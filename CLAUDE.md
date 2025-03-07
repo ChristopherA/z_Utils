@@ -37,7 +37,13 @@ Note: Branch context files in the `context/` directory may contain detailed info
    - Use `git ls-files <path>` to check if a file is tracked before removal
    - Use `git rm` for tracked files instead of `rm`
 
-3. **Commit process:**
+3. **Commit approval process (CRITICAL):**
+   - ALWAYS request explicit human confirmation before executing any commit
+   - Present the commit message for review before committing
+   - Never commit automatically or without explicit approval
+   - Wait for explicit confirmation before executing the commit command
+
+4. **Commit process:**
    - Review specific commit message requirements in `requirements/commit_standards.md`
    - Always sign commits with SSH/GPG key and add DCO sign-off as required
    - Stage files individually, not in batches
