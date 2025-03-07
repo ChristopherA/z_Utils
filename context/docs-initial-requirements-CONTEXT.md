@@ -90,13 +90,23 @@ find . -name "*.md" -type f | xargs grep "PATTERN"
 
 ## Next Actions
 
-1. Create a template for function specifications documentation
-2. Begin extraction and documentation of functions from source files, starting with z_Output()
-3. Review imported requirements documents to identify and address any Open Integrity specific content
-4. Create documentation for function categories and organization
-5. Update work items to include PR creation and GitHub push process
-6. Ensure all changes are committed before creating PR
-7. Plan for cherry-picking completed tasks to main branch
+1. Cherry-pick workflow improvements to main first:
+   - Commit all current branch changes
+   - Switch to main branch
+   - Cherry-pick WORK_STREAM_TASKS.md updates to main
+   - Push updates to main branch on GitHub
+   
+2. Complete PR process after cherry-picking:
+   - Switch back to docs/initial-requirements branch
+   - Create local PR with detailed description
+   - Push branch and PR to GitHub
+   - Request review of completed requirements import
+
+3. Plan for next branch creation:
+   - The function documentation tasks have been moved to unassigned
+   - A dedicated branch will be created for function documentation
+   - That branch will handle function specification template
+   - That branch will also document z_Output() and other functions
 
 ## References
 
