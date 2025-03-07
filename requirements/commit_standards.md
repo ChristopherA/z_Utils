@@ -127,22 +127,29 @@ The staging process is critical for creating proper commits:
    - Use `git add -p` for partial file staging if needed
    - Be cautious about whitespace and formatting changes
 
-## Sign and Sign-off Process
+## Commit Approval and Sign-off Process
 
 For each commit:
 
-1. **Configure Ed25519 SSH signing**
+1. **Human approval requirement (CRITICAL)**
+   - ALWAYS obtain explicit human confirmation before executing any commit
+   - Present the full commit message for review before committing
+   - Never execute a commit command without explicit human approval
+   - Wait for clear confirmation before proceeding with the commit
+   - For Claude and other AI tools: always pause and request explicit permission
+
+2. **Configure Ed25519 SSH signing**
    - Set up an Ed25519 SSH key for signing
    - Configure `gpg.format` to "ssh" for SSH signing
    - Configure `user.signingKey` to point to your Ed25519 public key
    - Set `commit.gpgsign` to true for automatic signing
    - Configure your allowed signers file
 
-2. **Add sign-off certification**
+3. **Add sign-off certification**
    - Use `-s` flag to add DCO sign-off
    - This adds your name and email as a signed certification
 
-3. **Create the commit**
+4. **Create the commit (only after human approval)**
    - Always use both flags: `git commit -S -s -m "Your message"`
    - Verify the commit is signed with `git log --show-signature`
 
