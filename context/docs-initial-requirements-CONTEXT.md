@@ -94,6 +94,9 @@ find . -name "*.md" -type f | xargs grep "PATTERN"
 2. Begin extraction and documentation of functions from source files, starting with z_Output()
 3. Review imported requirements documents to identify and address any Open Integrity specific content
 4. Create documentation for function categories and organization
+5. Update work items to include PR creation and GitHub push process
+6. Ensure all changes are committed before creating PR
+7. Plan for cherry-picking completed tasks to main branch
 
 ## References
 
