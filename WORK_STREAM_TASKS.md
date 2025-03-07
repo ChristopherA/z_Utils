@@ -59,6 +59,12 @@ Main branch tasks for project initialization and core infrastructure.
   - [x] Archive branch context to Archived Work Streams section (2025-03-07)
   - [x] Delete branch after successful merge and archiving (2025-03-07)
 
+- [x] **Create feature branches** [main] (High Priority) (2025-03-07)
+  - [x] Create docs/update-readme branch for README development (2025-03-07)
+  - [x] Set up branch context for docs/update-readme (2025-03-07)
+  - [x] Add branch section to WORK_STREAM_TASKS.md (2025-03-07)
+  - [ ] Create function-documentation branch (planned)
+
 - [ ] **Update task tracking** [main] (Medium Priority)
   - [ ] Cherry-pick completed task markers from branches to main
   - [ ] Ensure all completed work is properly documented
