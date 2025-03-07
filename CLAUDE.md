@@ -6,6 +6,15 @@ This document provides essential guidance for the Claude CLI agent when working 
 
 This project uses a structured development approach with parallel work streams managed through branches. Each work stream follows a requirements-driven process where tasks are defined based on specific requirements documents.
 
+## Initialization Process
+
+When first starting with a new project using this bootstrap:
+
+1. Begin by asking the user if they have existing files, code, or resources that should be incorporated into the project structure
+2. Help the user create or update project-specific documentation (README.md, etc.) with accurate information
+3. Guide the user through the initial tasks in WORK_STREAM_TASKS.md, customizing them as needed
+4. Suggest repository structure improvements based on the project's specific needs
+
 ## Core Files to Reference
 
 Claude should always reference the following files to understand the project context:
@@ -36,12 +45,30 @@ Note: Branch context files in the `context/` directory may contain detailed info
 
 ## Branch Context Management
 
-When working on a branch (including main):
+When starting work on a repository:
 
-1. Look for a branch context file (usually named `config/[branch-name]-CONTEXT.md`)
-2. If no context file exists, suggest creating one based on `config/branch_context_template.md`
-3. Reference the branch's section in WORK_STREAM_TASKS.md for current tasks
-4. Update WORK_STREAM_TASKS.md as tasks are completed with dates
+1. **First, identify the current branch:**
+   ```bash
+   git branch --show-current
+   ```
+
+2. **Then load the appropriate context file:**
+   - For main branch: `context/main-CONTEXT.md` or `config/main-CONTEXT.md`
+   - For feature branches: `context/[branch-name]-CONTEXT.md`
+   - Convention: Branch context files use hyphenated names (e.g., `feature-name-CONTEXT.md`)
+
+3. **If no context file exists for the current branch:**
+   - Suggest creating one based on `config/branch_context_template.md`
+   - Example: `cp config/branch_context_template.md context/[branch-name]-CONTEXT.md`
+
+4. **Reference corresponding section in WORK_STREAM_TASKS.md:**
+   - Find the branch's section (e.g., `## Branch: [branch-name]`)
+   - Focus on uncompleted tasks for that branch
+   - Recommend next actions based on task priorities
+
+5. **Update WORK_STREAM_TASKS.md as tasks are completed:**
+   - Mark completed tasks with [x] and add completion dates (YYYY-MM-DD)
+   - Ensure task updates are committed properly
 
 ## Requirements Documents
 
