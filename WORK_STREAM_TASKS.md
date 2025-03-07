@@ -20,6 +20,8 @@ Main branch tasks for project initialization and core infrastructure.
 
 - [ ] **Configure GitHub repository** [main] (High Priority)
   - [x] Create GitHub repository (2025-03-07)
+  - [ ] Configure GitHub remote (git remote add origin)
+  - [ ] Verify remote connection (git push -u origin main)
   - [ ] Configure GitHub repository settings
   - [ ] Set up branch protection rules
   - [x] Configure GitHub Actions (2025-03-07)
