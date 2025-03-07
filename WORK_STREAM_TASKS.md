@@ -102,7 +102,7 @@ This branch focuses on establishing foundational requirements documentation for 
   - [x] Document naming conventions and coding standards (2025-03-07)
   - [x] Organize existing documentation into new structure (2025-03-07)
 
-- [ ] **Create function specifications** [docs/initial-requirements] (Medium Priority)
+- [ ] **Create function specifications** [unassigned] (Medium Priority)
   - [ ] Document core utility functions
   - [ ] Document string manipulation functions
   - [ ] Document path handling functions
@@ -111,20 +111,27 @@ This branch focuses on establishing foundational requirements documentation for 
 
 ### Stage 2: Documentation Standards
 
-- [ ] **Establish testing requirements** [docs/initial-requirements] (Medium Priority)
+- [ ] **Establish testing requirements** [unassigned] (Medium Priority)
   - [ ] Define test coverage requirements
   - [ ] Document test case structure
   - [ ] Create test templates
 
-- [ ] **Create contribution guidelines** [docs/initial-requirements] (Medium Priority)
+- [ ] **Create contribution guidelines** [unassigned] (Medium Priority)
   - [ ] Document coding standards specific to z_Utils
   - [ ] Define documentation requirements for contributions
   - [ ] Establish review process
 
 ### Stage 3: Branch Completion Process
 
+- [ ] **Cherry-pick changes to main** [docs/initial-requirements] (High Priority)
+  - [ ] Ensure all changes are committed first
+  - [ ] Switch to main branch
+  - [ ] Cherry-pick task list updates
+  - [ ] Cherry-pick additional workflow improvements
+  - [ ] Push updates to main branch on GitHub
+
 - [ ] **Create local PR** [docs/initial-requirements] (High Priority)
-  - [ ] Ensure all changes are committed
+  - [ ] Switch back to docs/initial-requirements branch
   - [ ] Create detailed PR description
   - [ ] Highlight major changes and improvements
   - [ ] Request review
@@ -138,6 +145,12 @@ This branch focuses on establishing foundational requirements documentation for 
 ## Unassigned Tasks
 
 Tasks that have not yet been assigned to a specific branch.
+
+- [ ] **Function documentation branch** [unassigned] (High Priority)
+  - [ ] Create dedicated branch for function documentation
+  - [ ] Create template for function specifications
+  - [ ] Document z_Output() function from audit_inception_commit-POC.sh
+  - [ ] Update Open Integrity references in requirements documents
 
 - [ ] **Future infrastructure improvements** [unassigned]
   - [ ] Set up continuous integration
