@@ -10,6 +10,8 @@ Main branch tasks for project initialization and core infrastructure.
 
 **Related Requirements:**
 - [Link to primary requirements document when created]
+- [requirements/branch_management.md](requirements/branch_management.md)
+- [requirements/pr_process.md](requirements/pr_process.md)
 
 ### Stage 1: Repository Setup
 
@@ -49,7 +51,20 @@ Main branch tasks for project initialization and core infrastructure.
   - [ ] Document build process
   - [ ] Document testing process
 
-### Stage 3: Requirements Definition
+### Stage 3: Branch Management and PR Process
+
+- [ ] **Review and merge branch PRs** [main] (High Priority)
+  - [ ] Review docs/initial-requirements PR
+  - [ ] Merge approved PR using proper signed merge commit
+  - [ ] Archive branch context to Archived Work Streams section
+  - [ ] Delete branch after successful merge and archiving
+
+- [ ] **Update task tracking** [main] (Medium Priority)
+  - [ ] Cherry-pick completed task markers from branches to main
+  - [ ] Ensure all completed work is properly documented
+  - [ ] Record major accomplishments in README.md
+
+### Stage 4: Requirements Definition
 
 - [ ] **Establish requirements process** [main] (High Priority)
   - [ ] Define requirements documentation format
@@ -71,6 +86,12 @@ Main branch tasks for project initialization and core infrastructure.
 ## Unassigned Tasks
 
 Tasks that have not yet been assigned to a specific branch.
+
+- [ ] **Function documentation branch** [unassigned] (High Priority)
+  - [ ] Create dedicated branch for function documentation
+  - [ ] Create template for function specifications
+  - [ ] Document z_Output() function from audit_inception_commit-POC.sh
+  - [ ] Update Open Integrity references in requirements documents
 
 - [ ] **Future infrastructure improvements** [unassigned]
   - [ ] Set up continuous integration
