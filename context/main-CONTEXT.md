@@ -12,8 +12,10 @@ The `main` branch is the primary branch for the z_Utils project. It contains the
 
 1. **Project initialization:** Project has been initialized with core documents (2025-03-07)
 2. **Repository setup:** Git and GitHub repos set up with proper signing and structure (2025-03-07)
-3. **Branch structure:** Created docs/initial-requirements branch for requirements work (2025-03-07)
-4. **Next steps:** Set up GitHub remote and continue with requirements documentation
+3. **Requirements imported:** Merged docs/initial-requirements branch with foundational documents (2025-03-07)
+4. **Feature branch creation:** Created docs/update-readme branch from main for README development (2025-03-07)
+5. **Process improvements:** Enhanced commit approval requirements to ensure explicit human confirmation (2025-03-07)
+6. **Next steps:** Continue with docs/update-readme branch to create comprehensive README.md
 
 ## Key Documents
 
@@ -23,10 +25,19 @@ The `main` branch is the primary branch for the z_Utils project. It contains the
 - `WORK_STREAM_TASKS.md` - Master task tracking document for all branches
 
 **Requirements documents:**
+- `requirements/REQUIREMENTS-z_Utils_Functions.md` - Core function requirements
+- `requirements/REQUIREMENTS-Zsh_Core_Scripting_Best_Practices.md` - Zsh standards
+- `requirements/REQUIREMENTS-Zsh_Snippet_Script_Best_Practices.md` - Small script standards
+- `requirements/REQUIREMENTS-Zsh_Framework_Scripting_Best_Practices.md` - Framework standards
 - `requirements/git_workflow.md` - Git process requirements
 - `requirements/commit_standards.md` - Commit formatting and signing requirements
 - `requirements/branch_management.md` - Branch strategy and process
 - `requirements/work_stream_management.md` - Work stream management process
+
+**Source examples:**
+- `src/audit_inception_commit-POC.sh` - Example with z_Output function
+- `src/z_frame.sh` and `src/z_min_frame.sh` - Framework examples
+- `src/snippet_template.sh` - Snippet script template
 
 ## Project Phases
 
@@ -81,10 +92,10 @@ git branch -a
 
 ## Next Actions
 
-1. Configure GitHub remote (git remote add origin)
-2. Verify remote connection (git push -u origin main)
-3. Add LICENSE file to the repository
-4. Review and merge work from the docs/initial-requirements branch
+1. Complete the docs/update-readme branch to create a comprehensive README.md
+2. Add LICENSE file to the repository
+3. Plan next branch for function specification templates
+4. Set up remaining GitHub repository settings
 
 ## References
 
