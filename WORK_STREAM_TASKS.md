@@ -147,6 +147,53 @@ This branch focuses on establishing foundational requirements documentation for 
   - [x] Create PR on GitHub (2025-03-07)
   - [x] Verify branch and PR appear on GitHub (2025-03-07)
 
+## Branch: [docs/update-readme]
+
+This branch focuses on creating a comprehensive README.md for the z_Utils project.
+
+**Related Requirements:**
+- Context file: [context/docs-update-readme-CONTEXT.md](context/docs-update-readme-CONTEXT.md)
+
+### Stage 1: Information Gathering
+
+- [ ] **Review requirements documents** [docs/update-readme] (High Priority)
+  - [ ] Extract key information from z_Utils_Functions.md
+  - [ ] Review Zsh scripting standards for key points
+  - [ ] Identify core utility functions to highlight
+  - [ ] Gather design principles and conventions
+
+- [ ] **Plan README structure** [docs/update-readme] (High Priority)
+  - [ ] Create outline with major sections
+  - [ ] Decide on badges and project status indicators
+  - [ ] Develop table of contents approach
+
+### Stage 2: README Development
+
+- [ ] **Create initial README content** [docs/update-readme] (High Priority)
+  - [ ] Write project overview and purpose
+  - [ ] Document installation instructions
+  - [ ] Provide basic usage examples
+  - [ ] Include license and contribution information
+
+- [ ] **Add detailed sections** [docs/update-readme] (Medium Priority)
+  - [ ] Document architecture overview
+  - [ ] Add function categories descriptions
+  - [ ] Include more advanced usage examples
+  - [ ] Add relevant badges and status indicators
+
+### Stage 3: Branch Completion Process
+
+- [ ] **Cherry-pick changes to main** [docs/update-readme] (High Priority)
+  - [ ] Ensure all changes are committed first
+  - [ ] Switch to main branch
+  - [ ] Cherry-pick task list updates
+  - [ ] Push updates to main branch on GitHub
+
+- [ ] **Create PR** [docs/update-readme] (High Priority)
+  - [ ] Push branch to GitHub
+  - [ ] Create detailed PR description
+  - [ ] Request review
+
 ## Unassigned Tasks
 
 Tasks that have not yet been assigned to a specific branch.
