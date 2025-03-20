@@ -13,16 +13,17 @@
 - [x] Implemented initial _Z_Utils.zsh with z_Output function (2025-03-19)
 - [x] Created test file for z_Output function (2025-03-19)
 - [x] Added example scripts showing library usage (2025-03-19)
-- [x] Added get_repo_did.zsh example with proper DID reference (2025-03-19)
+- [x] Renamed get_repo_did.zsh to get_repo_did.sh to follow correct naming conventions (2025-03-19)
+- [x] Updated all requirement document headers with proper Z_Utils repository references and DID (2025-03-19)
 
 ## Current Tasks
-- [~] **Document Collection** (2025-03-19)
+- [x] **Document Collection** (2025-03-19)
   - [x] Create `untracked/source-material` directory for source documents (2025-03-19)
   - [x] Import documents from existing sources (2025-03-19)
   - [x] Document origins and sources (2025-03-19) - completed function inventory in source_materials_inventory.md
   - [x] Organize by preliminary categories (2025-03-19)
 
-- [~] **Document Inventory** (2025-03-19)
+- [x] **Document Inventory** (2025-03-19)
   - [x] Create document inventory in markdown table (2025-03-19)
   - [x] Record metadata for each document (2025-03-19)
   - [x] Identify documentation gaps (2025-03-19)
@@ -32,13 +33,20 @@
   - [x] Evaluate appropriate structure for this specific project (2025-03-19)
   - [x] Determine complex structure is needed (2025-03-19)
   - [x] Create documentation directory structure (2025-03-19)
-  - [ ] Define documentation standards
+  - [~] Define documentation standards (2025-03-19)
 
 - [~] **Documentation Processing** (2025-03-19)
   - [~] Convert priority documents to standard format (2025-03-19)
+  - [x] Update requirement document headers with proper Z_Utils repository references and DID (2025-03-19)
   - [ ] Create index documents if needed
   - [ ] Implement cross-references
   - [ ] Review converted documents
+
+- [~] **Script Organization** (2025-03-19)
+  - [x] Rename get_repo_did.zsh to get_repo_did.sh to follow naming conventions (2025-03-19)
+  - [x] Update get_repo_did.sh with proper repository DID (2025-03-19)
+  - [ ] Extract additional utility functions from source materials
+  - [ ] Create more example scripts
 
 - [ ] **Process Documentation**
   - Document the maintenance process
@@ -148,10 +156,15 @@ claude "load CLAUDE.md, identify branch as docs-import-materials, and continue w
 
 ## Next Steps
 For the next session:
-1. Update requirement document headers with proper Z_Utils repository references and DID
-2. Extract additional utility functions from source materials
-3. Create more example scripts
-4. Finalize directory structure
+1. Extract additional utility functions from source materials:
+   - z_Report_Error
+   - z_Setup_Environment
+   - z_Check_Dependencies
+   - z_Ensure_Parent_Path_Exists
+   - z_Cleanup
+2. Create more example scripts
+3. Adapt comprehensive tests from z_output_demo.sh into the test framework
+4. Finalize directory structure and documentation standards
 5. Start preparing for a PR to main
 
 <!-- When ready to create PR for this branch:

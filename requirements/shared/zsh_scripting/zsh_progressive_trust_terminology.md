@@ -1,7 +1,8 @@
 # Progressive Trust Terminology Requirements and Best Practices
-> - _did: `did:repo:69c8659959f1a6aa281bdc1b8653b381e741b3f6/blob/main/src/requirements/REQUIREMENTS-Progressive_Trust_Terminology.md`_
-> - _github: [`core/blob/main/src/requirements/REQUIREMENTS-Progressive_Trust_Terminology.md`](https://github.com/OpenIntegrityProject/core/blob/main/src/requirements/REQUIREMENTS-Progressive_Trust_Terminology.md)_
-> - _Updated: 2025-03-04 by Christopher Allen <ChristopherA@LifeWithAlacrity.com> Github/Twitter/Bluesky: @ChristopherA_
+> - _did: `did:repo:b0c5cd0d85b29543c604c093dd83a1a20eb17af1/blob/main/requirements/shared/zsh_scripting/zsh_progressive_trust_terminology.md`_
+> - _github: [`z_Utils/requirements/shared/zsh_scripting/zsh_progressive_trust_terminology.md`](https://github.com/ChristopherA/z_Utils/blob/main/requirements/shared/zsh_scripting/zsh_progressive_trust_terminology.md)_
+> - _Updated: 2025-03-19 by Christopher Allen <ChristopherA@LifeWithAlacrity.com> Github/Twitter/Bluesky: @ChristopherA_
+> - _Original: [`did:repo:69c8659959f1a6aa281bdc1b8653b381e741b3f6/blob/main/src/requirements/REQUIREMENTS-Progressive_Trust_Terminology.md`](https://github.com/OpenIntegrityProject/core/blob/main/src/requirements/REQUIREMENTS-Progressive_Trust_Terminology.md)_
 
 [![License](https://img.shields.io/badge/License-BSD_2--Clause--Patent-blue.svg)](https://spdx.org/licenses/BSD-2-Clause-Patent.html)  
 [![Project Status: Active](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)  

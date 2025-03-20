@@ -1,8 +1,8 @@
 # Z_Utils: Zsh Utility Library Requirements
 
-> - _did: `did:repo:z_utils_function_requirements`_
-> - _github: [Z_Utils Requirements](https://github.com/ChristopherA/Z_Utils)_
-> - _Updated: 2025-02-28 by Christopher Allen <ChristopherA@LifeWithAlacrity.com>_
+> - _did: `did:repo:b0c5cd0d85b29543c604c093dd83a1a20eb17af1/blob/main/requirements/project/z_utils_functions.md`_
+> - _github: [`z_Utils/requirements/project/z_utils_functions.md`](https://github.com/ChristopherA/z_Utils/blob/main/requirements/project/z_utils_functions.md)_
+> - _Updated: 2025-03-19 by Christopher Allen <ChristopherA@LifeWithAlacrity.com> Github/Twitter/Bluesky: @ChristopherA_
 
 [![License](https://img.shields.io/badge/License-BSD_2--Clause--Patent-blue.svg)](https://spdx.org/licenses/BSD-2-Clause-Patent.html)
 [![Project Status: WIP](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
