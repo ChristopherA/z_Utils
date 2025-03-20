@@ -135,13 +135,13 @@ function z_Output {
     
     EmojiMap=(
         "print"   ""
-        "info"    "=¡"
-        "verbose" "=Ø"
-        "success" ""
-        "warn"    " "
+        "info"    "=ï¿½"
+        "verbose" "=ï¿½"
+        "success" ""
+        "warn"    "ï¿½"
         "error"   "L"
-        "debug"   "=à"
-        "vdebug"  "="
+        "debug"   "=ï¿½"
+        "vdebug"  "="
         "prompt"  "S"
     )
     
@@ -392,4 +392,354 @@ function z_Convert_Path_To_Relative() {
     fi
     
     return 0
+}
+
+#----------------------------------------------------------------------#
+# Function: z_Report_Error
+#----------------------------------------------------------------------#
+# Description:
+#   Centralized error reporting with consistent formatting.
+#   Uses z_Output when available, falls back to print if needed.
+#
+# Parameters:
+#   $1 - Error message
+#   $2 - Optional exit code (defaults to Exit_Status_General)
+#
+# Returns:
+#   Prints error to stderr with consistent formatting
+#   Returns specified or default error code
+#----------------------------------------------------------------------#
+function z_Report_Error() {
+    typeset ErrorMessage="${1:?Missing error message parameter}"
+    typeset -i ErrorCode="${2:-$Exit_Status_General}"
+    
+    # Use z_Output if the function is defined and callable
+    if typeset -f z_Output >/dev/null; then
+        z_Output error "$ErrorMessage" Force=1
+    else
+        # Fall back to basic error output if z_Output isn't available
+        print -u2 "âŒ ERROR: $ErrorMessage"
+    fi
+    
+    return $ErrorCode
+}
+
+#----------------------------------------------------------------------#
+# Function: z_Check_Dependencies
+#----------------------------------------------------------------------#
+# Description:
+#   Checks for the presence of required external commands and tools.
+#   This function can verify both mandatory and optional dependencies.
+#
+# Parameters:
+#   $1 - Array name containing command dependencies (required)
+#   $2 - Optional array name containing optional commands (not required for success)
+#
+# Returns:
+#   Exit_Status_Success (0) if all required dependencies are available
+#   Exit_Status_Dependency (127) if any required dependency is missing
+#
+# Usage Examples:
+#   # Check required dependencies only
+#   typeset -a RequiredCmds=("git" "ssh" "tput")
+#   z_Check_Dependencies "RequiredCmds" || return $?
+#
+#   # Check both required and optional dependencies
+#   typeset -a RequiredCmds=("git" "ssh")
+#   typeset -a OptionalCmds=("gpg" "gh")
+#   z_Check_Dependencies "RequiredCmds" "OptionalCmds" || return $?
+#----------------------------------------------------------------------#
+function z_Check_Dependencies() {
+    typeset RequiredArrayName="${1:?Missing required dependencies array parameter}"
+    typeset OptionalArrayName="${2:-}"
+    
+    # Use nameref to access the array by name
+    typeset -n RequiredArray="$RequiredArrayName"
+    
+    typeset -i ErrorCount=0
+    typeset Command
+    
+    # Check required commands
+    for Command in "${RequiredArray[@]}"; do
+        if ! command -v "$Command" >/dev/null 2>&1; then
+            z_Report_Error "Required command not found: $Command"
+            (( ErrorCount++ ))
+        fi
+    done
+    
+    # If optional array is provided, check those commands too
+    if [[ -n "$OptionalArrayName" ]]; then
+        typeset -n OptionalArray="$OptionalArrayName"
+        
+        for Command in "${OptionalArray[@]}"; do
+            if ! command -v "$Command" >/dev/null 2>&1; then
+                # Just print a warning for optional dependencies
+                if typeset -f z_Output >/dev/null; then
+                    z_Output warn "Optional command not found: $Command"
+                else
+                    print -u2 "âš ï¸ WARNING: Optional command not found: $Command"
+                fi
+            fi
+        done
+    fi
+    
+    # Return appropriate exit status
+    if (( ErrorCount > 0 )); then
+        return $Exit_Status_Dependency
+    fi
+    
+    return $Exit_Status_Success
+}
+
+#----------------------------------------------------------------------#
+# Function: z_Ensure_Parent_Path_Exists
+#----------------------------------------------------------------------#
+# Description:
+#   Creates parent directories for a given file path if they don't
+#   already exist. Useful for ensuring a file can be written to a
+#   specific location.
+#
+# Parameters:
+#   $1 - File or directory path whose parent directories should exist
+#   $2 - Optional permissions to set on created directories (default: 755)
+#
+# Returns:
+#   Exit_Status_Success (0) if parent directories exist or were created
+#   Exit_Status_IO (3) if directory creation fails
+#
+# Usage Examples:
+#   z_Ensure_Parent_Path_Exists "/path/to/file.txt" || return $?
+#   z_Ensure_Parent_Path_Exists "/path/to/dir/" 700 || return $?
+#----------------------------------------------------------------------#
+function z_Ensure_Parent_Path_Exists() {
+    typeset TargetPath="${1:?Missing target path parameter}"
+    typeset DirPerms="${2:-755}"
+    
+    # Extract the parent directory path
+    typeset ParentDir
+    
+    # If the path ends with a slash, it's already a directory
+    if [[ "$TargetPath" == */ ]]; then
+        ParentDir="${TargetPath%/}"
+    else
+        # Otherwise, get the directory containing the file
+        ParentDir="${TargetPath:h}"
+    fi
+    
+    # No need to create anything if parent dir is just '.'
+    if [[ "$ParentDir" == "." ]]; then
+        return $Exit_Status_Success
+    fi
+    
+    # Create the directory if it doesn't exist
+    if [[ ! -d "$ParentDir" ]]; then
+        # Use mkdir with -p to create parent directories as needed
+        if ! mkdir -p "$ParentDir"; then
+            z_Report_Error "Failed to create directory: $ParentDir" $Exit_Status_IO
+            return $Exit_Status_IO
+        fi
+        
+        # Set permissions on the created directory
+        if ! chmod "$DirPerms" "$ParentDir"; then
+            z_Report_Error "Failed to set permissions on directory: $ParentDir" $Exit_Status_IO
+            return $Exit_Status_IO
+        fi
+    fi
+    
+    # Verify the directory is writable
+    if [[ ! -w "$ParentDir" ]]; then
+        z_Report_Error "Directory exists but is not writable: $ParentDir" $Exit_Status_IO
+        return $Exit_Status_IO
+    fi
+    
+    return $Exit_Status_Success
+}
+
+#----------------------------------------------------------------------#
+# Function: z_Setup_Environment
+#----------------------------------------------------------------------#
+# Description:
+#   Initializes the script environment with safe defaults, verifies
+#   required dependencies, and sets up necessary environment variables.
+#   This is typically called near the start of a script after setting
+#   the basic Zsh options.
+#
+# Parameters:
+#   None - Can be customized by modifying the internal constants if needed
+#
+# Returns:
+#   Exit_Status_Success (0) on successful environment setup
+#   Exit_Status_Dependency (127) if environment requirements are not met
+#
+# Usage Examples:
+#   z_Setup_Environment || exit $?
+#----------------------------------------------------------------------#
+function z_Setup_Environment() {
+    # Define minimum required version
+    typeset -r RequiredZshMajor=5
+    typeset -r RequiredZshMinor=8
+    
+    # Verify Zsh version first
+    function check_Zsh_Version() {
+        typeset ZshOutput MinVer
+        typeset -i Major=0 Minor=0
+        
+        ZshOutput="$(zsh --version 2>/dev/null)"
+        if [[ -z "$ZshOutput" ]]; then
+            z_Report_Error "Failed to get Zsh version"
+            return 1
+        }
+        
+        # Extract version numbers using parameter expansion
+        MinVer="${ZshOutput#*zsh }"
+        MinVer="${MinVer%% *}"
+        Major="${MinVer%%.*}"
+        Minor="${MinVer#*.}"
+        Minor="${Minor%%.*}"  # Handle cases like 5.8.1
+        
+        if (( Major < RequiredZshMajor || (Major == RequiredZshMajor && Minor < RequiredZshMinor) )); then
+            z_Report_Error "Zsh version ${RequiredZshMajor}.${RequiredZshMinor} or later required (found ${Major}.${Minor})"
+            return 1
+        fi
+        return 0
+    }
+    
+    # Check basic command dependencies
+    function check_Core_Dependencies() {
+        typeset -a RequiredCmds=("printf" "zsh" "tput")
+        
+        typeset Command
+        typeset -i ErrorCount=0
+        
+        for Command in "${RequiredCmds[@]}"; do
+            if ! command -v "${Command}" >/dev/null 2>&1; then
+                z_Report_Error "Required command not found: ${Command}"
+                (( ErrorCount++ ))
+            fi
+        done
+        
+        return $ErrorCount
+    }
+    
+    # Set up terminal capabilities if not already set
+    function setup_Terminal_Capabilities() {
+        # Only initialize if they aren't already defined
+        if [[ -z "$Term_Reset" ]]; then
+            # Initialize terminal capabilities
+            typeset -g Term_Reset="$(tput sgr0 2>/dev/null || echo '')"
+            typeset -g Term_Bold="$(tput bold 2>/dev/null || echo '')"
+            typeset -g Term_Red="$(tput setaf 1 2>/dev/null || echo '')"
+            typeset -g Term_Green="$(tput setaf 2 2>/dev/null || echo '')"
+            typeset -g Term_Yellow="$(tput setaf 3 2>/dev/null || echo '')"
+            typeset -g Term_Blue="$(tput setaf 4 2>/dev/null || echo '')"
+            typeset -g Term_Magenta="$(tput setaf 5 2>/dev/null || echo '')"
+            typeset -g Term_Cyan="$(tput setaf 6 2>/dev/null || echo '')"
+        fi
+    }
+    
+    # Run all setup checks
+    typeset -i ErrorCount=0
+    
+    # Check Zsh version
+    check_Zsh_Version || (( ErrorCount++ ))
+    
+    # Check basic dependencies
+    check_Core_Dependencies || (( ErrorCount += $? ))
+    
+    # Set up terminal capabilities
+    setup_Terminal_Capabilities
+    
+    # Initial environment variables with safe defaults
+    # Output control flags (only set if not already defined)
+    typeset -g Output_Verbose_Mode=${Output_Verbose_Mode:-0}
+    typeset -g Output_Quiet_Mode=${Output_Quiet_Mode:-0}
+    typeset -g Output_Debug_Mode=${Output_Debug_Mode:-0}
+    typeset -g Output_Prompt_Enabled=${Output_Prompt_Enabled:-1}
+    
+    # Define Script_Running flag if it doesn't exist
+    typeset -g Script_Running=${Script_Running:-$TRUE}
+    
+    # Return appropriate exit status
+    if (( ErrorCount > 0 )); then
+        return $Exit_Status_Dependency
+    fi
+    
+    return $Exit_Status_Success
+}
+
+#----------------------------------------------------------------------#
+# Function: z_Cleanup
+#----------------------------------------------------------------------#
+# Description:
+#   Performs cleanup operations when the script exits, handling both
+#   successful and error conditions. This function is designed to be
+#   registered via a trap to ensure it runs even if the script exits
+#   abnormally.
+#
+# Parameters:
+#   $1 - Success flag (boolean) - $TRUE for normal exit, $FALSE for error
+#   $2 - Optional error message - Details about an error condition
+#
+# Returns:
+#   Returns the same value as the success flag passed to it
+#
+# Required Script Variables:
+#   Script_Running - Flag to track and prevent recursive script execution
+#   TRUE/FALSE - Boolean constants
+#
+# Usage Example:
+#   # In your main script:
+#   typeset -g Script_Running=$TRUE
+#   trap 'z_Cleanup $FALSE "Script interrupted"' INT TERM
+#   trap 'z_Cleanup $TRUE' EXIT
+#
+#   # For manual cleanup:
+#   z_Cleanup $TRUE ""  # Normal successful completion
+#   z_Cleanup $FALSE "Script terminated due to error"  # Error condition
+#----------------------------------------------------------------------#
+function z_Cleanup() {
+    typeset Success=${1:?Missing success flag parameter}
+    typeset ErrorMsg="${2:-}"
+    
+    # Prevent recursive execution
+    if [[ "$Script_Running" != "$TRUE" ]]; then
+        return $Success
+    fi
+    
+    # Reset the script running flag
+    typeset -g Script_Running=$FALSE
+    
+    # Perform any required cleanup actions here
+    # This is where you would remove temporary files, release resources, etc.
+    
+    # Remove temporary files if a pattern is defined
+    if [[ -n "${Temp_Files_Pattern:-}" ]]; then
+        if typeset -f z_Output >/dev/null; then
+            z_Output debug "Cleaning up temporary files matching: $Temp_Files_Pattern"
+        fi
+        # Use safer -name approach for rm (avoid expanding wildcards too broadly)
+        find /tmp -type f -name "$Temp_Files_Pattern" -mmin -60 -delete 2>/dev/null || :
+    fi
+    
+    # Report cleanup status
+    if typeset -f z_Output >/dev/null; then
+        if (( Success == TRUE )); then
+            # On success, report cleanup completion in debug mode
+            z_Output debug "Cleanup completed successfully."
+        else
+            # On failure, use warning type which respects quiet mode
+            z_Output warn Emoji="" ""
+            z_Output warn "Script terminated with errors. Cleanup completed."
+            if [[ -n "$ErrorMsg" ]]; then
+                z_Output error "$ErrorMsg"
+            fi
+        fi
+    else
+        # Fallback if z_Output function isn't available
+        if (( Success != TRUE )) && [[ -n "$ErrorMsg" ]]; then
+            print -u2 "ERROR: $ErrorMsg"
+        fi
+    fi
+    
+    return $Success
 }
