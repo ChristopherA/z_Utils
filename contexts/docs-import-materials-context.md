@@ -143,11 +143,19 @@ docs/
 ## Restart Instructions
 To continue this work:
 ```bash
-claude "load CLAUDE.md, identify branch as docs/import-materials, and continue working on documentation import and organization"
+claude "load CLAUDE.md, identify branch as docs-import-materials, and continue working on documentation import and organization"
 ```
+
+## Next Steps
+For the next session:
+1. Update requirement document headers with proper Z_Utils repository references and DID
+2. Extract additional utility functions from source materials
+3. Create more example scripts
+4. Finalize directory structure
+5. Start preparing for a PR to main
 
 <!-- When ready to create PR for this branch:
 ```bash
-claude "load CLAUDE.md, identify branch as docs/import-materials, and create a PR to merge into main"
+claude "load CLAUDE.md, identify branch as docs-import-materials, and create a PR to merge into main"
 ```
 -->
