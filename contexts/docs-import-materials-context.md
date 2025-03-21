@@ -21,6 +21,14 @@
   - [x] z_Ensure_Parent_Path_Exists - Create parent directories as needed
   - [x] z_Setup_Environment - Initialize script environment
   - [x] z_Cleanup - Handle script termination and resource cleanup
+- [x] Created additional example scripts (2025-03-19):
+  - [x] check_dependencies_example.zsh - Demonstrates z_Check_Dependencies usage
+  - [x] setup_cleanup_example.zsh - Demonstrates z_Setup_Environment and z_Cleanup with traps
+  - [x] create_path_example.zsh - Demonstrates z_Ensure_Parent_Path_Exists usage
+- [x] Created comprehensive tests for utility functions (2025-03-19):
+  - [x] z_Output_comprehensive_test.zsh - Detailed tests for z_Output
+  - [x] z_Report_Error_test.zsh - Tests for z_Report_Error
+  - [x] z_Ensure_Parent_Path_Exists_test.zsh - Tests for z_Ensure_Parent_Path_Exists
 
 ## Current Tasks
 - [x] **Document Collection** (2025-03-19)
@@ -57,7 +65,10 @@
     - [x] z_Ensure_Parent_Path_Exists - Path creation utility
     - [x] z_Setup_Environment - Environment initialization
     - [x] z_Cleanup - Resource cleanup function
-  - [ ] Create more example scripts
+  - [x] Create more example scripts (2025-03-19):
+    - [x] check_dependencies_example.zsh - Demonstrates z_Check_Dependencies
+    - [x] setup_cleanup_example.zsh - Demonstrates z_Setup_Environment and z_Cleanup
+    - [x] create_path_example.zsh - Demonstrates z_Ensure_Parent_Path_Exists
 
 - [ ] **Process Documentation**
   - Document the maintenance process
@@ -167,13 +178,19 @@ claude "load CLAUDE.md, identify branch as docs-import-materials, and continue w
 
 ## Next Steps
 For the next session:
-1. Create more example scripts to demonstrate function usage:
-   - Example showing z_Check_Dependencies
-   - Example showing z_Setup_Environment and z_Cleanup with trap usage
-2. Adapt comprehensive tests from z_output_demo.sh into the test framework
-3. Finalize directory structure and documentation standards
-4. Add function documentation to requirements/project/functions/ directory
-5. Start preparing for a PR to main
+1. Document the functions in individual markdown files in requirements/project/functions/ directory:
+   - z_Output.md
+   - z_Report_Error.md
+   - z_Check_Dependencies.md
+   - z_Ensure_Parent_Path_Exists.md
+   - z_Setup_Environment.md
+   - z_Cleanup.md
+   - z_Convert_Path_To_Relative.md
+2. Finalize documentation standards
+3. Create function test for z_Check_Dependencies
+4. Create function test for z_Setup_Environment and z_Cleanup
+5. Create function test for z_Convert_Path_To_Relative
+6. Start preparing for a PR to main
 
 <!-- When ready to create PR for this branch:
 ```bash
