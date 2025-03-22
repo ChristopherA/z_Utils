@@ -22,13 +22,19 @@
   - [x] z_Setup_Environment - Initialize script environment
   - [x] z_Cleanup - Handle script termination and resource cleanup
 - [x] Created additional example scripts (2025-03-19):
-  - [x] check_dependencies_example.zsh - Demonstrates z_Check_Dependencies usage
-  - [x] setup_cleanup_example.zsh - Demonstrates z_Setup_Environment and z_Cleanup with traps
-  - [x] create_path_example.zsh - Demonstrates z_Ensure_Parent_Path_Exists usage
+  - [x] check_dependencies_example.sh - Demonstrates z_Check_Dependencies usage
+  - [x] setup_cleanup_example.sh - Demonstrates z_Setup_Environment and z_Cleanup with traps
+  - [x] create_path_example.sh - Demonstrates z_Ensure_Parent_Path_Exists usage
 - [x] Created comprehensive tests for utility functions (2025-03-19):
-  - [x] z_Output_comprehensive_test.zsh - Detailed tests for z_Output
-  - [x] z_Report_Error_test.zsh - Tests for z_Report_Error
-  - [x] z_Ensure_Parent_Path_Exists_test.zsh - Tests for z_Ensure_Parent_Path_Exists
+  - [x] z_Output_comprehensive_test.sh - Detailed tests for z_Output
+  - [x] z_Report_Error_test.sh - Tests for z_Report_Error
+  - [x] z_Ensure_Parent_Path_Exists_test.sh - Tests for z_Ensure_Parent_Path_Exists
+- [x] Imported source material scripts (2025-03-19):
+  - [x] Added script templates: snippet_template.sh, z_frame.sh, z_min_frame.sh
+  - [x] Added test scripts: TEST-audit_inception_commit.sh, TEST-create_inception_commit.sh, audit_inception_commit-POC.sh, create_inception_commit.sh
+- [x] Fixed file naming conventions (2025-03-19):
+  - [x] Changed all example and test script extensions from .zsh to .sh to follow conventions
+  - [x] Only _Z_Utils.zsh retains .zsh extension as it's a library
 
 ## Current Tasks
 - [x] **Document Collection** (2025-03-19)
@@ -66,9 +72,13 @@
     - [x] z_Setup_Environment - Environment initialization
     - [x] z_Cleanup - Resource cleanup function
   - [x] Create more example scripts (2025-03-19):
-    - [x] check_dependencies_example.zsh - Demonstrates z_Check_Dependencies
-    - [x] setup_cleanup_example.zsh - Demonstrates z_Setup_Environment and z_Cleanup
-    - [x] create_path_example.zsh - Demonstrates z_Ensure_Parent_Path_Exists
+    - [x] check_dependencies_example.sh - Demonstrates z_Check_Dependencies
+    - [x] setup_cleanup_example.sh - Demonstrates z_Setup_Environment and z_Cleanup
+    - [x] create_path_example.sh - Demonstrates z_Ensure_Parent_Path_Exists
+  - [x] Import source material scripts (2025-03-19):
+    - [x] snippet_template.sh, z_frame.sh, z_min_frame.sh
+    - [x] TEST-audit_inception_commit.sh, TEST-create_inception_commit.sh
+    - [x] audit_inception_commit-POC.sh, create_inception_commit.sh
 
 - [ ] **Process Documentation**
   - Document the maintenance process
