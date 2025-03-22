@@ -5,27 +5,75 @@
 
 ## Active Tasks
 
-### Project Setup
+### Project Setup and Infrastructure
 - [x] Initialize repository and branch structure (2025-03-19)
 - [x] Import source materials (2025-03-19)
 - [x] Set up development environment (2025-03-19)
 - [x] Define project requirements (2025-03-19)
 - [x] Clean up repository structure (2025-03-21)
 - [x] Update development processes and documentation (2025-03-22)
+- [~] Organize task planning and create future branch contexts (started 2025-03-22)
 
-### Core Development
+### Core Library Development (Critical Path)
 - [x] Set up core library functionality (2025-03-19)
-- [ ] Document existing library functions (High priority)
-- [ ] Implement comprehensive test coverage (High priority)
-- [ ] Modernize imported scripts (Medium priority)
-- [ ] Add CI/CD pipeline (Low priority)
+- [ ] **Document existing library functions** (High priority)
+  - Acceptance Criteria:
+    - All functions have comprehensive documentation
+    - Documentation follows established standards
+    - Usage examples are provided for each function
+    - Integration guidance is documented
+  - Dependencies: None
+  - Branch: feature/function-documentation
 
-### Documentation
+- [ ] **Implement comprehensive test coverage** (High priority)
+  - Acceptance Criteria:
+    - All functions have test coverage
+    - Test automation is implemented
+    - Test reporting is functional
+    - Testing guidelines are documented
+  - Dependencies: Function documentation (recommended but not required)
+  - Branch: feature/test-coverage
+
+### Script and Usability Enhancement
+- [ ] **Modernize imported scripts** (Medium priority)
+  - Acceptance Criteria:
+    - All scripts use _Z_Utils.zsh consistently
+    - Error handling is standardized
+    - Command-line processing is modernized
+    - Script templates are created
+  - Dependencies: None
+  - Branch: feature/modernize-scripts
+
+- [ ] **Add enhanced functionality** (Medium priority)
+  - Acceptance Criteria:
+    - Advanced logging functions implemented
+    - Configuration management functions implemented
+    - Process management utilities implemented
+    - Extended examples created and documented
+  - Dependencies: Function documentation, Test coverage
+  - Branch: feature/enhanced-functionality
+
+### Documentation and Integration
 - [x] Create documentation directory structure (2025-03-19)
-- [ ] Complete function reference documentation (High priority)
-- [ ] Create user guide with examples (Medium priority)
-- [ ] Create contributor guidelines (Medium priority)
-- [ ] Create changelog and release process (Low priority)
+- [ ] **Complete function reference documentation** (High priority)
+  - Part of feature/function-documentation branch
+- [ ] **Create user guide with examples** (Medium priority)
+  - Dependencies: Function documentation
+- [ ] **Create contributor guidelines** (Medium priority)
+  - Dependencies: None
+
+### Automation and Deployment
+- [ ] **Add CI/CD pipeline** (Low priority)
+  - Acceptance Criteria:
+    - GitHub Actions workflows configured
+    - Automated testing implemented
+    - Code quality checks established
+    - Release process defined and implemented
+  - Dependencies: Test coverage
+  - Branch: feature/ci-cd-setup
+
+- [ ] **Create changelog and release process** (Low priority)
+  - Part of feature/ci-cd-setup branch
 
 ## Branch: main
 
@@ -34,77 +82,14 @@
 - [x] Define initial architecture (2025-03-19)
 - [x] Implement core utility functions (2025-03-19)
 
-## Branch: docs/project-focus-and-task-organization
+## Branch: organize/task-planning-and-context-creation
 
-- [ ] **Documentation Refinement** (High priority)
-  - [ ] Update CLAUDE.md to focus on Z_Utils guidance
-  - [ ] Update PROJECT_GUIDE.md to focus on Z_Utils workflows
-  - [ ] Update README.md to enhance project description
-  - [ ] Update WORK_STREAM_TASKS.md for better organization
-- [ ] **Task Planning**
-  - [ ] Create draft context files for future branches
-  - [ ] Identify and avoid critical path dependencies
-  - [ ] Prioritize future work items
-
-## Branch: feature/function-documentation
-
-- [ ] **Function Documentation** (High priority)
-  - [ ] Create template for function documentation
-  - [ ] Document z_Output function
-  - [ ] Document z_Report_Error function
-  - [ ] Document z_Check_Dependencies function
-  - [ ] Document z_Ensure_Parent_Path_Exists function
-  - [ ] Document z_Setup_Environment function
-  - [ ] Document z_Cleanup function
-  - [ ] Document z_Convert_Path_To_Relative function
-- [ ] **Documentation Standards**
-  - [ ] Define comprehensive documentation standards
-  - [ ] Create documentation templates
-  - [ ] Document usage examples
-
-## Branch: feature/test-coverage
-
-- [ ] **Test Implementation** (High priority)
-  - [ ] Create function test for z_Check_Dependencies
-  - [ ] Create function test for z_Setup_Environment
-  - [ ] Create function test for z_Cleanup
-  - [ ] Create function test for z_Convert_Path_To_Relative
-- [ ] **Test Framework**
-  - [ ] Implement test automation
-  - [ ] Create test reporting
-  - [ ] Document testing approach
-
-## Branch: feature/modernize-scripts
-
-- [ ] **Script Modernization** (Medium priority)
-  - [ ] Update imported scripts to use _Z_Utils.zsh
-  - [ ] Implement consistent error handling
-  - [ ] Modernize command line processing
-- [ ] **Script Documentation**
-  - [ ] Document modernized scripts
-  - [ ] Create usage examples
-  - [ ] Create script templates
-
-## Branch: feature/enhanced-functionality (Planned)
-
-- [ ] **Enhanced Features** (Medium priority)
-  - [ ] Add advanced logging capabilities
-  - [ ] Implement configuration management
-  - [ ] Add process management utilities
-- [ ] **Extended Examples**
-  - [ ] Create complex usage examples
-  - [ ] Document best practices for usage
-
-## Branch: feature/ci-cd-setup (Planned)
-
-- [ ] **CI/CD Implementation** (Low priority)
-  - [ ] Set up GitHub Actions workflow
-  - [ ] Implement automated testing
-  - [ ] Configure linting and style checks
-- [ ] **Release Management**
-  - [ ] Define release process
-  - [ ] Implement version tagging
-  - [ ] Create release notes template
+- [~] **Task Organization** (started 2025-03-22)
+  - [~] Review and update WORK_STREAM_TASKS.md structure (started 2025-03-22)
+  - [~] Create context files for future branches (started 2025-03-22)
+  - [~] Clarify dependencies and critical path (started 2025-03-22)
+  - [~] Define acceptance criteria for major tasks (started 2025-03-22)
+  - [ ] Update main context with revised task planning
 
 ## Development Process
 
@@ -118,13 +103,18 @@
 ## Task Dependencies and Critical Path
 
 ### Critical Path Components:
-1. Documentation of existing functions (required for all other work)
-2. Test coverage for core functions (required for enhanced functionality)
+1. Documentation of existing functions (required for clear understanding and effective reuse)
+2. Test coverage for core functions (required for ensuring reliability and enabling enhanced functionality)
+
+### Primary Task Dependencies:
+- Function Documentation → Test Coverage (recommended sequence)
+- Function Documentation + Test Coverage → Enhanced Functionality (required)
+- Test Coverage → CI/CD Pipeline (required for automated testing)
 
 ### Independent Work Streams:
 - Script modernization (can proceed independently)
-- CI/CD setup (can be implemented at any time)
-- Enhanced functionality (depends on documentation and tests)
+- Task organization (can proceed independently)
+- Documentation improvements (can proceed in parallel with other tasks)
 
 ## Completed Tasks
 
