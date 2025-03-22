@@ -1,66 +1,80 @@
-# Claude Code CLI Toolkit
+# Z_Utils: Zsh Utility Library
 
-> - _did-original-source_: `did:repo:ca85b5ea9bc63cc8229c073d8f6a3faae8062a77/blob/main/README.md`
-> - _github-original-source_: `https://github.com/ChristopherA/Claude-Code-CLI-Toolkit/blob/main/README.md`
-> - _purpose_: Provide overview of the Claude Code CLI Toolkit
+> - _did_: `did:repo:b0c5cd0d85b29543c604c093dd83a1a20eb17af1/blob/main/README.md`
+> - _github_: [`z_Utils/README.md`](https://github.com/ChristopherA/z_Utils/blob/main/README.md)
+> - _purpose_: Provide overview of the Z_Utils Zsh utility library
 > - _copyright_: ©2025 by @ChristopherA, licensed under the [BSD 2-Clause Plus Patent License](https://spdx.org/licenses/BSD-2-Clause-Patent.html)
 > - _created_: 2025-03-19 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
-> - _last-updated_: 2025-03-19 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
+> - _last-updated_: 2025-03-21 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
+
+[![License](https://img.shields.io/badge/License-BSD_2--Clause--Patent-blue.svg)](https://spdx.org/licenses/BSD-2-Clause-Patent.html)
+[![Project Status: WIP](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![Version](https://img.shields.io/badge/version-0.1.00-blue.svg)](CHANGELOG.md)
 
 ## Project Overview
 
-The Claude Code CLI Toolkit provides a structured environment for developing software projects with Claude AI assistance through the command line interface. This toolkit helps maintain consistent development practices across Claude-assisted projects.
+Z_Utils is a collection of reusable Zsh utility functions designed to provide consistent, robust, and efficient scripting capabilities. This library helps maintain high-quality shell scripting practices across projects.
 
 ## Purpose
 
-This toolkit serves two main purposes:
+Z_Utils serves two main purposes:
 
-1. **As a Starting Point**: Use these files as the foundation for new projects
-2. **As a Reference**: Study this toolkit to understand Claude-assisted development
+1. **Consistent Scripting**: Provide reusable functions for reliable shell scripting
+2. **Best Practices**: Implement shell scripting best practices in a reusable format
 
 ## Getting Started
 
 1. Clone this repository
-2. Delete the `.git` folder to start fresh
-3. Run Claude to guide you through project setup: `claude "load CLAUDE.md and help me setup this project"`
-4. Follow the bootstrap.md instructions to customize for your project
-5. Delete bootstrap.md when setup is complete
+2. Source the library in your Zsh scripts: `source /path/to/_Z_Utils.zsh`
+3. Use Z_Utils functions in your scripts: `z_Output info "Hello, World!"`
 
 ## Key Features
 
-- **Structured Development Models**: Choose between Solo or Team development models
-- **Context Management**: System for maintaining project context across sessions
-- **Task Tracking**: Organized approach to tracking work and progress
-- **Git Workflow**: Best practices for Git operations and commits
-- **Documentation Structure**: Organized approach to project documentation
+- **Output Management**: Standardized output with formatting, colors, and emoji support
+- **Error Handling**: Consistent error reporting and propagation
+- **Environment Setup**: Script environment initialization and validation
+- **Dependency Checking**: Verify required tools and commands
+- **Path Management**: Utilities for handling file paths
+- **Resource Cleanup**: Automatic cleanup of temporary resources
 
-## Development Approach
+## Utility Functions
 
-See PROJECT_GUIDE.md for detailed information about development models and approaches.
+The library includes several core utility functions:
 
-## Additional Resources
+- `z_Output`: Standardized formatted output with multiple message types
+- `z_Report_Error`: Centralized error reporting
+- `z_Check_Dependencies`: Verify required external commands
+- `z_Ensure_Parent_Path_Exists`: Create parent directories as needed
+- `z_Setup_Environment`: Initialize script environment
+- `z_Cleanup`: Handle script termination cleanup
+- `z_Convert_Path_To_Relative`: Convert paths to user-friendly formats
 
-- Detailed guides are stored in `requirements/guides/`
-- For file organization, see CLAUDE.md
-- For task tracking, see WORK_STREAM_TASKS.md
-- For context management, see `contexts/` directory
+## Development Workflow
 
-## Updating Toolkit Files
+The Z_Utils project follows a structured development process with:
 
-After customizing this toolkit for your project, you can't use Git pull to get updates from the original repository. Instead, follow these steps to manually update specific files:
+- Detailed requirements documentation
+- Function-level tests
+- Comprehensive example scripts
+- Task tracking in WORK_STREAM_TASKS.md
 
-1. **Check for Updates**: Look at the `_github-original-source_` URL in the file's metadata header
-2. **Compare Versions**: Visit the URL to compare with your customized version
-3. **Download Updates**: If updates are valuable, download the latest version
-4. **Merge Changes**: Manually incorporate changes while preserving your customizations
+## Requirements and Documentation
 
-### Which Files to Update
+- Detailed function requirements are in `requirements/project/functions/`
+- General Zsh scripting requirements are in `requirements/shared/zsh_scripting/`
+- Example scripts showing usage are in `src/examples/`
+- Function tests are in `src/function_tests/`
 
-Best candidates for updates:
-- `requirements/guides/*.md` files - workflow guides that may be improved
-- `PROJECT_GUIDE.md` - development model documentation
+## Compatibility
 
-Files to avoid updating:
-- `CLAUDE.md` - Contains your project-specific context
-- Any files you've heavily customized for your specific project
-- Context files in the `contexts/` directory
+- Requires Zsh 5.8+
+- Tested on macOS and Linux
+- Minimal external dependencies
+
+## License
+
+This project is licensed under the [BSD 2-Clause Plus Patent License](https://spdx.org/licenses/BSD-2-Clause-Patent.html).
+
+## Contributing
+
+Contributions are welcome. Please see the project workflow guides in `requirements/guides/` for more information.
