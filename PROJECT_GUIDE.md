@@ -10,15 +10,29 @@ This guide serves as the central reference for development processes for the Z_U
 > **Purpose**: This document provides an overview of project state and workflows.
 > For detailed Git operations, context management, and task tracking, follow links to specialized guides.
 
-## Team Development Model
+## Development Models
 
-Z_Utils uses a Team development model, which means:
+The toolkit supports two development models:
 
-- Structured branch protection
-- Required code reviews and PRs
-- Detailed context sharing between team members
-- Formal task assignment and tracking
-- Enhanced security practices
+### Solo Development Model
+- **Intended for**: Individual developers, personal projects, prototypes
+- **Features**: 
+  - Simplified workflows with less ceremony
+  - Direct commits to main allowed
+  - Reduced PR requirements 
+  - Streamlined context management
+  - Focus on rapid iteration
+
+### Team Development Model
+- **Intended for**: Multi-developer teams, collaborative projects
+- **Features**:
+  - Structured branch protection
+  - Required code reviews and PRs
+  - Detailed context sharing between team members
+  - Formal task assignment and tracking
+  - Enhanced security practices
+
+Z_Utils uses a **Team development model**, which means more structured processes are followed for all changes.
 
 ## Working with Claude
 
@@ -26,7 +40,7 @@ Z_Utils uses a Team development model, which means:
 
 ```bash
 # Start Claude with project context
-claude "load CLAUDE.md and help me continue Z_Utils development"
+claude "load CLAUDE.md, verify current branch is correct, load appropriate context, and continue Z_Utils development"
 ```
 
 ### During Development
@@ -35,13 +49,13 @@ Common Claude commands:
 
 ```bash
 # For continuing work on a branch
-claude "load CLAUDE.md, identify branch as feature/name, and continue working on Z_Utils function X"
+claude "load CLAUDE.md, verify current branch is feature/name, and continue working on Z_Utils function X"
 
 # For switching to a new task
 claude "load CLAUDE.md, check out branch feature/name, and help me implement Z_Utils function X"
 
 # For troubleshooting issues
-claude "load CLAUDE.md and help me debug the error in Z_Utils function X"
+claude "load CLAUDE.md, verify current branch is correct, and help me debug the error in Z_Utils function X"
 ```
 
 ## Core Process Reference
@@ -68,7 +82,7 @@ claude "load CLAUDE.md and help me debug the error in Z_Utils function X"
 
 1. Create a context file for each branch
    ```
-   contexts/[branch-name]-context.md
+   contexts/[branch-type]-[branch-name]-context.md
    ```
 
 2. Update the context file:
@@ -78,9 +92,11 @@ claude "load CLAUDE.md and help me debug the error in Z_Utils function X"
 
 3. Use standard format for context files:
    - Current Status
+   - Scope Boundaries
    - Completed Work
    - Current Tasks
    - Key Decisions
+   - Error Recovery
    - Restart Instructions
 
 ### Task Tracking
@@ -134,6 +150,28 @@ claude "load CLAUDE.md and help me debug the error in Z_Utils function X"
    - Provide usage examples for all major features
    - Keep examples simple and focused
    - Include comments explaining key points
+
+## Special Workflows
+
+### PR Review and Merge Process
+```bash
+claude "load CLAUDE.md, verify current branch is main, review PR #[number], and merge if approved"
+```
+
+### Branch Switching
+```bash
+claude "load CLAUDE.md, verify current branch is main, switch to branch [branch-name], and continue work"
+```
+
+### Work Stream Management
+```bash
+claude "load CLAUDE.md, verify current branch is main, and organize WORK_STREAM_TASKS.md"
+```
+
+### Context Archiving
+```bash
+claude "load CLAUDE.md, verify current branch is main, archive completed context [context-name], and update documentation"
+```
 
 ## Specialized Process Guides
 
