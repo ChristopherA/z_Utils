@@ -5,7 +5,7 @@
 > - _purpose_: Define task tracking system for project management
 > - _copyright_: ©2025 by @ChristopherA, licensed under the [BSD 2-Clause Plus Patent License](https://spdx.org/licenses/BSD-2-Clause-Patent.html)
 > - _created_: 2025-03-19 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
-> - _last-updated_: 2025-03-19 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
+> - _last-updated_: 2025-03-22 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
 
 ## Core Task File
 
@@ -35,10 +35,10 @@ Example:
 Tasks should be organized in this structure:
 
 ```markdown
-# Project Name - Work Stream Tasks
+# Z_Utils - Work Stream Tasks
 
 > - _created: <!-- START_DATE -->_
-> - _last-updated: <!-- START_DATE -->_
+> - _last-updated: <!-- UPDATE_DATE -->_
 
 ## Active Tasks
 
@@ -46,7 +46,7 @@ Tasks should be organized in this structure:
 - [ ] Task 1
 - [ ] Task 2
 
-### Feature Development
+### Core Development
 - [ ] Task 3
 - [ ] Task 4
 
@@ -56,6 +56,12 @@ Tasks should be organized in this structure:
 
 ## Branch: fix/issue
 - [~] Bug fix task
+
+## Development Process
+[Process documentation - how tasks are handled]
+
+## Task Dependencies and Critical Path
+[Task dependencies - critical path information]
 
 ## Completed Tasks
 <!-- No entries yet -->
@@ -101,12 +107,40 @@ Tasks should be:
 - [ ] [Action verb] [specific deliverable] - [optional context]
 ```
 
-Examples:
+Examples for Z_Utils tasks:
 ```
-- [ ] Create user login component with form validation
-- [ ] Fix navigation bar display on mobile devices
-- [ ] Document API endpoints for user management
+- [ ] Document z_Output function with comprehensive examples
+- [ ] Create function test for z_Check_Dependencies
+- [ ] Modernize error handling in example scripts
 ```
+
+## Z_Utils Task Types
+
+For the Z_Utils project, tasks generally fall into these categories:
+
+### Documentation Tasks
+- Function documentation
+- Usage examples
+- API references
+- Architecture documentation
+
+### Testing Tasks
+- Function test creation
+- Test automation
+- Test reporting
+- Regression test improvement
+
+### Development Tasks
+- Function implementation
+- Bug fixing
+- Performance optimization
+- Feature enhancement
+
+### Process Tasks
+- CI/CD setup
+- Release management
+- Development workflow improvement
+- Code review process
 
 ## Claude's Role in Task Tracking
 
@@ -117,5 +151,6 @@ Claude will help with task management by:
 3. Moving completed tasks to the completed section
 4. Adding implementation details to completed tasks
 5. Suggesting next tasks based on dependencies
+6. Helping maintain critical path information
 
 <!-- Note for Claude: When updating the WORK_STREAM_TASKS.md file, ensure you update the last-updated date and maintain consistent formatting. Always use YYYY-MM-DD format for all dates. -->

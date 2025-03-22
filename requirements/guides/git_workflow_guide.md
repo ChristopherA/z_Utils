@@ -5,7 +5,7 @@
 > - _purpose_: Provide standard Git commands and workflows for the project
 > - _copyright_: ©2025 by @ChristopherA, licensed under the [BSD 2-Clause Plus Patent License](https://spdx.org/licenses/BSD-2-Clause-Patent.html)
 > - _created_: 2025-03-19 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
-> - _last-updated_: 2025-03-19 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
+> - _last-updated_: 2025-03-22 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
 
 ## Essential Git Commands
 
@@ -35,9 +35,10 @@ git push                       # Push existing branch
 
 | Type | Purpose | Naming | Example |
 |------|---------|--------|---------|
-| feature | New functionality | feature/name | feature/login |
-| fix | Bug fixes | fix/description | fix/header-alignment |
+| feature | New functionality | feature/name | feature/function-documentation |
+| fix | Bug fixes | fix/description | fix/output-format |
 | docs | Documentation | docs/area | docs/api-reference |
+| process | Workflow improvements | process/area | process/update-toolkit |
 
 ## Commit Standards
 
@@ -96,14 +97,14 @@ Commits should represent a single logical change:
 # Start feature branch
 git checkout main
 git pull
-git checkout -b feature/login
+git checkout -b feature/function-documentation
 
 # Make changes and commit
-git add src/components/Login.js
-git commit -S -s -m "Add login component"
+git add src/_Z_Utils.zsh
+git commit -S -s -m "Add documentation for z_Output function"
 
 # Push and create PR
-git push -u origin feature/login
+git push -u origin feature/function-documentation
 gh pr create
 ```
 
@@ -113,14 +114,14 @@ gh pr create
 # Start fix branch
 git checkout main
 git pull
-git checkout -b fix/header-alignment
+git checkout -b fix/output-format
 
 # Make changes and commit
-git add src/components/Header.css
-git commit -S -s -m "Fix header alignment on mobile"
+git add src/_Z_Utils.zsh
+git commit -S -s -m "Fix output formatting in z_Output"
 
 # Push and create PR
-git push -u origin fix/header-alignment
+git push -u origin fix/output-format
 gh pr create
 ```
 
@@ -130,14 +131,31 @@ gh pr create
 # Start docs branch
 git checkout main
 git pull
-git checkout -b docs/api-reference
+git checkout -b docs/function-usage
 
 # Make changes and commit
-git add docs/api.md
-git commit -S -s -m "Add API reference documentation"
+git add docs/function-usage.md
+git commit -S -s -m "Add function usage documentation"
 
 # Push and create PR
-git push -u origin docs/api-reference
+git push -u origin docs/function-usage
+gh pr create
+```
+
+### Process Updates
+
+```bash
+# Start process branch
+git checkout main
+git pull
+git checkout -b process/update-workflow
+
+# Make changes and commit
+git add requirements/guides/*.md
+git commit -S -s -m "Update workflow process documentation"
+
+# Push and create PR
+git push -u origin process/update-workflow
 gh pr create
 ```
 
@@ -269,5 +287,29 @@ gh pr view <PR-NUMBER>
 # List all open PRs
 gh pr list
 ```
+
+### Z_Utils-Specific Workflows
+
+When working with Z_Utils, consider these specific approaches:
+
+1. **Function Documentation**:
+   ```bash
+   git checkout -b feature/function-documentation
+   # Add documentation to _Z_Utils.zsh and commit
+   ```
+
+2. **Test Development**:
+   ```bash
+   git checkout -b feature/test-coverage
+   # Create test file in src/function_tests/ and commit
+   ```
+
+3. **Script Modernization**:
+   ```bash
+   git checkout -b feature/modernize-scripts
+   # Update scripts and commit
+   ```
+
+This guidance helps maintain consistency across the Z_Utils codebase and ensures proper organization of feature development.
 
 <!-- Note for Claude: The special workflows section is particularly important for Team development models, but less critical for Solo development. Adjust your guidance based on the project's development model. -->
