@@ -1,48 +1,24 @@
-# Claude Code CLI Toolkit - Project Guide
+# Z_Utils: Zsh Utility Library - Project Guide
 
-> - _did-original-source_: `did:repo:ca85b5ea9bc63cc8229c073d8f6a3faae8062a77/blob/main/PROJECT_GUIDE.md`
-> - _github-original-source_: `https://github.com/ChristopherA/Claude-Code-CLI-Toolkit/blob/main/PROJECT_GUIDE.md`
-> - _purpose_: Define development models and provide project state overview
+> - _purpose_: Provide project state overview and development workflow
 > - _copyright_: ©2025 by @ChristopherA, licensed under the [BSD 2-Clause Plus Patent License](https://spdx.org/licenses/BSD-2-Clause-Patent.html)
 > - _created_: 2025-03-19 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
-> - _last-updated_: 2025-03-19 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
+> - _last-updated_: 2025-03-22 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
 
-This guide serves as the central reference for development processes AFTER initial project setup as described in bootstrap.md.
+This guide serves as the central reference for development processes for the Z_Utils Zsh utility library.
 
-> **Purpose**: This document outlines development models and provides an overview of project state and workflows.
+> **Purpose**: This document provides an overview of project state and workflows.
 > For detailed Git operations, context management, and task tracking, follow links to specialized guides.
 
-## Development Models
+## Team Development Model
 
-The toolkit supports two development models:
+Z_Utils uses a Team development model, which means:
 
-### Solo Development Model
-- **Intended for**: Individual developers, personal projects, prototypes
-- **Features**: 
-  - Simplified workflows with less ceremony
-  - Direct commits to main allowed
-  - Reduced PR requirements 
-  - Streamlined context management
-  - Focus on rapid iteration
-
-### Team Development Model
-- **Intended for**: Multi-developer teams, collaborative projects
-- **Features**:
-  - Structured branch protection
-  - Required code reviews and PRs
-  - Detailed context sharing between team members
-  - Formal task assignment and tracking
-  - Enhanced security practices
-
-## Initial Setup
-
-```bash
-# Initialize Git repository with Open Integrity Project commit signing
-./scripts/setup_local_git_inception.sh
-
-# Create GitHub repository with branch protections (optional, but useful in Team Development Model)
-./scripts/create_github_remote.sh
-```
+- Structured branch protection
+- Required code reviews and PRs
+- Detailed context sharing between team members
+- Formal task assignment and tracking
+- Enhanced security practices
 
 ## Working with Claude
 
@@ -50,7 +26,7 @@ The toolkit supports two development models:
 
 ```bash
 # Start Claude with project context
-claude "load CLAUDE.md and help me continue project setup"
+claude "load CLAUDE.md and help me continue Z_Utils development"
 ```
 
 ### During Development
@@ -59,13 +35,13 @@ Common Claude commands:
 
 ```bash
 # For continuing work on a branch
-claude "load CLAUDE.md, identify branch as feature/name, and continue working on task X"
+claude "load CLAUDE.md, identify branch as feature/name, and continue working on Z_Utils function X"
 
 # For switching to a new task
-claude "load CLAUDE.md, check out branch feature/name, and help me implement feature X"
+claude "load CLAUDE.md, check out branch feature/name, and help me implement Z_Utils function X"
 
 # For troubleshooting issues
-claude "load CLAUDE.md and help me debug the error in component X"
+claude "load CLAUDE.md and help me debug the error in Z_Utils function X"
 ```
 
 ## Core Process Reference
@@ -120,6 +96,44 @@ claude "load CLAUDE.md and help me debug the error in component X"
    - [ ] Not started
    - [~] In progress (with start date in YYYY-MM-DD format)
    - [x] Completed (with completion date in YYYY-MM-DD format)
+
+## Z_Utils Development Guidelines
+
+### Directory Structure
+
+- `src/_Z_Utils.zsh` - Main library file containing all utility functions
+- `src/examples/` - Example scripts demonstrating library usage
+- `src/function_tests/` - Individual test scripts for each function
+- `src/tests/` - Full regression test suite
+
+### Code Style
+
+1. **Function Documentation**
+   - Every function must have a complete header comment
+   - Document parameters, return values, and examples
+   - Follow the established format in existing functions
+
+2. **Error Handling**
+   - Use `z_Report_Error` for consistent error reporting
+   - Return appropriate exit status codes
+   - Leverage the defined exit status constants
+
+3. **Output Standards**
+   - Use `z_Output` for all user-facing messages
+   - Respect verbosity settings (`Output_Verbose_Mode`, etc.)
+   - Follow established message type conventions
+
+### Testing
+
+1. **Function Tests**
+   - Create at least one test script per function
+   - Test both success and failure cases
+   - Verify correct return values
+
+2. **Example Scripts**
+   - Provide usage examples for all major features
+   - Keep examples simple and focused
+   - Include comments explaining key points
 
 ## Specialized Process Guides
 

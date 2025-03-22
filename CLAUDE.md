@@ -1,10 +1,19 @@
 # Z_Utils: Zsh Utility Library - Claude Guidance
 
 > - _created: 2025-03-19_
-> - _last-updated: 2025-03-21_
+> - _last-updated: 2025-03-22_
 > - _development-model: Team_
 
 This document provides essential guidance for Claude when working with the Z_Utils Zsh utility library project.
+
+## Project Overview
+
+Z_Utils is a collection of reusable Zsh utility functions designed to provide consistent, robust, and efficient scripting capabilities. The library includes standardized:
+
+- Output formatting and error handling
+- Script environment setup and validation
+- Dependency checking
+- Path management and cleanup routines
 
 ## Repository Structure
 
@@ -29,41 +38,15 @@ This repository contains the Z_Utils Zsh utility library and associated document
 
 <!-- Note for Claude: This section helps you understand the overall repository structure. You should familiarize yourself with each component to provide effective assistance. -->
 
-## Project Setup Process
-
-There are two states for this repository:
-
-1. **Starting state**: No .git folder - user has cloned the toolkit and deleted .git to start fresh
-2. **Running state**: When set up as a user's own project with its own Git repository
-
-When a user first runs Claude with this toolkit:
-- This repository is now in running state with an active Git repository.
-- Refer to PROJECT_GUIDE.md for ongoing work and project management.
-
-<!-- Note for Claude: The repository is now in running state. Initial setup has been completed. -->
-
-### Project Setup Note
-
-This project has been properly set up with:
-- An initialized Git repository
-- Configured directory structure
-- Project documentation
-- Development workflows established
-
-For any new development work, refer to PROJECT_GUIDE.md for guidance on the development model and workflow processes.
-
-<!-- Note for Claude: The initial setup has been completed. Always refer to PROJECT_GUIDE.md for ongoing work. -->
-
-## Toolkit Usage
-
-There are two main ways to use this repository:
-
-1. **As a Reference**: Help users understand Claude-assisted development practices
-2. **As a Starting Point**: Help users set up new projects based on these files
-
 ## Development Model
 
 The current development model for this project is: **_development-model: Team_** (see header metadata)
+
+This means:
+- Structured branch protection is in place
+- Required code reviews and PRs for changes
+- Detailed context sharing between team members
+- Formal task assignment and tracking
 
 See PROJECT_GUIDE.md for the full description of development models and detailed workflows.
 
@@ -84,10 +67,12 @@ When working on this project:
 2. End sessions by updating context files with current progress
 3. For long-running tasks, maintain updated context files for easy resumption
 
-## File Organization
-   - `contexts/` - Branch-specific context files
-   - `requirements/guides/` - Development workflow guides
-   - `scripts/` - Utility scripts for Git and GitHub operations
+## Key Code Locations
+
+- Main library: `src/_Z_Utils.zsh`
+- Examples: `src/examples/`
+- Function tests: `src/function_tests/`
+- Project requirements: `requirements/project/functions/`
 
 ## Guides and References
 
@@ -96,5 +81,25 @@ For detailed guidance, refer to:
 - Task tracking: `requirements/guides/task_tracking_guide.md`
 - Context management: `requirements/guides/context_guide.md`
 - Git workflow: `requirements/guides/git_workflow_guide.md`
+
+## Common Development Tasks
+
+### Starting a New Feature
+
+```bash
+claude "load CLAUDE.md, create branch feature/[feature-name] from main, and implement [specific functionality]"
+```
+
+### Working on Testing
+
+```bash
+claude "load CLAUDE.md, identify branch as feature/test-coverage, and implement tests for [specific function]"
+```
+
+### Updating Documentation
+
+```bash
+claude "load CLAUDE.md, identify branch as docs/[docs-task-name], and update documentation for [specific topic]"
+```
 
 <!-- Note for Claude: When helping users with ongoing project work, ALWAYS refer to the appropriate guide for detailed instructions rather than inventing your own approach. This ensures consistency in development practices. -->
