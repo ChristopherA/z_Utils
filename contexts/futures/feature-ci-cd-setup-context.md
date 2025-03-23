@@ -14,6 +14,7 @@
   - Define release process
   - Implement version tagging
   - Create release notes template
+  - Create changelog management process
 - Out of Scope:
   - Function documentation (covered in feature/function-documentation)
   - Test creation (covered in feature/test-coverage)
@@ -73,6 +74,16 @@
     - [ ] Design release notes format
     - [ ] Automate changelog generation
     - [ ] Add user-facing documentation updates
+
+- [ ] **Changelog Management**
+  - [ ] Create CHANGELOG.md file
+    - [ ] Set up initial structure
+    - [ ] Add all current changes
+    - [ ] Define update process
+  - [ ] Implement changelog automation
+    - [ ] Explore commit message parsing
+    - [ ] Set up PR integration
+    - [ ] Create automated generation script
 
 ## Key Decisions
 <!-- No entries yet -->

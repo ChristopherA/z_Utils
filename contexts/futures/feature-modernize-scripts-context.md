@@ -13,6 +13,8 @@
   - Modernize command line processing with standard patterns
   - Create script templates for new script development
   - Document modernized script usage and patterns
+  - Refactor create_github_remote.sh
+  - Consolidate inception scripts if appropriate
 - Out of Scope:
   - Function documentation (covered in feature/function-documentation)
   - Test implementation (covered in feature/test-coverage)
@@ -67,6 +69,20 @@
     - [ ] Complex script template with full features
     - [ ] Document template usage
 
+- [ ] **Specific Script Refactoring**
+  - [ ] Refactor create_github_remote.sh
+    - [ ] Update to use _Z_Utils.zsh instead of embedded functions
+    - [ ] Implement consistent error handling
+    - [ ] Add repository protection safeguards
+    - [ ] Add remote repository cleanup mechanism
+    - [ ] Create comprehensive documentation
+  - [ ] Compare and consolidate inception scripts
+    - [ ] Compare create_inception_commit.sh and setup_local_git_inception.sh
+    - [ ] Identify unique features in each script
+    - [ ] Create consolidated script with best practices
+    - [ ] Document migration path from old scripts
+    - [ ] Plan deprecation of redundant scripts
+
 ## Key Decisions
 <!-- No entries yet -->
 
@@ -74,6 +90,7 @@
 ### Reference Information
 - Example scripts: src/examples/*.sh
 - Main library: src/_Z_Utils.zsh
+- Scripts to refactor: create_github_remote.sh, create_inception_commit.sh, setup_local_git_inception.sh
 
 ### Modernization Goals
 - Consistent script structure:

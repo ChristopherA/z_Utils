@@ -13,6 +13,7 @@
   - Implement test automation framework
   - Document testing approach and standards
   - Create test reporting capabilities
+  - Implement safe testing environment for git operations
 - Out of Scope:
   - Function documentation (covered in feature/function-documentation)
   - Script modernization (covered in feature/modernize-scripts)
@@ -25,6 +26,17 @@
 <!-- No entries yet -->
 
 ## Current Tasks
+- [ ] **Testing Environment Setup**
+  - [ ] Create sandbox testing environment
+    - [ ] Set up isolated directory structure for test repos
+    - [ ] Create clean-up mechanisms for test artifacts
+    - [ ] Implement safeguards against affecting real repositories
+    - [ ] Document testing environment approach
+  - [ ] Implement repository testing utilities
+    - [ ] Create test repo creation functions
+    - [ ] Add repository state manipulation utilities
+    - [ ] Create verification utilities
+
 - [ ] **Test Framework Development**
   - [ ] Define test architecture and structure
     - [ ] Research Zsh testing frameworks and patterns
@@ -74,6 +86,16 @@
   - [ ] Implement test coverage reporting
   - [ ] Document test coverage metrics and targets
 
+- [ ] **Script-Specific Tests**
+  - [ ] Create/enhance test for create_inception_commit.sh
+    - [ ] Create comprehensive test suite
+    - [ ] Test various repository conditions
+    - [ ] Verify correct behavior
+  - [ ] Create tests for audit_inception_commit-POC.sh
+    - [ ] Implement tests for various repository conditions
+    - [ ] Test with malformed repositories
+    - [ ] Verify detection capabilities
+
 ## Key Decisions
 <!-- No entries yet -->
 
@@ -82,6 +104,7 @@
 - Existing tests: src/function_tests/*.sh
 - Main library: src/_Z_Utils.zsh
 - Examples that show function usage: src/examples/*.sh
+- Scripts to test: create_inception_commit.sh, audit_inception_commit-POC.sh
 
 ### Testing Approach
 - Tests should verify:
