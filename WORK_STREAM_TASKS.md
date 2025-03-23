@@ -14,82 +14,126 @@
 - [x] Update development processes and documentation (2025-03-22)
 - [~] Organize task planning and create future branch contexts (started 2025-03-22)
 
-### Core Library Development (Critical Path)
+### Core Infrastructure and Standards (Critical Path - Foundation)
+- [ ] **Enforce consistent naming conventions**
+  - Acceptance Criteria:
+    - All script files follow naming conventions in zsh_core_scripting.md
+    - Function naming is standardized across the codebase
+    - Variable naming is standardized according to requirements
+    - All scripts correctly adhere to either snippet or framework requirements
+  - Dependencies: None
+  - Branch: feature/function-documentation
+
+- [ ] **Implement safe testing environment for git operations**
+  - Acceptance Criteria:
+    - Sandbox directory created and excluded from git tracking
+    - Test repositories are properly isolated
+    - Cleanup mechanisms handle all test artifacts
+    - Safeguards prevent affecting real repositories
+    - Testing approach is documented
+  - Dependencies: None
+  - Branch: feature/test-coverage
+
+- [ ] **Update project requirements for z_* functions**
+  - Acceptance Criteria:
+    - Clear criteria for including functions in _Z_Utils.zsh
+    - Standards for z_* function implementation documented
+    - Guidelines for refactoring script-specific functions created
+    - Documentation levels defined for different function types
+    - Templates created for function documentation
+  - Dependencies: None
+  - Branch: feature/enhanced-functionality
+
+### Core Function Documentation and Testing (Critical Path - Functionality)
 - [x] Set up core library functionality (2025-03-19)
 - [ ] **Document existing library functions** (High priority)
   - Acceptance Criteria:
-    - All functions have comprehensive documentation
+    - All functions in _Z_Utils.zsh have comprehensive documentation
     - Documentation follows established standards
     - Usage examples are provided for each function
-    - Integration guidance is documented
-  - Dependencies: None
+    - Function headers have consistent format and content
+  - Dependencies: Consistent naming conventions
   - Branch: feature/function-documentation
 
 - [ ] **Implement comprehensive test coverage** (High priority)
   - Acceptance Criteria:
     - All functions have test coverage
+    - Function tests conform to zsh requirements
     - Test automation is implemented
     - Test reporting is functional
     - Testing guidelines are documented
   - Dependencies: Function documentation (recommended but not required)
   - Branch: feature/test-coverage
 
-### Script and Usability Enhancement
-- [ ] **Modernize imported scripts** (Medium priority)
+- [ ] **Improve z_Output() function and testing**
   - Acceptance Criteria:
-    - All scripts use _Z_Utils.zsh consistently
-    - Error handling is standardized
-    - Command-line processing is modernized
-    - Script templates are created
-  - Dependencies: None
-  - Branch: feature/modernize-scripts
-
-- [ ] **Add enhanced functionality** (Medium priority)
-  - Acceptance Criteria:
-    - Advanced logging functions implemented
-    - Configuration management functions implemented
-    - Process management utilities implemented
-    - Extended examples created and documented
-  - Dependencies: Function documentation, Test coverage
+    - Latest version is correctly implemented in _Z_Utils.zsh
+    - Tests are comprehensive, incorporating z_Output_Demo() techniques
+    - Usage patterns and examples are documented
+    - Function conforms to all requirements
+  - Dependencies: Function documentation
   - Branch: feature/enhanced-functionality
 
-### Documentation and Integration
-- [x] Create documentation directory structure (2025-03-19)
-- [ ] **Complete function reference documentation** (High priority)
-  - Part of feature/function-documentation branch
-- [ ] **Create user guide with examples** (Medium priority)
-  - Dependencies: Function documentation
-- [ ] **Create contributor guidelines** (Medium priority)
-  - Dependencies: None
+### Script Refactoring and Testing
+- [ ] **Refactor create_inception_commit.sh** (High priority)
+  - Acceptance Criteria:
+    - TEST-create_inception_commit.sh properly tests the script
+    - Script sources _Z_Utils.zsh instead of containing duplicate functions
+    - Both scripts conform to zsh requirements
+    - Script continues to function correctly
+  - Dependencies: Safe testing environment
+  - Branch: feature/test-coverage
 
-### Automation and Deployment
-- [ ] **Add CI/CD pipeline** (Low priority)
+- [ ] **Refactor create_github_remote.sh** (Medium priority)
+  - Acceptance Criteria:
+    - Script conforms to zsh requirements
+    - Script uses _Z_Utils.zsh instead of embedded functions
+    - Comprehensive regression test suite created
+    - Repository protection safeguards implemented
+    - Remote repository cleanup mechanism added
+  - Dependencies: Safe testing environment
+  - Branch: feature/modernize-scripts
+
+- [ ] **Create tests for audit_inception_commit-POC.sh** (Medium priority)
+  - Acceptance Criteria:
+    - Test suite with various repository conditions created
+    - Sandbox isolation implemented
+    - Cleanup mechanisms added
+    - Testing approach documented
+    - Framework compliance verified
+  - Dependencies: Safe testing environment
+  - Branch: feature/test-coverage
+
+### Future Projects
+- [ ] **Consolidate inception scripts** (Medium priority)
+  - Acceptance Criteria:
+    - create_inception_commit.sh and setup_local_git_inception.sh compared
+    - Valuable elements incorporated into consolidated script
+    - Appropriate naming determined
+    - setup_local_git_inception.sh deprecated
+    - Documentation updated
+  - Dependencies: Refactoring create_inception_commit.sh
+  - Branch: feature/modernize-scripts
+
+- [ ] **Set up CI/CD pipeline** (Low priority)
   - Acceptance Criteria:
     - GitHub Actions workflows configured
     - Automated testing implemented
-    - Code quality checks established
-    - Release process defined and implemented
+    - Linting and style checking set up
+    - Release process automation created
+    - CI/CD procedures documented
   - Dependencies: Test coverage
   - Branch: feature/ci-cd-setup
 
-- [ ] **Create changelog and release process** (Low priority)
-  - Part of feature/ci-cd-setup branch
-
-## Branch: main
-
-- [x] Create project README (2025-03-19)
-- [x] Set up basic project structure (2025-03-19)
-- [x] Define initial architecture (2025-03-19)
-- [x] Implement core utility functions (2025-03-19)
-
-## Branch: organize/task-planning-and-context-creation
+## Branch: organize/task-planning-final
 
 - [~] **Task Organization** (started 2025-03-22)
   - [~] Review and update WORK_STREAM_TASKS.md structure (started 2025-03-22)
   - [~] Create context files for future branches (started 2025-03-22)
   - [~] Clarify dependencies and critical path (started 2025-03-22)
   - [~] Define acceptance criteria for major tasks (started 2025-03-22)
-  - [ ] Update main context with revised task planning
+  - [~] Create organize-task-planning-summary.md (started 2025-03-22)
+  - [~] Update main context with revised task planning (started 2025-03-22)
 
 ## Development Process
 
@@ -103,8 +147,10 @@
 ## Task Dependencies and Critical Path
 
 ### Critical Path Components:
-1. Documentation of existing functions (required for clear understanding and effective reuse)
-2. Test coverage for core functions (required for ensuring reliability and enabling enhanced functionality)
+1. Core Infrastructure and Standards (foundation for all other work)
+2. Function Documentation (essential for understanding behavior)
+3. Test Coverage (builds on documentation for reliable enhancement)
+4. Enhanced Functionality (relies on solid documentation and testing)
 
 ### Primary Task Dependencies:
 - Function Documentation → Test Coverage (recommended sequence)

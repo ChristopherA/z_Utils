@@ -18,25 +18,25 @@ Tasks have been organized into these primary categories:
    - Development environment setup
    - Process documentation and improvement
 
-2. **Core Library Development** (Critical Path)
+2. **Core Infrastructure and Standards** (Critical Path - Foundation)
+   - Naming conventions
+   - Testing environment for git operations
+   - Function standards and requirements
+
+3. **Core Function Documentation and Testing** (Critical Path - Functionality)
    - Function documentation
    - Test coverage implementation
    - These form the critical path for future development
 
-3. **Script and Usability Enhancement**
+4. **Script Refactoring and Testing**
    - Script modernization
    - Enhanced functionality implementation
    - Examples and templates
 
-4. **Documentation and Integration**
-   - Function reference documentation
-   - User guides
-   - Contributor guidelines
-
-5. **Automation and Deployment**
+5. **Future Projects**
    - CI/CD pipeline
-   - Release process
-   - Changelog management
+   - Script consolidation
+   - Advanced functionality
 
 ### Future Branches with Context Files
 Context files have been created for these planned branches:
@@ -70,9 +70,10 @@ Context files have been created for these planned branches:
 
 The critical path for the Z_Utils project has been identified as:
 
-1. **Function Documentation** → This forms the foundation for understanding and effective use
-2. **Test Coverage** → Builds on documentation and enables confident enhancement
-3. **Enhanced Functionality** → Leverages documentation and tests to add new capabilities
+1. **Core Infrastructure and Standards** → This forms the foundation for all other work
+2. **Function Documentation** → Essential for understanding behavior
+3. **Test Coverage** → Builds on documentation for reliable enhancement
+4. **Enhanced Functionality** → Relies on solid documentation and testing
 
 Other tasks can proceed in parallel:
 - Script modernization (independent)

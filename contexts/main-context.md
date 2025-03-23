@@ -17,40 +17,36 @@ The main branch serves as the coordination point for project management and shou
 
 ## Active Pull Requests
 <!-- List active PRs that need review/merge attention -->
-<!-- Example:
-- [ ] PR #12: "Add user authentication" - Ready for review
-- [~] PR #15: "Fix header styling" - In review (2025-03-15)
--->
-<!-- No active PRs at this time -->
+- [~] PR #7: "Organize tasks and create future branch contexts" - Needs revision (2025-03-22)
 
 ## Active Branches
 <!-- List active branches with their status -->
-- [ ] docs/project-focus-and-task-organization - Documentation refinement (waiting)
-
-## Available Future Branches
-<!-- List branches with context files that can be created -->
-- [ ] feature/function-documentation - Function documentation (High priority)
-- [ ] feature/test-coverage - Test implementation (High priority)
-- [ ] feature/modernize-scripts - Script modernization (Medium priority)
-- [ ] feature/enhanced-functionality - Enhanced features (Medium priority)
-- [ ] feature/ci-cd-setup - CI/CD implementation (Low priority)
+- [~] organize/task-planning-final - Task planning revision (2025-03-22)
+- [ ] feature/function-documentation - Function documentation (high priority - next up on critical path)
+- [ ] feature/test-coverage - Test implementation (high priority - follows documentation)
+- [ ] feature/modernize-scripts - Script modernization (medium priority - independent)
+- [ ] feature/enhanced-functionality - Enhanced features (medium priority - depends on tests)
+- [ ] feature/ci-cd-setup - CI/CD implementation (low priority - depends on tests)
 
 ## Available Context Files
 <!-- List context files without branches that can be started -->
-<!-- No available context files at this time -->
+- contexts/futures/feature-function-documentation-context.md - High priority (critical path)
+- contexts/futures/feature-test-coverage-context.md - High priority (critical path)
+- contexts/futures/feature-modernize-scripts-context.md - Medium priority (independent)
+- contexts/futures/feature-enhanced-functionality-context.md - Medium priority (depends on documentation)
+- contexts/futures/feature-ci-cd-setup-context.md - Low priority (depends on test coverage)
 
 ## Completed Contexts
 <!-- List context files for completed work that can be archived -->
 - [x] docs-import-materials - Completed (2025-03-19)
 - [x] cleanup-project-docs-and-structure - Completed (2025-03-21)
 - [x] process-update-toolkit - Completed (2025-03-22)
-- [x] organize-task-planning-and-context-creation - Completed (2025-03-22)
 
 ## Work Stream Management
 - [x] Review and prioritize items in WORK_STREAM_TASKS.md (2025-03-22)
-- [x] Create new context files for upcoming work (2025-03-22)
+- [x] Create context files for future branches (2025-03-22)
 - [ ] Archive completed context files
-- [ ] Update project documentation
+- [x] Update project documentation with task organization (2025-03-22)
 
 ## Core Z_Utils Tasks
 - [x] Create project README (2025-03-19)
@@ -69,18 +65,23 @@ The main branch serves as the coordination point for project management and shou
 - [2025-03-19] Branch protection rules enabled for main branch
 - [2025-03-19] All Z_Utils functions maintained in _Z_Utils.zsh file
 - [2025-03-22] Process updates from toolkit incorporated with PR #4
-- [2025-03-22] Task organization and future branch planning completed with PR #5
-- [2025-03-22] Critical path identified: Function Documentation → Test Coverage → Enhanced Functionality
+- [2025-03-22] Task organization completed with critical path identification
+- [2025-03-22] Future branch context files created and stored in contexts/futures/
 
 ## Notes
-### Future Branch Contexts
-Future branch context files are stored in `contexts/futures/` until the branches are created. When creating a new branch from the list of available future branches, copy the corresponding context file from this directory to the main contexts directory.
+### Critical Path
+The critical path for Z_Utils development has been identified as:
+1. Core Infrastructure and Standards → Foundation for all other work
+2. Function Documentation → Essential for understanding behavior
+3. Test Coverage → Builds on documentation for reliable enhancement
+4. Enhanced Functionality → Relies on solid documentation and testing
 
-Example:
-```bash
-# When creating feature/function-documentation branch
-cp contexts/futures/feature-function-documentation-context.md contexts/feature-function-documentation-context.md
-```
+### Task Categories
+Tasks have been organized into these primary categories:
+1. Core Infrastructure and Standards (Foundation)
+2. Core Function Documentation and Testing (Functionality)
+3. Script Refactoring and Testing (Parallel Workstreams)
+4. Future Projects (Dependent on Prior Work)
 
 ## Special Workflows
 
@@ -102,4 +103,9 @@ claude "load CLAUDE.md, verify current branch is main, and organize WORK_STREAM_
 ### Context Archiving
 ```bash
 claude "load CLAUDE.md, verify current branch is main, archive completed context [context-name], and update documentation"
+```
+
+### Starting Next Critical Path Item
+```bash
+claude "load CLAUDE.md, verify current branch is main, copy contexts/futures/feature-function-documentation-context.md to contexts/, create branch feature/function-documentation, and begin working on function documentation"
 ```
