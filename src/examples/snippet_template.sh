@@ -27,7 +27,7 @@ typeset -r Exit_Status_IO=3                 # Input/output error
 typeset -r Exit_Status_Format=4             # Invalid format specified
 
 #----------------------------------------------------------------------#
-# Function: show_Usage
+# Function: display_Script_Usage
 #----------------------------------------------------------------------#
 # Description:
 #   Prints usage instructions and examples to stderr
@@ -36,7 +36,7 @@ typeset -r Exit_Status_Format=4             # Invalid format specified
 # Returns:
 #   Does not return - exits with Exit_Status_Usage
 #----------------------------------------------------------------------#
-show_Usage() {
+display_Script_Usage() {
     print -u2 "Usage: $0 [-f|--format default|json|yaml] <file>
 Examples:
   $0 ~/.zshrc             # Show status in default format
@@ -131,7 +131,7 @@ get_File_Status() {
 }
 
 #----------------------------------------------------------------------#
-# Function: core_Logic
+# Function: execute_Core_Workflow
 #----------------------------------------------------------------------#
 # Description:
 #   Main processing function
@@ -143,7 +143,7 @@ get_File_Status() {
 #   Exit_Status_IO on file access error
 #   Exit_Status_Format on invalid format
 #----------------------------------------------------------------------#
-core_Logic() {
+execute_Core_Workflow() {
     typeset Format="$1" FilePath="$2"
     typeset Status StatusArray
     
@@ -160,10 +160,10 @@ core_Logic() {
 }
 
 #----------------------------------------------------------------------#
-# Function: parse_Parameters
+# Function: parse_CLI_Options
 #----------------------------------------------------------------------#
 # Description:
-#   Processes command line arguments
+#   Processes command line options
 # Parameters:
 #   $@ - Command line arguments
 # Returns:
@@ -171,23 +171,23 @@ core_Logic() {
 #   Exit_Status_Success on success
 #   Exit_Status_Usage on invalid arguments
 #----------------------------------------------------------------------#
-parse_Parameters() {
+parse_CLI_Options() {
     typeset Format="default"
     typeset FilePath=""
     
     while (( $# > 0 )); do
         case "$1" in
             -f|--format)
-                (( $# > 1 )) || show_Usage
+                (( $# > 1 )) || display_Script_Usage
                 Format="$2"
                 shift 2
                 ;;
             -h|--help)
-                show_Usage
+                display_Script_Usage
                 ;;
             -*)
                 print -u2 "Error: Unknown option '$1'"
-                show_Usage
+                display_Script_Usage
                 ;;
             *)
                 FilePath="$1"
@@ -197,14 +197,14 @@ parse_Parameters() {
         esac
     done
     
-    [[ -n "$FilePath" ]] || show_Usage
+    [[ -n "$FilePath" ]] || display_Script_Usage
     
     print -- "$Format $FilePath"
     return $Exit_Status_Success
 }
 
 #----------------------------------------------------------------------#
-# Function: check_Dependencies
+# Function: check_Script_Dependencies
 #----------------------------------------------------------------------#
 # Description:
 #   Verifies required external commands are available
@@ -216,7 +216,7 @@ parse_Parameters() {
 # Dependencies:
 #   Requires stat command with BSD-style arguments
 #----------------------------------------------------------------------#
-check_Dependencies() {
+check_Script_Dependencies() {
     # Check for stat command
     command -v stat >/dev/null || {
         print -u2 "Error: Required command 'stat' not found"
@@ -237,6 +237,7 @@ check_Dependencies() {
 #----------------------------------------------------------------------#
 # Description:
 #   Script entry point
+#   Note: This function name is kept as 'main' to conform with broader Zsh scripting standards
 # Parameters:
 #   $@ - Command line arguments
 # Returns:
@@ -247,14 +248,14 @@ main() {
     typeset Params Format FilePath
     
     # Check dependencies first
-    check_Dependencies || exit $?
+    check_Script_Dependencies || exit $?
     
-    # Get and parse parameters
-    Params=$(parse_Parameters "$@") || exit $?
+    # Get and parse CLI options
+    Params=$(parse_CLI_Options "$@") || exit $?
     read -r Format FilePath <<< "$Params"
     
-    # Execute core logic
-    core_Logic "$Format" "$FilePath" || exit $?
+    # Execute core workflow
+    execute_Core_Workflow "$Format" "$FilePath" || exit $?
     
     exit $Exit_Status_Success
 }

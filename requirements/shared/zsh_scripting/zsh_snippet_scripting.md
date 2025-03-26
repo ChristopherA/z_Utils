@@ -87,14 +87,14 @@ Script Start
 │       └── Call main()
 │
 └── main()
-    └── core_Logic()
+    └── execute_Core_Workflow()
         └── [Success] ──► stdout
 ```
 
 #### Simple Error Propagation (Failure Path)
 
 ```
-core_Logic()
+execute_Core_Workflow()
 └── return error (Exit_Status_Code)
     └── main()
         ├── exit (with status)
@@ -111,7 +111,7 @@ emulate -LR zsh
 setopt errexit nounset pipefail localoptions warncreateglobal
 
 # Function for core logic
-core_Logic() {
+execute_Core_Workflow() {
     # Primary functionality code
     # Return appropriate exit status
 }
@@ -119,7 +119,7 @@ core_Logic() {
 # Main execution block
 main() {
     # Parameter and dependency checks
-    core_Logic "$@"
+    execute_Core_Workflow "$@"
 }
 
 # Execute only if run directly
@@ -143,13 +143,13 @@ Script Start
 │       └── Call main()
 │
 └── main()
-    ├── parse_Parameters()
+    ├── parse_CLI_Options()
     │   └── validate input
     │
-    ├── check_Dependencies() (optional)
-    │   └── verify commands
+    ├── check_Script_Dependencies() (optional)
+    │   └── check commands
     │
-    └── core_Logic()
+    └── execute_Core_Workflow()
         └── [Success] ──► stdout
 ```
 
@@ -162,13 +162,13 @@ core_Logic()
         ├── exit (with status)
         └── [Error] ──► stderr
 
-parse_Parameters()
-└── show_Usage()
+parse_CLI_Options()
+└── display_Script_Usage()
     └── main()
         ├── exit (Exit_Status_Usage)
         └── [Error] ──► stderr
 
-check_Dependencies()
+check_Script_Dependencies()
 └── return error (Exit_Status_Dependency)
     └── main()
         ├── exit (with status)
@@ -194,7 +194,7 @@ typeset -r Exit_Status_Usage=2
 
 # Remaining script-scoped variables here
 
-show_Usage() {
+display_Script_Usage() {
    # Prints usage instructions
 }
 
@@ -204,28 +204,28 @@ other_Function() {
     # Return appropriate exit status on error
 }
 
-core_Logic() {
+execute_Core_Workflow() {
    # Primary script functionality
    # Call other functions as needed
    # Return appropriate exit status
 }
 
-check_Dependencies() {
-   # Verify required commands exist
+check_Script_Dependencies() {
+   # Check for required commands and resources
    # Return appropriate exit status on failure
 }
 
-parse_Parameters() {
-   # Process and validate input parameters
-   # Call show_Usage() for invalid input
-   # Return validated parameters
+parse_CLI_Options() {
+   # Process and validate command-line options
+   # Call display_Script_Usage() for invalid input
+   # Return validated options
 }
 
 main() {
    # Orchestrate execution flow
-   # 1. Parse parameters
-   # 2. Check dependencies (if needed)
-   # 3. Execute core logic
+   # 1. Parse CLI options
+   # 2. Check script dependencies (if needed)
+   # 3. Execute core workflow
 }
 
 # Execute only when run directly

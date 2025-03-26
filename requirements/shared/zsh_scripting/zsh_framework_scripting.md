@@ -120,19 +120,19 @@ Script Invocation
     │   └── Check dependencies, requirements, and environment
     │
     ├── Two-Phase Argument Processing:
-    │   ├── Phase 1: z_Parse_Initial_Arguments
-    │   │   ├── Process framework arguments (--verbose, --debug, etc.)
+    │   ├── Phase 1: z_Parse_CLI_Initial_Options
+    │   │   ├── Process framework options (--verbose, --debug, etc.)
     │   │   └── Set global execution flags
     │   │
-    │   └── Phase 2: parse_Remaining_Arguments
-    │       ├── Process domain-specific arguments
+    │   └── Phase 2: parse_CLI_Remaining_Options
+    │       ├── Process domain-specific options
     │       ├── Call handle_* functions for complex arguments
     │       │   ├── handle_Change_Directory for -C/--chdir
     │       │   ├── handle_Process_Config for config options
     │       │   └── Other specialized handlers as needed
     │       └── Validate argument combinations
     │
-    └── core_Logic()
+    └── execute_Core_Workflow()
         ├── High-level workflow orchestration
         │   ├── Phase initialization and sequencing
         │   ├── Workflow state management
@@ -182,7 +182,7 @@ Domain Function Error
 │   │   └── OR abort current phase
 │   └── Return error status to controller
 │
-├── Controller Layer (core_Logic)
+├── Controller Layer (execute_Core_Workflow)
 │   ├── Phase failure detection
 │   ├── Error aggregation
 │   ├── Result generation with error context
@@ -198,16 +198,16 @@ This error flow ensures errors are detected as close to their source as possible
 
 ### Two-Phase Argument Processing
 
-Framework scripts must implement a two-phase argument processing approach:
+Framework scripts must implement a two-phase CLI option processing approach:
 
-1. **Framework Argument Phase**:
-   - Process framework-level arguments first (verbose, debug, etc.)
-   - Must use a dedicated function such as `z_Parse_Initial_Arguments`
+1. **Framework Options Phase**:
+   - Process framework-level options first (verbose, debug, etc.)
+   - Must use a dedicated function such as `z_Parse_CLI_Initial_Options`
    - Sets global execution flags that affect script behavior
 
-2. **Domain Argument Phase**:
-   - Process domain-specific arguments after framework setup
-   - Must use a separate function such as `parse_Remaining_Arguments`
+2. **Domain Options Phase**:
+   - Process domain-specific options after framework setup
+   - Must use a separate function such as `parse_CLI_Remaining_Options`
    - Applies domain logic to specialized parameters
 
 ### Controller Function Responsibilities
@@ -217,12 +217,12 @@ Framework scripts must clearly delineate responsibilities between controller fun
 - **main()**: Script entry point that:
   - Sets up signal handlers and traps
   - Initializes the environment
-  - Processes command-line arguments (via two-phase approach)
-  - Delegates to `core_Logic` for main workflow
+  - Processes command-line options (via two-phase approach)
+  - Delegates to `execute_Core_Workflow` for main workflow
   - Ensures proper cleanup and exit status propagation
   - Must be the only function that directly exits the script
 
-- **core_Logic()**: Main workflow orchestrator that:
+- **execute_Core_Workflow()**: Main workflow orchestrator that:
   - Manages the execution sequence
   - Coordinates phase transitions
   - Controls workflow branching
@@ -272,7 +272,7 @@ Follow the "Naming and Documentation Requirements" in `REQUIREMENTS-Zsh_Core_Scr
 
 - **Controller Functions**:
   - Standardized names without prefix
-  - Examples: `main`, `core_Logic`
+  - Examples: `main`, `execute_Core_Workflow`
 
 ### Comprehensive Function Documentation
 
@@ -670,7 +670,7 @@ Framework scripts must implement comprehensive system requirements validation:
 
 Example dependency checking:
 ```zsh
-function check_External_Dependency() {
+function check_External_Tool_Dependency() {
     typeset DependencyName="$1"
     typeset MinVersion="${2:-}"
     typeset Required="${3:-$TRUE}"
