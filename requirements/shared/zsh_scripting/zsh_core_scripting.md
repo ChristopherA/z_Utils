@@ -76,7 +76,12 @@ setopt errexit nounset pipefail localoptions warncreateglobal
 
 ### Naming Conventions
 - **Scripts:** Use `lower_snake_case.sh` (not `.zsh`) in `verb_preposition_object.sh` order (e.g., `create_inception_commit.sh`).
+- **Library Scripts:** Use `_Library_Name.zsh` format with leading underscore to indicate it's not meant to be executed directly (e.g., `_Z_Utils.zsh`).
 - **Functions:** Use `lowerfirst_Pascal_Snake_Case` in `verb_Preposition_Object` order (e.g., `verify_Commit_Signature()`).
+  - First word should be lowercase, subsequent words capitalized
+  - Use at least two words to clearly convey purpose: prefer `display_Script_Usage()` over `display_Usage()`
+  - Use descriptive verbs that indicate precise action: `execute_Core_Workflow()` rather than `core_Logic()`
+  - The `main()` function is an exception to this convention, following broader Zsh standards
   - To prevent potential conflicts with Zsh built-ins and plugins, check for existing function names using `typeset -f function_name` during testing.
 - **Variables:**
   - **Avoid globals:** Use script-scoped variables instead.
@@ -105,17 +110,23 @@ typeset -r SCRIPT_VERSION="1.0.0"
 Good - Clear verb_Object pattern with purpose:
 ```zsh
 calculate_File_Hash()     # Calculates hash of a file
-verify_Git_Repo()        # Verifies Git repository status
+verify_Git_Repo()         # Verifies Git repository status
 parse_Command_Options()   # Parses command line options
 validate_Input_Path()     # Validates an input path exists
+display_Script_Usage()    # Displays script usage information
+execute_Core_Workflow()   # Executes the script's primary workflow
+parse_CLI_Options()       # Parses command-line interface options
 ```
 
-Bad - Unclear purpose or missing verb:
+Bad - Unclear purpose, missing verb, or single-word objects:
 ```zsh
-do_hash()          # Unclear what is being hashed
-repo_check()       # Missing verb, unclear action
-args()            # Too generic, unclear purpose
-validate()         # Missing object being validated
+do_hash()               # Unclear what is being hashed
+repo_check()            # Missing verb, unclear action
+args()                  # Too generic, unclear purpose
+validate()              # Missing object being validated
+display_Usage()         # Single-word object lacks specificity 
+core_Logic()            # "Logic" is vague, not a clear object
+parse_Arguments()       # "Arguments" could be any kind of arguments (function or CLI)
 ```
 
 ## Zsh Core Scripting - Execution Flow and Structure
