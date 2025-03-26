@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 ########################################################################
 ## Script:        snippet_template.sh
-## Version:       0.1.00 (2025-03-04)
+## Version:       0.1.01 (2025-03-26)
 ## Origin:        https://github.com/OpenIntegrityProject/core/blob/main/src/snippet_template.sh
 ## Description:   Shows detailed status information for a file, supporting
 ##                multiple output formats (default, json, yaml).
