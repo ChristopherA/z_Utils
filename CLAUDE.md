@@ -1,7 +1,7 @@
 # Z_Utils: Zsh Utility Library - Claude Guidance
 
 > - _created: 2025-03-19_
-> - _last-updated: 2025-03-22_
+> - _last-updated: 2025-03-27_
 > - _development-model: Team_
 
 This document provides essential guidance for Claude when working with the Z_Utils Zsh utility library project.
@@ -102,4 +102,16 @@ claude "load CLAUDE.md, identify branch as feature/test-coverage, and implement 
 claude "load CLAUDE.md, identify branch as docs/[docs-task-name], and update documentation for [specific topic]"
 ```
 
-<!-- Note for Claude: When helping users with ongoing project work, ALWAYS refer to the appropriate guide for detailed instructions rather than inventing your own approach. This ensures consistency in development practices. -->
+### Archiving Completed Contexts
+
+```bash
+claude "load CLAUDE.md, verify current branch is main, archive completed context [context-name], and update documentation"
+```
+
+### Synchronizing Task Tracking
+
+```bash
+claude "load CLAUDE.md, verify current branch is main, synchronize WORK_STREAM_TASKS.md with context changes, and continue work"
+```
+
+<!-- Note for Claude: When helping users with ongoing project work, ALWAYS refer to the appropriate guide for detailed instructions rather than inventing your own approach. This ensures consistency in development practices. For context archiving and task synchronization, follow the detailed processes in context_guide.md and task_tracking_guide.md. -->
