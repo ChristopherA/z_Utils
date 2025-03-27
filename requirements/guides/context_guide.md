@@ -5,7 +5,7 @@
 > - _purpose_: Guide context management across Claude sessions
 > - _copyright_: ©2025 by @ChristopherA, licensed under the [BSD 2-Clause Plus Patent License](https://spdx.org/licenses/BSD-2-Clause-Patent.html)
 > - _created_: 2025-03-19 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
-> - _last-updated_: 2025-03-22 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
+> - _last-updated_: 2025-03-27 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
 
 ## Branch-Context Synchronization
 
@@ -392,3 +392,97 @@ If feature development tasks appear in main-context.md:
    - Move the task to the correct context file
    - If on main branch, create feature branch before continuing work
    - Update main-context.md to focus on branch/PR management
+
+## Context Lifecycle Management
+
+### Context States and Transitions
+
+Contexts progress through multiple states during their lifecycle:
+
+1. **Future** (`contexts/futures/` directory)
+   - Planned, not yet started
+   - Templates for future branches
+   - Referenced in main-context.md and WORK_STREAM_TASKS.md
+
+2. **Active** (root of `contexts/` directory)
+   - Associated with an active branch
+   - Work in progress
+   - Tasks being updated
+
+3. **Completed** (moved to `contexts/archived.md`)
+   - Branch merged via PR
+   - All work completed
+   - Preserved for historical reference
+
+### Context Archiving Process
+
+When work on a branch is complete and merged to main:
+
+1. **Mark the context as completed**:
+   ```markdown
+   ## Current Status
+   - Current branch: [branch-type]/[branch-name]
+   - Started: YYYY-MM-DD
+   - Completed: YYYY-MM-DD
+   - Status: COMPLETED - All tasks successfully finished
+   ```
+
+2. **Archive the context file**:
+   ```bash
+   claude "load CLAUDE.md, verify current branch is main, archive completed context [context-name], and update documentation"
+   ```
+
+3. **Archiving steps**:
+   - Create or update `contexts/archived.md` with entries for each archived context
+   - Include completion date, PR number, and branch reference
+   - Add a brief summary (3-5 lines) describing the work completed
+   - Include a link to the specific Git commit version of the context file
+   - Remove the original context file with `git rm`
+   - Update the "Completed Contexts" section in main-context.md
+
+4. **Synchronize task tracking**:
+   - Update WORK_STREAM_TASKS.md to reflect completed work
+   - Ensure references to branch names and context files are current
+   - Mark the archiving task as completed in main-context.md
+
+### Example Archive Entry Format
+
+Each archived context should follow this standard format in `contexts/archived.md`:
+
+```markdown
+## branch-name-context.md
+
+**Status:** Completed  
+**Branch:** [branch-type]/[branch-name]  
+**Completed:** YYYY-MM-DD  
+**Archived:** YYYY-MM-DD  
+**PR:** [#XX](https://github.com/[org]/[repo]/pull/XX) (Merged YYYY-MM-DD)  
+**Categories:** [Category1], [Category2]
+
+Brief description of the work completed in 3-5 lines. Focus on the outcomes,
+major accomplishments, and significance of the work.
+
+**Key Accomplishments:**
+- Major achievement 1
+- Major achievement 2
+- Major achievement 3
+- Major achievement 4
+
+**Related Contexts:** [related-context-1], [related-context-2]
+
+[View archived context](https://github.com/[org]/[repo]/blob/[commit-hash]/contexts/[context-filename])
+```
+
+### Future Contexts Management
+
+Contexts for future branches should be stored in `contexts/futures/` to maintain a clear separation between:
+
+1. **Active work** (in root of `contexts/`)
+2. **Future planned work** (in `contexts/futures/`)
+3. **Completed work** (in `contexts/archived.md`)
+
+When starting work on a planned branch, move the context from futures/ to the root contexts/ directory:
+
+```bash
+git mv contexts/futures/feature-name-context.md contexts/feature-name-context.md
+```

@@ -5,7 +5,7 @@
 > - _purpose_: Define task tracking system for project management
 > - _copyright_: ©2025 by @ChristopherA, licensed under the [BSD 2-Clause Plus Patent License](https://spdx.org/licenses/BSD-2-Clause-Patent.html)
 > - _created_: 2025-03-19 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
-> - _last-updated_: 2025-03-22 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
+> - _last-updated_: 2025-03-27 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
 
 ## Core Task File
 
@@ -152,5 +152,44 @@ Claude will help with task management by:
 4. Adding implementation details to completed tasks
 5. Suggesting next tasks based on dependencies
 6. Helping maintain critical path information
+7. Synchronizing task tracking with context changes
 
-<!-- Note for Claude: When updating the WORK_STREAM_TASKS.md file, ensure you update the last-updated date and maintain consistent formatting. Always use YYYY-MM-DD format for all dates. -->
+## Context Synchronization
+
+When contexts are archived or refactored, ensure WORK_STREAM_TASKS.md remains synchronized:
+
+### Task Tracking for Archived Contexts
+
+1. **Keep historical references to completed work**:
+   - Completed tasks associated with archived contexts remain in WORK_STREAM_TASKS.md
+   - Historical references maintain project continuity and progress tracking
+   - Include completion dates for all archived work
+
+2. **Update branch references**:
+   - When a branch is archived, ensure any tasks still referencing it are updated
+   - Tasks that depend on archived work should reference the appropriate active branches
+   - Any future tasks that built on archived contexts should be updated
+
+3. **Refactor task sections as needed**:
+   - When contexts are refactored (e.g., split or combined), refactor corresponding task sections
+   - Maintain the same task breakdown structure but update branch references
+   - Update dependency chains to reflect new branch relationships
+   - Ensure acceptance criteria matches current context scope
+
+### Synchronization Process
+
+When significant context changes occur:
+
+1. Use the following command to synchronize task tracking:
+   ```bash
+   claude "load CLAUDE.md, verify current branch is main, synchronize WORK_STREAM_TASKS.md with context changes, and continue work"
+   ```
+
+2. Claude will:
+   - Update branch references in WORK_STREAM_TASKS.md
+   - Ensure task sections align with current contexts
+   - Maintain historical completed work
+   - Update task dependencies as needed
+   - Preserve completion dates and implementation details
+
+<!-- Note for Claude: When updating the WORK_STREAM_TASKS.md file, ensure you update the last-updated date and maintain consistent formatting. Always use YYYY-MM-DD format for all dates. When synchronizing tasks with archived contexts, always preserve historical completed work while updating references to active branches. -->
