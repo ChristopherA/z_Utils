@@ -86,15 +86,25 @@
   - Dependencies: Consistent naming conventions
   - Branch: feature/refactor-inception-script
 
-- [ ] **Implement comprehensive test coverage** (High priority)
+- [ ] **Develop test infrastructure** (High priority)
   - Acceptance Criteria:
-    - All functions have test coverage
-    - Function tests conform to zsh requirements
-    - Test automation is implemented
-    - Test reporting is functional
-    - Testing guidelines are documented
+    - Standardized testing environment created
+    - Test automation framework implemented
+    - Pattern matching and ANSI handling standardized
+    - Test runner and reporting mechanism functional
+    - Testing guidelines and documentation completed
   - Dependencies: Function documentation (recommended but not required)
-  - Branch: feature/test-coverage
+  - Branch: feature/test-infrastructure
+
+- [ ] **Implement function test coverage** (High priority)
+  - Acceptance Criteria:
+    - All functions have comprehensive test coverage
+    - Tests for core utility functions implemented
+    - Tests for environment functions implemented
+    - Tests for path handling functions implemented
+    - Tests for Git functions implemented
+  - Dependencies: Test infrastructure, Function documentation
+  - Branch: feature/function-test-implementation
 
 - [ ] **Improve z_Output() function and testing**
   - Acceptance Criteria:
@@ -141,7 +151,7 @@
     - Testing approach documented
     - Framework compliance verified
   - Dependencies: Safe testing environment
-  - Branch: feature/test-coverage
+  - Branch: feature/test-infrastructure
 
 ### Core Function Testing Improvements
 - [x] **Improve Test Infrastructure** (Completed: 2025-03-25)
@@ -317,8 +327,8 @@
     - Extend sandbox support to all function tests
     - Document best practices for sandbox testing
   - Dependencies: Test infrastructure improvements
-  - Branch: feature/enhanced-sandbox-testing
-  - Context: contexts/futures/feature-enhanced-sandbox-testing-context.md
+  - Branch: feature/test-infrastructure
+  - Context: contexts/futures/feature-test-infrastructure-context.md
 
 - [ ] **Set up CI/CD pipeline** (Low priority)
   - Acceptance Criteria:

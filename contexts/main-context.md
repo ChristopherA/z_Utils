@@ -22,7 +22,8 @@ The main branch serves as the coordination point for project management and shou
 ## Active Branches
 <!-- List active branches with their status -->
 - [ ] feature/function-documentation - Function documentation (high priority - next up on critical path)
-- [ ] feature/test-coverage - Test implementation (high priority - follows documentation)
+- [ ] feature/test-infrastructure - Test infrastructure (high priority - follows documentation)
+- [ ] feature/function-test-implementation - Function test coverage (high priority - after test infrastructure)
 - [ ] feature/modernize-scripts - Script modernization (medium priority - independent)
 - [ ] feature/enhanced-functionality - Enhanced features (medium priority - depends on tests)
 - [ ] feature/ci-cd-setup - CI/CD implementation (low priority - depends on tests)
@@ -30,22 +31,20 @@ The main branch serves as the coordination point for project management and shou
 ## Available Context Files
 <!-- List context files without branches that can be started -->
 - contexts/futures/feature-function-documentation-context.md - High priority (critical path)
-- contexts/futures/feature-test-coverage-context.md - High priority (critical path)
+- contexts/futures/feature-test-infrastructure-context.md - High priority (critical path)
+- contexts/futures/feature-function-test-implementation-context.md - High priority (follows test infrastructure)
 - contexts/futures/feature-modernize-scripts-context.md - Medium priority (independent)
 - contexts/futures/feature-enhanced-functionality-context.md - Medium priority (depends on documentation)
-- contexts/futures/feature-ci-cd-setup-context.md - Low priority (depends on test coverage)
+- contexts/futures/feature-ci-cd-setup-context.md - Low priority (depends on function test implementation)
 
 ## Completed Contexts
-<!-- List context files for completed work that can be archived -->
-- [x] docs-import-materials - Completed (2025-03-19)
-- [x] cleanup-project-docs-and-structure - Completed (2025-03-21)
-- [x] process-update-toolkit - Completed (2025-03-22)
-- [x] organize-task-planning-final - Completed (2025-03-22)
+<!-- All completed contexts have been archived to contexts/archived.md -->
+All completed contexts have been archived. See contexts/archived.md for a complete list of archived contexts with their summaries and links to the original files in Git history.
 
 ## Work Stream Management
 - [x] Review and prioritize items in WORK_STREAM_TASKS.md (2025-03-22)
 - [x] Create context files for future branches (2025-03-22)
-- [ ] Archive completed context files
+- [x] Archive completed context files (2025-03-27)
 - [x] Update project documentation with task organization (2025-03-22)
 
 ## Core Z_Utils Tasks
