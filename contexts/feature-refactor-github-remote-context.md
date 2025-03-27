@@ -1,4 +1,4 @@
-# Context: Modernize GitHub Remote Scripts
+# Context: Refactor GitHub Remote Script
 
 > - _created: 2025-03-29_
 > - _last-updated: 2025-03-29_
@@ -83,7 +83,7 @@ The modernized script will include:
 
 ## Branch Information
 
-- **Branch:** feature/modernize-scripts
+- **Branch:** feature/refactor-github-remote
 - **Created from:** main
 - **Merge to:** main
 
@@ -100,5 +100,5 @@ This work relates to the following task in WORK_STREAM_TASKS.md:
     - Repository protection safeguards implemented
     - Remote repository cleanup mechanism added
   - Dependencies: Safe testing environment
-  - Branch: feature/modernize-scripts
+  - Branch: feature/refactor-github-remote
 ```
