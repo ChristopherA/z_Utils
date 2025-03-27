@@ -16,11 +16,13 @@ This future branch will focus on enhancing the testing infrastructure and sandbo
 
 ## Current Status
 
-This feature is in the planning phase. It contains work items that were identified during the refactoring of the inception scripts but were separated to maintain focus on the core refactoring tasks.
+This feature is in the planning phase and marked as a future task. It contains work items that were identified during the refactoring of the inception scripts but were separated to maintain focus on the core refactoring tasks.
 
-## Files Not Included in Current Branch
+## Files Stored in Untracked Directory
 
-The following files were developed during the refactoring work but are being deferred to this future branch:
+All files associated with this future task have been stored in the `untracked/enhanced-sandbox-testing/` directory with their original relative paths preserved. For example, `src/function_tests/z_Create_Inception_Repository_test.sh` is now stored at `untracked/enhanced-sandbox-testing/src/function_tests/z_Create_Inception_Repository_test.sh`. These files can be retrieved when work on this feature begins. No changes will be made to the repository until this task is officially started.
+
+The following files were developed during the refactoring work but are being deferred to this future branch (all currently stored in the untracked directory):
 
 ### Function Test Files
 - `src/function_tests/z_Create_Inception_Repository_test.sh`
@@ -167,5 +169,9 @@ This work is an extension of the improvements made in the following branches:
 ## Branch Information
 
 - **Future Branch:** feature/enhanced-sandbox-testing
-- **Create from:** main
+- **Create from:** main (when work begins)
 - **Merge to:** main
+- **Priority:** Medium
+- **Timeline:** To be determined based on project priorities
+
+This task has been fully documented but no active branch currently exists. When work begins, all files in `untracked/enhanced-sandbox-testing/` should be reviewed and incorporated into the new branch as appropriate.
