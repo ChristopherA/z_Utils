@@ -5,7 +5,55 @@
 > - _purpose_: Define task tracking system for project management
 > - _copyright_: ©2025 by @ChristopherA, licensed under the [BSD 2-Clause Plus Patent License](https://spdx.org/licenses/BSD-2-Clause-Patent.html)
 > - _created_: 2025-03-19 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
-> - _last-updated_: 2025-03-27 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
+> - _last-updated_: 2025-03-31 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
+
+## For Claude: Task Tracking Framework
+```
+FUNCTION: Task Management and Synchronization
+TRIGGER: Any task-related operation or context synchronization request
+
+STATE_VARIABLES:
+    task_file_path = "WORK_STREAM_TASKS.md"
+    operation_type = "" // "update", "complete", "synchronize"
+    task_completed = FALSE
+    task_started = FALSE
+    context_updated = FALSE
+    
+INITIALIZATION:
+    EXECUTE "git branch --show-current" -> current_branch
+    VERIFY current_branch is authorized for task updates
+    
+DETECT operation_type:
+    SCAN user_request for operation_indicators
+    SET operation_type based on indicators
+    
+PROCESS task_operation:
+    IF operation_type == "update":
+        EXECUTE task_update_procedure
+    ELSE IF operation_type == "complete":
+        EXECUTE task_completion_procedure
+    ELSE IF operation_type == "synchronize":
+        EXECUTE context_synchronization_procedure
+        
+VALIDATION:
+    VERIFY task_file has been properly updated
+    VERIFY last_updated date has been updated
+    VERIFY task state matches requested operation
+    
+    IF context_updated:
+        VERIFY context files and task tracking are synchronized
+        
+ON ERROR:
+    RESPOND "I encountered an issue updating the task tracking. Let me try a different approach."
+    FOLLOW error_recovery_procedure
+
+PATTERNS:
+    operation_indicators = {
+        "update": ["start task", "begin work", "mark in progress"],
+        "complete": ["complete task", "finish task", "mark as done"],
+        "synchronize": ["sync tasks", "update task tracking", "align with contexts"]
+    }
+```
 
 ## Core Task File
 
@@ -144,6 +192,54 @@ For the Z_Utils project, tasks generally fall into these categories:
 
 ## Claude's Role in Task Tracking
 
+### For Claude: Task Processing Framework
+```
+FUNCTION: Task Processing and Management
+TRIGGER: Any task-related request or session start/end
+
+STATE_VARIABLES:
+    current_tasks = []
+    completed_tasks = []
+    task_file_updated = FALSE
+    task_completion_percentage = 0.0
+    
+INITIALIZATION:
+    EXECUTE "git branch --show-current" -> current_branch
+    EXECUTE "cat WORK_STREAM_TASKS.md" -> task_content
+    EXTRACT tasks for current_branch from task_content
+    POPULATE current_tasks and completed_tasks
+    
+PROCESS at_session_start:
+    IDENTIFY current branch tasks
+    PRESENT task summary to user:
+        - In-progress tasks
+        - Not-started tasks
+        - Completion percentage
+    IDENTIFY next actions based on task dependencies
+    
+PROCESS during_session:
+    MONITOR for completed work
+    UPDATE task status when work completes
+    TRACK implementation details for completed tasks
+    
+PROCESS at_session_end:
+    UPDATE task status based on session progress
+    ADD implementation details to newly completed tasks
+    UPDATE completion dates with current date
+    UPDATE task_file_path with changes
+    UPDATE last_updated date
+    
+VALIDATION:
+    VERIFY all task updates have proper dates
+    VERIFY implementation details exist for completed tasks
+    VERIFY acceptance criteria are validated for completed tasks
+    
+ON ERROR:
+    USE most recent task state as fallback
+    PRESERVE existing task information
+    REPORT sync issues to user
+```
+
 Claude will help with task management by:
 
 1. Identifying current tasks when starting a session
@@ -153,6 +249,9 @@ Claude will help with task management by:
 5. Suggesting next tasks based on dependencies
 6. Helping maintain critical path information
 7. Synchronizing task tracking with context changes
+8. Calculating and tracking completion percentages
+9. Validating task updates against acceptance criteria
+10. Ensuring proper formatting and date conventions
 
 ## Context Synchronization
 
@@ -176,6 +275,59 @@ When contexts are archived or refactored, ensure WORK_STREAM_TASKS.md remains sy
    - Update dependency chains to reflect new branch relationships
    - Ensure acceptance criteria matches current context scope
 
+### For Claude: Context Synchronization Framework
+```
+FUNCTION: Task and Context Synchronization
+TRIGGER: Context changes or explicit synchronization request
+
+STATE_VARIABLES:
+    active_contexts = []
+    future_contexts = []
+    archived_contexts = []
+    task_entries = []
+    update_required = FALSE
+    
+INITIALIZATION:
+    EXECUTE "find contexts/ -name '*.md' ! -path '*/archived.md'" -> context_files
+    EXECUTE "find contexts/futures/ -name '*.md'" -> future_context_files
+    EXECUTE "cat contexts/archived.md" -> archived_context_data
+    EXECUTE "cat WORK_STREAM_TASKS.md" -> task_data
+    
+PROCESS synchronization:
+    FOR each context_file:
+        EXTRACT branch_name, status, tasks
+        ADD to active_contexts
+    
+    FOR each future_context_file:
+        EXTRACT branch_name, tasks
+        ADD to future_contexts
+        
+    EXTRACT archived_branch_names from archived_context_data
+    
+    PARSE task_data into task_entries
+    
+    FOR each active_context:
+        VERIFY matching task_entries exist
+        IF no match OR mismatch:
+            SET update_required = TRUE
+            CREATE/UPDATE corresponding task entry
+    
+    FOR each task_entry with branch reference:
+        VERIFY branch exists in active_contexts OR future_contexts OR archived_contexts
+        IF no match:
+            MARK for review
+            SUGGEST branch reference correction
+            
+VALIDATION:
+    VERIFY all active contexts have task entries
+    VERIFY all task entries reference valid contexts
+    VERIFY completion status matches between contexts and tasks
+    
+ON ERROR:
+    PRESENT synchronization issues for manual review
+    SUGGEST specific corrections for each issue
+```
+
 ### Synchronization Process
 
 When significant context changes occur:
@@ -186,10 +338,14 @@ When significant context changes occur:
    ```
 
 2. Claude will:
+   - Scan all context files and extract branch information
+   - Compare context tasks with WORK_STREAM_TASKS.md entries
    - Update branch references in WORK_STREAM_TASKS.md
    - Ensure task sections align with current contexts
    - Maintain historical completed work
    - Update task dependencies as needed
    - Preserve completion dates and implementation details
+   - Calculate and update completion percentages
+   - Validate all references for consistency
 
 <!-- Note for Claude: When updating the WORK_STREAM_TASKS.md file, ensure you update the last-updated date and maintain consistent formatting. Always use YYYY-MM-DD format for all dates. When synchronizing tasks with archived contexts, always preserve historical completed work while updating references to active branches. -->
