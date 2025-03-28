@@ -1,110 +1,84 @@
-# Main Branch Context
+# Main Branch Facilitation Context
 
-## Current Status
-- Current branch: main
-- Started: 2025-03-19
-- Progress: Ready for workflow management and branch orchestration
+## For Claude: Main Branch Facilitation Decision Tree
+```
+FUNCTION: Main Branch Process Selection
+TRIGGER: Any user request while on main branch
 
-## Branch Protection Notice
-**IMPORTANT**: The main branch has protection rules that prevent direct commits. All changes must be made via feature branches and pull requests.
+STATE_VARIABLES:
+    current_branch = ""
+    file_modification_attempt = FALSE
+    request_type = ""
+    
+INITIALIZATION:
+    EXECUTE "git branch --show-current" -> current_branch
+    
+    IF current_branch != "main":
+        EXIT FUNCTION // Not on main branch, no protection needed
+    
+DETECT file_modification_attempt:
+    SCAN user_request for file_modification_patterns
+    IF file_modification_patterns_found == TRUE:
+        SET file_modification_attempt = TRUE
+    
+PROCESS protection_check:
+    IF file_modification_attempt == TRUE:
+        RESPOND with branch_protection_warning
+        EXECUTE branch_selection_facilitation
+        RETURN
 
-## Main Branch Purpose
-The main branch serves as the coordination point for project management and should NOT contain direct development work. Its primary functions are:
+DETECT request_intent:
+    SCAN user_request for:
+        CONTAINS "help select" -> SET request_type = "branch_selection" 
+        CONTAINS "help review PR" -> SET request_type = "pr_review"
+        CONTAINS "help plan context" -> SET request_type = "context_lifecycle"
+        CONTAINS "help activate" -> SET request_type = "context_activation"
+        CONTAINS "help archive" -> SET request_type = "context_archiving"
+        DEFAULT -> SET request_type = "general_facilitation"
 
-1. PR review and merge management
-2. Branch orchestration and context switching
-3. Work stream task organization and planning
+EXECUTE process_block_selection:
+    LOAD corresponding_process_block from CLAUDE.md based on request_type
+    EXECUTE corresponding_process_block
 
-## Active Pull Requests
-<!-- List active PRs that need review/merge attention -->
-<!-- No active PRs at this time -->
+ON ERROR:
+    RESPOND "I encountered an issue while processing your request on the main branch.
+             Since this is a protected branch, I'll help you select a working branch
+             where we can proceed with your task safely."
+    EXECUTE branch_selection_facilitation
 
-## Active Branches
-<!-- List active branches with their status -->
-- [ ] feature/function-documentation - Function documentation (high priority - next up on critical path)
-- [ ] feature/test-infrastructure - Test infrastructure (high priority - follows documentation)
-- [ ] feature/function-test-implementation - Function test coverage (high priority - after test infrastructure)
-- [ ] feature/modernize-scripts - Script modernization (medium priority - independent)
-- [ ] feature/enhanced-functionality - Enhanced features (medium priority - depends on tests)
-- [ ] feature/ci-cd-setup - CI/CD implementation (low priority - depends on tests)
-
-## Available Context Files
-<!-- List context files without branches that can be started -->
-- contexts/futures/feature-function-documentation-context.md - High priority (critical path)
-- contexts/futures/feature-test-infrastructure-context.md - High priority (critical path)
-- contexts/futures/feature-function-test-implementation-context.md - High priority (follows test infrastructure)
-- contexts/futures/feature-modernize-scripts-context.md - Medium priority (independent)
-- contexts/futures/feature-enhanced-functionality-context.md - Medium priority (depends on documentation)
-- contexts/futures/feature-ci-cd-setup-context.md - Low priority (depends on function test implementation)
-
-## Completed Contexts
-<!-- All completed contexts have been archived to contexts/archived.md -->
-All completed contexts have been archived. See contexts/archived.md for a complete list of archived contexts with their summaries and links to the original files in Git history.
-
-## Work Stream Management
-- [x] Review and prioritize items in WORK_STREAM_TASKS.md (2025-03-22)
-- [x] Create context files for future branches (2025-03-22)
-- [x] Archive completed context files (2025-03-27)
-- [x] Update project documentation with task organization (2025-03-22)
-
-## Core Z_Utils Tasks
-- [x] Create project README (2025-03-19)
-- [x] Set up basic project structure (2025-03-19)
-- [x] Define initial architecture (2025-03-19)
-- [x] Implement core utility functions (2025-03-19)
-
-<!-- Task format: 
-- [ ] Not started
-- [~] In progress (with start date in YYYY-MM-DD format)
-- [x] Completed (with completion date in YYYY-MM-DD format)
--->
-
-## Key Decisions
-- [2025-03-19] Project will follow team development model
-- [2025-03-19] Branch protection rules enabled for main branch
-- [2025-03-19] All Z_Utils functions maintained in _Z_Utils.zsh file
-- [2025-03-22] Process updates from toolkit incorporated with PR #4
-- [2025-03-22] Task organization completed with critical path identification
-- [2025-03-22] Future branch context files created and stored in contexts/futures/
-
-## Notes
-### Critical Path
-The critical path for Z_Utils development has been identified as:
-1. Core Infrastructure and Standards → Foundation for all other work
-2. Function Documentation → Essential for understanding behavior
-3. Test Coverage → Builds on documentation for reliable enhancement
-4. Enhanced Functionality → Relies on solid documentation and testing
-
-### Task Categories
-Tasks have been organized into these primary categories:
-1. Core Infrastructure and Standards (Foundation)
-2. Core Function Documentation and Testing (Functionality)
-3. Script Refactoring and Testing (Parallel Workstreams)
-4. Future Projects (Dependent on Prior Work)
-
-## Special Workflows
-
-### PR Review and Merge Process
-```bash
-claude "load CLAUDE.md, verify current branch is main, review PR #[number], and merge if approved"
+PATTERNS:
+    branch_protection_warning = "I notice we're on the main branch which is protected. 
+    The main branch cannot be directly modified - all changes require pull requests.
+    Let me help you select or create an appropriate working branch for this task."
+    
+    file_modification_patterns = [
+        "create file", "edit file", "modify", "change", "update file",
+        "add new", "delete file", "remove file", "rename file"
+    ]
 ```
 
-### Branch Switching
-```bash
-claude "load CLAUDE.md, verify current branch is main, switch to branch [branch-name], and continue work"
-```
+## Purpose
+To guide users in navigating from the protected main branch to appropriate working branches and facilitating PR reviews.
 
-### Work Stream Management
-```bash
-claude "load CLAUDE.md, verify current branch is main, and organize WORK_STREAM_TASKS.md"
-```
+## Branch Protection
+The main branch cannot be directly modified. All changes require PRs from working branches.
 
-### Context Archiving
-```bash
-claude "load CLAUDE.md, verify current branch is main, archive completed context [context-name], and update documentation"
-```
+## Facilitation Role
+When on main branch, Claude should:
+1. Help users select or create appropriate working branches
+2. Guide PR review processes without making changes
+3. Assist with context lifecycle planning
+4. Never attempt direct file modifications
 
-### Starting Next Critical Path Item
+## Key Facilitation Commands
+
 ```bash
-claude "load CLAUDE.md, verify current branch is main, copy contexts/futures/feature-function-documentation-context.md to contexts/, create branch feature/function-documentation, and begin working on function documentation"
+# Help select a working branch
+claude "load CLAUDE.md, verify current branch is main, help select working branch"
+
+# Help review pull request
+claude "load CLAUDE.md, verify current branch is main, help review PR #[number]"
+
+# Help plan context lifecycle
+claude "load CLAUDE.md, verify current branch is main, help plan context lifecycle"
 ```
