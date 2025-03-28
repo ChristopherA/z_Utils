@@ -5,7 +5,7 @@
 > - _purpose_: Provide standard Git commands and workflows for the project
 > - _copyright_: ©2025 by @ChristopherA, licensed under the [BSD 2-Clause Plus Patent License](https://spdx.org/licenses/BSD-2-Clause-Patent.html)
 > - _created_: 2025-03-19 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
-> - _last-updated_: 2025-03-22 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
+> - _last-updated_: 2025-03-30 by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
 
 ## Essential Git Commands
 
@@ -300,8 +300,13 @@ When working with Z_Utils, consider these specific approaches:
 
 2. **Test Development**:
    ```bash
-   git checkout -b feature/test-coverage
-   # Create test file in src/function_tests/ and commit
+   git checkout -b feature/test-infrastructure
+   # Create test infrastructure in src/tests/ and commit
+   ```
+   
+   ```bash
+   git checkout -b feature/function-test-implementation
+   # Create function tests in src/function_tests/ and commit
    ```
 
 3. **Script Modernization**:
