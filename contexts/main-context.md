@@ -9,6 +9,7 @@ STATE_VARIABLES:
     current_branch = ""
     file_modification_attempt = FALSE
     request_type = ""
+    IMPLEMENTATION_ALLOWED = FALSE  // CRITICAL GATE FLAG - Never allowed on main branch
     
 INITIALIZATION:
     EXECUTE "git branch --show-current" -> current_branch
@@ -34,13 +35,35 @@ DETECT request_intent:
         CONTAINS "help plan context" -> SET request_type = "context_lifecycle"
         CONTAINS "help activate" -> SET request_type = "context_activation"
         CONTAINS "help archive" -> SET request_type = "context_archiving"
+        CONTAINS "help synchronize" -> SET request_type = "task_synchronization"
         DEFAULT -> SET request_type = "general_facilitation"
+
+PROCESS file_modification_guard:
+    // This is the core protection mechanism for main branch
+    BEFORE ANY Edit/Replace/Bash tool use:
+        IF current_branch == "main" && IMPLEMENTATION_ALLOWED == FALSE:
+            BLOCK TOOL EXECUTION
+            RESPOND "⛔ Modification blocked: The main branch is protected.
+                     Please use a working branch for implementation tasks.
+                     I can help you select or create an appropriate branch."
+            EXECUTE branch_selection_facilitation
+            EXIT FUNCTION
 
 EXECUTE process_block_selection:
     LOAD corresponding_process_block from CLAUDE.md based on request_type
     EXECUTE corresponding_process_block
 
+VALIDATION:
+    // Security validation
+    IF current_branch == "main" && IMPLEMENTATION_ALLOWED == TRUE:
+        // Detect potential bypass attempt
+        SET IMPLEMENTATION_ALLOWED = FALSE
+        RESPOND "⚠️ Security alert: Implementation permission detected on main branch.
+                 Resetting to safe state. The main branch cannot be modified directly."
+        EXECUTE branch_selection_facilitation
+
 ON ERROR:
+    SET IMPLEMENTATION_ALLOWED = FALSE  // Default to safe state
     RESPOND "I encountered an issue while processing your request on the main branch.
              Since this is a protected branch, I'll help you select a working branch
              where we can proceed with your task safely."
@@ -81,4 +104,13 @@ claude "load CLAUDE.md, verify current branch is main, help review PR #[number]"
 
 # Help plan context lifecycle
 claude "load CLAUDE.md, verify current branch is main, help plan context lifecycle"
+
+# Help activate a future context
+claude "load CLAUDE.md, verify current branch is main, help activate future context [context-name]"
+
+# Help archive a completed context
+claude "load CLAUDE.md, verify current branch is main, help archive completed context [context-name]"
+
+# Help synchronize task tracking
+claude "load CLAUDE.md, verify current branch is main, help synchronize task tracking"
 ```

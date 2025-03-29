@@ -17,6 +17,7 @@ STATE_VARIABLES:
     planning_approval = FALSE
     requested_action = ""
     protection_violation = FALSE
+    IMPLEMENTATION_ALLOWED = FALSE  // CRITICAL GATE FLAG
 
 INITIALIZATION:
     EXECUTE "git branch --show-current" -> current_branch
@@ -39,19 +40,52 @@ PROCESS main_branch_protection_process:
         EXECUTE context_lifecycle_facilitation
     ELSE:
         EXECUTE general_facilitation
+        
+    // File modification guard - critical security mechanism for main branch
+    BEFORE ANY Edit/Replace/Bash tool use:
+        BLOCK TOOL EXECUTION
+        RESPOND "⛔ Modification blocked: The main branch is protected.
+                 Please use a working branch for implementation tasks.
+                 I can help you select or create an appropriate branch."
+        EXECUTE branch_selection_facilitation
+        EXIT FUNCTION
 
 PROCESS working_branch_context_process:
     LOAD context_file for current_branch
     DETECT context_phase from context_file
     
+    // Initialize the critical implementation gate flag
+    SET IMPLEMENTATION_ALLOWED = FALSE
+    
+    // Implementation permission check
     IF context_phase == "Planning":
         DETECT planning_approval from context_file
         IF planning_approval == FALSE:
-            RESPOND with planning_approval_request
+            // Check for explicit approval command
+            IF "I APPROVE THE PLANNING PHASE" found in latest_user_message:
+                SET planning_approval = TRUE
+                SET IMPLEMENTATION_ALLOWED = TRUE
+                UPDATE context_file planning_approval_section
+                RESPOND "✅ Planning phase approved! The implementation gate has been unlocked."
+            ELSE:
+                RESPOND with planning_approval_request
+                // Block implementation until approved
+                RETURN
         ELSE:
+            SET IMPLEMENTATION_ALLOWED = TRUE
             CONTINUE with requested_work
     ELSE:
+        SET IMPLEMENTATION_ALLOWED = TRUE
         CONTINUE with requested_work
+        
+    // File modification guard - critical security mechanism
+    BEFORE ANY Edit/Replace/Bash tool use:
+        IF context_phase == "Planning" && IMPLEMENTATION_ALLOWED == FALSE:
+            BLOCK TOOL EXECUTION
+            RESPOND "⛔ Implementation blocked: Planning phase requires approval.
+                     Please review the plan and approve with phrase:
+                     'I APPROVE THE PLANNING PHASE'"
+            EXIT FUNCTION
 
 VALIDATION:
     VERIFY correct_branch_detection = (current_branch matches git status)
@@ -60,8 +94,17 @@ VALIDATION:
     
     IF any verification fails:
         EXECUTE recovery_process
+        
+    // Security validation
+    IF context_phase == "Implementation" && planning_approval == FALSE:
+        // Detect potential bypass attempt
+        SET IMPLEMENTATION_ALLOWED = FALSE
+        SET context_phase = "Planning"
+        RESPOND "⚠️ Security alert: Implementation phase detected without planning approval.
+                 Resetting to Planning phase for proper review."
 
 ON ERROR:
+    SET IMPLEMENTATION_ALLOWED = FALSE  // Default to safe state
     IF current_branch == "main":
         RESPOND "I encountered an issue while processing your request on the main branch.
                  Since this is a protected branch, I'll help you select a working branch
@@ -81,7 +124,8 @@ PATTERNS:
     3. Prepare a PR from another branch"
 
     planning_approval_request = "The planning phase for this work needs approval before we can proceed with implementation.
-    Please review the planning details above and confirm if you approve this approach."
+    Please review the planning details above and if you approve, respond with the exact phrase:
+    'I APPROVE THE PLANNING PHASE'"
 ```
 
 ### Self-Contained Process Blocks
