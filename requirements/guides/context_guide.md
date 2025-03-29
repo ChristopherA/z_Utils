@@ -12,30 +12,64 @@
 FUNCTION: Context Management Process Selection
 TRIGGER: Any context-related request
 
-DETECT current_branch using "git branch --show-current"
+STATE_VARIABLES:
+    current_branch = ""
+    context_path = ""
+    context_phase = ""
+    planning_approval = FALSE
+    IMPLEMENTATION_ALLOWED = FALSE  // CRITICAL GATE FLAG
 
+INITIALIZATION:
+    EXECUTE "git branch --show-current" -> current_branch
+    SET context_path = "contexts/[branch-type]-[branch-name]-context.md"
+    
 STEP 1: VERIFY context-branch synchronization
-    expected_context_path = "contexts/[branch-type]-[branch-name]-context.md"
-    IF !exists(expected_context_path):
+    VERIFY file_exists(context_path)
+    IF !file_exists(context_path):
         EXECUTE context_creation_facilitation
         RETURN
     
 STEP 2: LOAD context file
-    context_content = read(expected_context_path)
-    context_phase = extract_phase(context_content)
+    EXECUTE "cat ${context_path}" -> context_content
+    DETECT context_phase from context_content
+    
+    // Initialize the critical implementation gate flag
+    SET IMPLEMENTATION_ALLOWED = FALSE
     
 STEP 3: CHECK context state and respond
     IF context_phase == "Planning":
-        has_approval = check_planning_approval(context_content)
-        IF !has_approval:
-            REQUEST planning_approval
-            RETURN
+        DETECT planning_approval from context_content
+        IF planning_approval == FALSE:
+            // Check for explicit approval command
+            IF "I APPROVE THE PLANNING PHASE" found in latest_user_message:
+                SET planning_approval = TRUE
+                SET IMPLEMENTATION_ALLOWED = TRUE
+                UPDATE context_file planning_approval_section
+                RESPOND "✅ Planning phase approved! The implementation gate has been unlocked."
+            ELSE:
+                RESPOND with planning_approval_request
+                // Block implementation until approved
+                RETURN
+        ELSE:
+            SET IMPLEMENTATION_ALLOWED = TRUE
+            continue_with_implementation
             
     IF context_phase == "Implementation":
+        SET IMPLEMENTATION_ALLOWED = TRUE
         continue_with_implementation
         
     IF context_phase == "Completion":
+        SET IMPLEMENTATION_ALLOWED = TRUE
         check_PR_readiness
+        
+    // File modification guard - critical security mechanism
+    BEFORE ANY Edit/Replace/Bash tool use:
+        IF context_phase == "Planning" && IMPLEMENTATION_ALLOWED == FALSE:
+            BLOCK TOOL EXECUTION
+            RESPOND "⛔ Implementation blocked: Planning phase requires approval.
+                     Please review the plan and approve with phrase:
+                     'I APPROVE THE PLANNING PHASE'"
+            EXIT FUNCTION
         
 STEP 4: END session with proper closure
     UPDATE context with:
@@ -44,7 +78,26 @@ STEP 4: END session with proper closure
         key_decisions
         next_steps
     
-context_creation_facilitation_pattern = "I notice this branch doesn't have a corresponding context file. Let me help create one to ensure proper tracking of your work."
+VALIDATION:
+    // Security validation
+    IF context_phase == "Implementation" && planning_approval == FALSE:
+        // Detect potential bypass attempt
+        SET IMPLEMENTATION_ALLOWED = FALSE
+        SET context_phase = "Planning"
+        RESPOND "⚠️ Security alert: Implementation phase detected without planning approval.
+                 Resetting to Planning phase for proper review."
+
+ON ERROR:
+    SET IMPLEMENTATION_ALLOWED = FALSE  // Default to safe state
+    RESPOND "I encountered an issue while processing the context. Let me try to recover by reverting to a safe state."
+    EXECUTE context_recovery_process
+
+PATTERNS:
+    context_creation_facilitation_pattern = "I notice this branch doesn't have a corresponding context file. Let me help create one to ensure proper tracking of your work."
+    
+    planning_approval_request = "The planning phase for this work needs approval before we can proceed with implementation.
+    Please review the planning details above and if you approve, respond with the exact phrase:
+    'I APPROVE THE PLANNING PHASE'"
 ```
 
 ### Self-Contained Process Blocks
@@ -993,3 +1046,165 @@ When starting work on a planned branch, move the context from futures/ to the ro
 ```bash
 git mv contexts/futures/feature-name-context.md contexts/feature-name-context.md
 ```
+
+## Planning to Implementation Process
+
+Every branch context must complete a planning phase before implementation begins:
+
+### Planning Phase
+
+1. **Create Initial Planning**:
+   - Complete the Planning section in the context file
+   - Define problem statement, approach, and success criteria
+   - Outline implementation phases
+
+2. **Request Explicit Approval**:
+   Claude should ask for the exact approval phrase: 
+   ```
+   I've reviewed the planning for [branch-name]:
+   
+   Problem: [problem statement]
+   Approach: [approach]
+   [...]
+   
+   To approve this plan and begin implementation, please explicitly respond with:
+   'I APPROVE THE PLANNING PHASE'
+   ```
+
+3. **Implementation Gate Unlocking**:
+   - Approval ONLY happens when user types the exact phrase: "I APPROVE THE PLANNING PHASE"
+   - Any other response will NOT unlock implementation
+   - This is a critical security mechanism that prevents accidental approval
+
+4. **Document Approval**:
+   - Mark the "Planning approved" checkbox with date when approved
+   - Update context Phase from "Planning" to "Implementation"
+   - Set IMPLEMENTATION_ALLOWED flag to TRUE
+   - Begin implementing per the approved plan
+
+5. **Blocked Implementation**:
+   - Any attempt to modify files during Planning phase will be blocked
+   - Claude will display a clear error message requiring approval
+   - The error message will contain the required approval phrase
+
+### Implementation Phase
+
+After planning is approved:
+1. Begin work on the defined implementation phases
+2. Track progress by updating task status
+3. Document key decisions and their rationales
+4. Note any changes to the original plan
+
+### Completion Phase
+
+When implementation is finished:
+1. Verify all tasks are completed
+2. Create a pull request for review
+3. Document any open questions or follow-up work
+4. Update PR with review feedback
+
+## Troubleshooting Approval-Related Issues
+
+### Common Approval Problems
+
+1. **Approval Phrase Not Recognized**
+   - Ensure you've typed exactly: `I APPROVE THE PLANNING PHASE`
+   - Check for typos, extra spaces, or missing characters
+   - The phrase is case-sensitive and must be exact
+
+2. **Implementation Still Blocked After Approval**
+   - Verify the context file was updated with approval date
+   - Check that Phase is set to "Implementation" in Current Status
+   - If issues persist, try reloading the context with a new Claude session
+
+3. **Planning Section Incomplete**
+   - Ensure all required planning sections are completed:
+     - What We're Solving
+     - Our Approach
+     - Definition of Done (at least 2 items)
+     - Implementation Phases (at least 1 phase)
+   - Claude will indicate which sections need completion
+
+## Error Recovery Examples
+
+### 1. Premature Implementation Attempt
+
+**Detection Indicators:**
+- File modification during Planning phase
+- Implementation attempt before approval
+
+**Error Message:**
+```
+⛔ Implementation Blocked:
+Planning phase requires approval before implementation can begin.
+The planning section must be complete and explicitly approved.
+
+To approve, please respond with:
+'I APPROVE THE PLANNING PHASE'
+```
+
+**Recovery Steps:**
+1. Complete Planning section in context file:
+   - Problem statement
+   - Approach
+   - Success criteria
+   - Implementation phases
+2. Request approval with: `I APPROVE THE PLANNING PHASE`
+3. Proceed with implementation after approval
+
+### 2. Planning Approval Bypass Attempt
+
+**Detection Indicators:**
+- Implementation phase detected without approval record
+- Inconsistency between phase and approval status
+
+**Error Message:**
+```
+⚠️ Security alert: Implementation phase detected without planning approval.
+Resetting to Planning phase for proper review.
+
+Please complete the planning phase and request approval with:
+'I APPROVE THE PLANNING PHASE'
+```
+
+**Recovery Steps:**
+1. Return to planning phase
+2. Review and complete planning section
+3. Request explicit approval
+4. Continue with properly approved implementation
+
+### 3. Main Branch Modification Attempt
+
+**Detection Indicators:**
+- File modification attempt on main branch
+- Edit/Replace/Bash tool execution on main branch
+
+**Error Message:**
+```
+⛔ Modification blocked: The main branch is protected.
+Please use a working branch for implementation tasks.
+I can help you select or create an appropriate branch.
+```
+
+**Recovery Steps:**
+1. Create or switch to a feature branch
+2. Ensure branch has a proper context file
+3. Complete planning and get approval if needed
+4. Make changes on the working branch
+
+### 4. Git Operation Without Approval
+
+**Detection Indicators:**
+- Commit or PR creation attempt without explicit approval
+- Missing approval phrase in user response
+
+**Error Message:**
+```
+⚠️ Exact approval phrase required. To approve, please type:
+'I APPROVE THIS COMMIT'
+```
+
+**Recovery Steps:**
+1. Review the staged changes carefully
+2. Provide the exact approval phrase requested
+3. Verify commit execution was successful
