@@ -48,6 +48,75 @@ Every commit must:
 2. **Include DCO sign-off** using `-s` flag
 3. **Follow standard message format** (see below)
 4. **Be logically atomic** (one conceptual change per commit)
+5. **Require explicit approval** before execution (see Git Operations Approval below)
+
+## Git Operations Approval
+
+To ensure deliberate, intentional changes, all Git operations require explicit approval:
+
+### Commit Approval Process
+
+1. **Review Changes Before Committing**
+   - View staged changes: `git diff --staged`
+   - Claude will display a preview of staged changes
+   - Review the changes and proposed commit message carefully
+
+2. **Explicit Approval Required**
+   - After reviewing changes, you must provide explicit approval
+   - Claude will request approval with:
+     ```
+     Here's a preview of your commit:
+     
+     Files to be committed:
+     [list of files]
+     
+     Changes:
+     [summary of changes]
+     
+     Commit message:
+     [proposed message]
+     
+     To confirm and execute this commit, please respond with:
+     'I APPROVE THIS COMMIT'
+     ```
+   - You must type exactly: `I APPROVE THIS COMMIT`
+   - Any other response will not trigger the commit
+
+3. **Execution After Approval**
+   - Only after explicit approval will Claude execute the git commit command
+   - The approval will be documented in the context file
+
+### Pull Request Approval Process
+
+1. **Review PR Before Creation**
+   - Claude will display a preview of the PR contents
+   - Review the PR title, description, and included commits
+
+2. **Explicit Approval Required**
+   - After reviewing PR details, you must provide explicit approval
+   - Claude will request approval with:
+     ```
+     Here's a preview of your Pull Request:
+     
+     Title: [PR title]
+     From: [branch name]
+     To: main
+     
+     Description:
+     [PR description]
+     
+     Commits to include:
+     [list of commits]
+     
+     To confirm and create this Pull Request, please respond with:
+     'I APPROVE THIS PULL REQUEST'
+     ```
+   - You must type exactly: `I APPROVE THIS PULL REQUEST`
+   - Any other response will not create the PR
+
+3. **Execution After Approval**
+   - Only after explicit approval will Claude execute the PR creation
+   - The approval will be documented in the context file
 
 ```bash
 git commit -S -s -m "Add user authentication feature" -m "- Implement login form
