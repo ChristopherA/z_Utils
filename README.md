@@ -365,7 +365,7 @@ Comprehensive documentation is available in the repository:
 - General guidelines: `requirements/shared/zsh_scripting/`
 - Example scripts: `src/examples/`
 - Function tests: `src/function_tests/`
-- Developer workflows: [PROJECT_GUIDE.md](PROJECT_GUIDE.md)
+- Developer workflows: [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)
 
 ## Compatibility
 
@@ -408,7 +408,7 @@ Z_Utils includes specialized functionality for:
 
 For developers interested in contributing to Z_Utils:
 
-- [PROJECT_GUIDE.md](PROJECT_GUIDE.md) - Detailed development workflows
+- [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) - Detailed development workflows
 - [WORK_STREAM_TASKS.md](WORK_STREAM_TASKS.md) - Current project status and task tracking
 
 Z_Utils maintains comprehensive documentation:

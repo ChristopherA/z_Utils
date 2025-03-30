@@ -75,12 +75,12 @@ The framework employs a hierarchical structure:
 DEVELOPER REFERENCE SECTION
 ============================================================================
 This section provides essential reference information for developers.
-For comprehensive documentation, see PROJECT_GUIDE.md.
+For comprehensive documentation, see DEVELOPER_GUIDE.md.
 -->
 
 ## Reference Information for Developers
 
-> **Note:** For detailed project structure, development workflows, and examples of working with Claude using both explicit commands and natural language patterns, refer to [PROJECT_GUIDE.md](./PROJECT_GUIDE.md). The content below contains essential information required for understanding Claude's process frameworks.
+> **Note:** For detailed project structure, development workflows, and examples of working with Claude using both explicit commands and natural language patterns, refer to [DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md). The content below contains essential information required for understanding Claude's process frameworks.
 
 ### Role Distinctions
 
@@ -111,14 +111,14 @@ Key process implications:
 - Each branch requires a corresponding context file
 - Planning phases require explicit approval
 
-See `PROJECT_GUIDE.md` for the complete development model details.
+See `DEVELOPER_GUIDE.md` for the complete development model details.
 
 <!-- 
 ============================================================================
 ESSENTIAL GUIDELINES SECTION
 ============================================================================
 This section contains critical guidelines for Claude's operation.
-For example commands, refer to PROJECT_GUIDE.md which contains both
+For example commands, refer to DEVELOPER_GUIDE.md which contains both
 explicit command patterns and natural language patterns for all operations.
 -->
 
@@ -146,7 +146,7 @@ Check all generated content carefully before finalizing to remove any self-refer
 ### Cross-References
 
 For detailed information on specific topics, refer to these files:
-- **Command Examples**: See PROJECT_GUIDE.md for both explicit and natural language patterns
+- **Command Examples**: See DEVELOPER_GUIDE.md for both explicit and natural language patterns
 - **Context Management**: See requirements/guides/context_guide.md for detailed procedures
 - **Task Tracking**: See requirements/guides/task_tracking_guide.md for task organization standards
 
@@ -1020,7 +1020,7 @@ This means:
 - Detailed context sharing between team members
 - Formal task assignment and tracking
 
-See `PROJECT_GUIDE.md` for the full description of development models and detailed workflows.
+See `DEVELOPER_GUIDE.md` for the full description of development models and detailed workflows.
 
 ### Repository Structure
 
@@ -1028,7 +1028,7 @@ This repository contains the Z_Utils Zsh utility library and associated document
 
 - `CLAUDE.md` - This file with guidance for Claude and human developers
 - `README.md` - Documentation about the Z_Utils library
-- `PROJECT_GUIDE.md` - Guide for project state and workflows
+- `DEVELOPER_GUIDE.md` - Guide for project state and workflows
 - `WORK_STREAM_TASKS.md` - Task tracking file
 - `contexts/` - Context management files
   - `futures/` - Future feature contexts
@@ -1054,7 +1054,7 @@ This repository contains the Z_Utils Zsh utility library and associated document
 ### Guides and References
 
 For detailed guidance, refer to:
-- Development models: `PROJECT_GUIDE.md`
+- Development models: `DEVELOPER_GUIDE.md`
 - Task tracking: `requirements/guides/task_tracking_guide.md`
 - Context management: `requirements/guides/context_guide.md`
 - Git workflow: `requirements/guides/git_workflow_guide.md`

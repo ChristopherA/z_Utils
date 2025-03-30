@@ -3,6 +3,150 @@
 > - _created: 2025-03-19_
 > - _last-updated: 2025-03-31_
 
+<!-- 
+============================================================================
+TASK MANAGEMENT GUIDE: WORK STREAM MANAGEMENT
+============================================================================
+This section explains the purpose and organization of this task tracking file
+and how it integrates with the context-based workflow.
+-->
+
+## About Work Stream Tasks
+
+This file tracks all tasks and work streams for the Z_Utils project, providing a centralized overview of completed, in-progress, and planned work. It serves as both a project roadmap and a historical record of project evolution.
+
+> **Note:** For detailed instructions on working with Claude using both explicit commands and natural language patterns, refer to [DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md).
+
+### Purpose and Function
+
+- **Project Coordination**: Provides a high-level view of all work streams across the project
+- **Status Tracking**: Documents the completion status of all major tasks
+- **Dependency Management**: Identifies relationships and dependencies between tasks
+- **Implementation Traceability**: Links tasks to implementation details and branches
+- **Historical Reference**: Maintains a record of completed work with implementation notes
+
+### Relationship to Context Files
+
+Every task in this file should correspond to one or more context files:
+
+1. **Active tasks** → Active context files in `contexts/`
+2. **Future tasks** → Future context files in `contexts/futures/`
+3. **Completed tasks** → Archived entries in `contexts/archived.md`
+
+### Task Status Conventions
+
+Tasks use the following status indicators:
+- `[ ]` - Not started
+- `[~]` - In progress (always include start date)
+- `[x]` - Completed (always include completion date)
+
+### Maintaining This File
+
+When working with this file:
+1. Update task status as work progresses
+2. Include dates for all status changes (YYYY-MM-DD format)
+3. Document implementation details for completed tasks
+4. Ensure consistency between this file and context files
+5. Move completed tasks to the Completed Tasks section
+
+<!-- 
+============================================================================
+TASK TRACKING CONTENT
+============================================================================
+-->
+
+<!-- 
+============================================================================
+CLAUDE-FOCUSED PROCESS FRAMEWORK
+============================================================================
+This section contains the task tracking process framework for Claude.
+-->
+
+```
+FUNCTION: Task Tracking Framework
+TRIGGER: Any request related to task tracking or work stream management
+
+STATE_VARIABLES:
+    current_branch = ""
+    task_status = {}
+    active_tasks = []
+    completed_tasks = []
+    future_tasks = []
+    task_dependencies = {}
+    context_files = []
+    synchronization_needed = FALSE
+    
+INITIALIZATION:
+    EXECUTE "git branch --show-current" -> current_branch
+    LOAD "WORK_STREAM_TASKS.md" -> task_content
+    PARSE task_content -> task_status
+    
+    EXTRACT active_tasks = sections under "Active Tasks"
+    EXTRACT completed_tasks = sections under "Completed Tasks"
+    EXTRACT future_tasks = where status is "[ ]" and not in "Active Tasks"
+    
+    EXECUTE "ls contexts/" -> active_context_files
+    EXECUTE "ls contexts/futures/" -> future_context_files
+    
+    ADD active_context_files to context_files
+    ADD future_context_files to context_files
+    
+PROCESS task_status_detection:
+    CHECK synchronization between active_tasks and active_context_files
+    CHECK synchronization between completed_tasks and archived contexts
+    
+    IF mismatches found:
+        SET synchronization_needed = TRUE
+        GENERATE synchronization_report = {
+            missing_contexts: tasks without contexts,
+            missing_tasks: contexts without tasks,
+            status_mismatch: task status doesn't match context phase
+        }
+
+PROCESS task_update_facilitation:
+    IF user_request contains "update task status" or "mark task" or "complete task":
+        EXTRACT task_name from user_request
+        FIND task_name in task_status
+        
+        IF found:
+            PRESENT current status and implementation details
+            GUIDE user through status update procedure
+            SUGGEST context file updates for consistency
+        ELSE:
+            RESPOND "I couldn't find a task matching [task_name]. Would you like to create it?"
+
+PROCESS task_synchronization:
+    IF synchronization_needed:
+        PRESENT synchronization_report to user
+        ASK "Would you like me to help synchronize tasks and contexts?"
+        
+        IF user confirms:
+            FOR each mismatch in synchronization_report:
+                SUGGEST specific update with correct format
+                GUIDE user through implementation
+                
+    ELSE:
+        RESPOND "Tasks and contexts appear to be properly synchronized."
+
+VALIDATION:
+    VERIFY task_format_correct = (all tasks follow proper format with dates)
+    VERIFY dependency_consistency = (all dependencies are valid tasks)
+    VERIFY branch_references = (all branch references exist)
+    
+    IF validation_errors:
+        PRESENT validation_report to user
+        GUIDE through format corrections
+
+ON ERROR:
+    RESPOND "I encountered an issue while processing task tracking information. Let's take a more manual approach."
+    PRESENT task_management_options to user
+
+RELATED_PROCESS_FILES:
+    - CLAUDE.md:PROCESS_BLOCK:Context Lifecycle Management
+    - contexts/main-context.md
+    - requirements/guides/task_tracking_guide.md
+```
+
 ## Active Tasks
 
 ### Project Setup and Infrastructure
@@ -460,7 +604,7 @@
   - [x] Updated context_guide.md with enhanced features (2025-03-22)
   - [x] Updated git_workflow_guide.md with process improvements (2025-03-22)
   - [x] Updated main-context.md with improved structure (2025-03-22)
-  - [x] Updated PROJECT_GUIDE.md with development models (2025-03-22) 
+  - [x] Updated DEVELOPER_GUIDE.md with development models (2025-03-22) 
   - [x] Updated task_tracking_guide.md with Z_Utils focus (2025-03-22)
   - [x] Updated WORK_STREAM_TASKS.md with improved structure (2025-03-22)
   - [x] Created PR with detailed documentation of changes (2025-03-22)
