@@ -84,9 +84,9 @@ ON ERROR:
 - Current branch: cleanup/work-stream-task-updates
 - Started: 2025-03-31
 - Last updated: 2025-03-31
-- Progress: Implementation phase - Phases 1-4 and Documentation Refinement completed, Phase 5 (Upstream Toolkit Integration) pending
-- Phase: Implementation
-- Completion: ~95% (Phases 1-4 and Documentation Refinement complete, Phase 5 pending)
+- Progress: Ready for context closure - Major implementation work completed
+- Phase: Completion
+- Completion: ~97% (Phases 1-4 and Documentation Refinement complete, PR preparation pending)
 
 ## Scope Boundaries
 - Primary Purpose: Update and clean up WORK_STREAM_TASKS.md to reflect current project state
@@ -433,6 +433,9 @@ We'll separate our work into three distinct phases with separate PRs to maintain
 - Enhanced README.md with focus on project capabilities rather than process details (2025-03-31)
 - Maintained critical "human" references in process code where they are necessary for Claude's operation (2025-03-31)
 - Added comprehensive Git operations, Testing Framework, and Filesystem Operations sections to README.md (2025-03-31)
+- Renamed PROJECT_GUIDE.md to DEVELOPER_GUIDE.md for alignment with terminology changes and clearer purpose (2025-03-31)
+- Implemented staged commit strategy (content changes first, then rename) to minimize git history confusion (2025-03-31)
+- Refocused README.md from repository installation to function/library integration patterns to better reflect actual usage (2025-03-31)
 
 ### File Architecture Optimization Plan
 After analyzing the three key files (CLAUDE.md, WORK_STREAM_TASKS.md, PROJECT_GUIDE.md), we've identified significant optimization opportunities to reduce redundancy and improve focus:
@@ -639,35 +642,38 @@ This branch does not create/use any untracked files.
 - If context file becomes out of sync: Use `git checkout cleanup/work-stream-task-updates` to ensure correct branch
 
 ## Restart Instructions
-To continue this work:
+To prepare the PR for this work:
 ```bash
-claude "our project is enhancing process frameworks, continue implementation on cleanup/work-stream-task-updates branch focusing on upstream toolkit integration"
+claude "our work on process framework enhancement is complete, help me prepare a PR for the cleanup/work-stream-task-updates branch"
 ```
 
 This prompt uses our natural language pattern approach with:
-1. Goal-based activation: "our project is enhancing process frameworks"
-2. Action and branch specification: "continue implementation on cleanup/work-stream-task-updates branch"
-3. Focus specification: "focusing on upstream toolkit integration"
+1. Goal-based activation: "our work on process framework enhancement is complete"
+2. Action specification: "help me prepare a PR"
+3. Branch specification: "for the cleanup/work-stream-task-updates branch"
+
+Note: This context is now ready for closure. After /compact, the next step would be PR preparation and submission.
 
 ## Next Steps
 
-1. Prepare for Phase 5: Upstream Toolkit Integration (Priority)
-   - Plan integration of improvements into toolkit repository
-   - Ensure bootstrap nature is preserved
-   - Create branch in Claude-Code-CLI-Toolkit repository
-   - Port process framework improvements
-   - Preserve bootstrap toolkit design (no context files)
-   - Create PR with detailed documentation in description
+1. Close Context and Prepare for PR (Immediate Priority)
+   - Review all completed work for integrity and coherence
+   - Prepare PR details with comprehensive description
+   - Create work summary with key accomplishments:
+     - Process framework enhancements with natural language patterns
+     - Documentation reorganization and terminology refinement
+     - PROJECT_GUIDE.md → DEVELOPER_GUIDE.md transition
+     - README.md usage pattern improvements
+   - Create closing commit with final context updates
+   - Use /compact to prepare for PR submission
 
-2. Prepare PR for Current Changes (Complete Work So Far)
-   - Review all changes from Phases 1-4 and Documentation Refinement
-   - Ensure consistent formatting across all files
-   - Create comprehensive PR description
-   - Include summary of process framework enhancements
-   - Document terminology refinement approach
-   - Highlight the PROJECT_GUIDE.md → DEVELOPER_GUIDE.md transition
+2. Future Work (Post-PR, New Context)
+   - Upstream Toolkit Integration (separate branch/context)
+   - Z_Utils Work Stream Updates (separate branch/context)
+   - Methodical task status updates
+   - Archive remaining completed contexts
 
-3. Begin Phase 3: Z_Utils Work Stream Updates
-   - Methodically update WORK_STREAM_TASKS.md task statuses
-   - Archive completed contexts
-   - Ensure consistent references across project documentation
+3. PR Submission
+   - Create PR with detailed summary of all completed work
+   - Include links to all key file changes
+   - Reference context file in PR description for traceability
