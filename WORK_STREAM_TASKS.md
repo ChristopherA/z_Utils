@@ -47,7 +47,8 @@ When working with this file:
 2. Include dates for all status changes (YYYY-MM-DD format)
 3. Document implementation details for completed tasks
 4. Ensure consistency between this file and context files
-5. Move completed tasks to the Completed Tasks section
+5. Move completed tasks to the Completed Tasks section with minimal details
+6. Archive completed tasks to contexts/archived.md for detailed history
 
 <!-- 
 ============================================================================
@@ -75,6 +76,7 @@ STATE_VARIABLES:
     task_dependencies = {}
     context_files = []
     synchronization_needed = FALSE
+    archivable_tasks = []
     
 INITIALIZATION:
     EXECUTE "git branch --show-current" -> current_branch
@@ -82,11 +84,12 @@ INITIALIZATION:
     PARSE task_content -> task_status
     
     EXTRACT active_tasks = sections under "Active Tasks"
-    EXTRACT completed_tasks = sections under "Completed Tasks"
+    EXTRACT completed_tasks = sections under "Completed Tasks and Projects"
     EXTRACT future_tasks = where status is "[ ]" and not in "Active Tasks"
     
     EXECUTE "ls contexts/" -> active_context_files
     EXECUTE "ls contexts/futures/" -> future_context_files
+    EXECUTE "grep -n '##' contexts/archived.md" -> archived_context_headers
     
     ADD active_context_files to context_files
     ADD future_context_files to context_files
@@ -95,12 +98,18 @@ PROCESS task_status_detection:
     CHECK synchronization between active_tasks and active_context_files
     CHECK synchronization between completed_tasks and archived contexts
     
-    IF mismatches found:
+    // Detect tasks ready for archiving
+    FOR each task in completed_tasks:
+        IF task contains detailed implementation AND NOT minimal_reference:
+            ADD task to archivable_tasks
+    
+    IF mismatches found OR archivable_tasks not empty:
         SET synchronization_needed = TRUE
         GENERATE synchronization_report = {
             missing_contexts: tasks without contexts,
             missing_tasks: contexts without tasks,
-            status_mismatch: task status doesn't match context phase
+            status_mismatch: task status doesn't match context phase,
+            tasks_to_archive: tasks ready to be archived
         }
 
 PROCESS task_update_facilitation:
@@ -112,8 +121,27 @@ PROCESS task_update_facilitation:
             PRESENT current status and implementation details
             GUIDE user through status update procedure
             SUGGEST context file updates for consistency
+            
+            IF new_status == "completed":
+                SUGGEST archiving process:
+                    1. Create detailed entry in contexts/archived.md
+                    2. Replace detailed entry in WORK_STREAM_TASKS.md with minimal reference
+                    3. Update relevant context files
         ELSE:
             RESPOND "I couldn't find a task matching [task_name]. Would you like to create it?"
+
+PROCESS task_archival:
+    IF user_request contains "archive tasks" or "clean up completed tasks":
+        IF archivable_tasks not empty:
+            PRESENT archivable_tasks to user
+            FOR each task in archivable_tasks approved for archiving:
+                GUIDE user through:
+                    1. Check if entry already exists in archived.md
+                    2. Create new entry in contexts/archived.md if needed
+                    3. Replace detailed task entry with minimal reference
+                    4. Update completion information and date
+        ELSE:
+            RESPOND "No completed tasks currently need archiving. All completed tasks are either properly referenced or already archived."
 
 PROCESS task_synchronization:
     IF synchronization_needed:
@@ -121,6 +149,9 @@ PROCESS task_synchronization:
         ASK "Would you like me to help synchronize tasks and contexts?"
         
         IF user confirms:
+            IF archivable_tasks not empty:
+                SUGGEST archiving detailed tasks first
+                
             FOR each mismatch in synchronization_report:
                 SUGGEST specific update with correct format
                 GUIDE user through implementation
@@ -132,6 +163,7 @@ VALIDATION:
     VERIFY task_format_correct = (all tasks follow proper format with dates)
     VERIFY dependency_consistency = (all dependencies are valid tasks)
     VERIFY branch_references = (all branch references exist)
+    VERIFY archive_references = (completed tasks have proper archive references)
     
     IF validation_errors:
         PRESENT validation_report to user
@@ -145,11 +177,90 @@ RELATED_PROCESS_FILES:
     - CLAUDE.md:PROCESS_BLOCK:Context Lifecycle Management
     - contexts/main-context.md
     - requirements/guides/task_tracking_guide.md
+    - contexts/archived.md
 ```
 
 ## Active Tasks
 
-### Project Setup and Infrastructure
+### Core Infrastructure and Standards (Critical Path - Foundation)
+- [ ] **Update project requirements for z_* functions**
+  - Current focus: Creating standardized guidelines for Z_Utils functions
+  - Status: Analysis of existing functions complete, drafting requirements
+  - Branch: feature/enhanced-functionality
+
+### Task Management and Process Improvements
+- [ ] **Update Task Tracking Framework** (High priority)
+  - Current focus: Enhancing task archiving and conciseness processes
+  - Status: Planning phase, issues identified, improvements scoped
+  - Branch: cleanup/task-tracking-framework
+  - Context: [cleanup-task-tracking-framework-context.md](./contexts/cleanup-task-tracking-framework-context.md)
+
+### Core Function Documentation and Testing (Critical Path - Functionality)
+- [ ] **Develop test infrastructure** (High priority)
+  - Current focus: Creating test runner with unified reporting and patterns
+  - Status: In planning phase, requirements defined
+  - Branch: feature/test-infrastructure
+
+- [ ] **Implement function test coverage** (High priority)
+  - Current focus: Prioritizing core utility functions for initial test suite
+  - Dependencies: Test infrastructure framework, Function documentation
+  - Branch: feature/function-test-implementation
+
+- [ ] **Improve z_Output() function and testing**
+  - Current focus: Adding comprehensive test coverage and fixing edge cases
+  - Status: Function audit completed, improvements planned
+  - Branch: feature/enhanced-functionality
+
+### Script Refactoring and Testing
+- [ ] **Refactor create_github_remote.sh** (Medium priority)
+  - Current focus: Converting embedded functions to use Z_Utils library
+  - Status: Analysis complete, refactoring plan created
+  - Branch: feature/refactor-github-remote
+
+- [~] **Deprecate setup_local_git_inception.sh** (Started: 2025-03-31, High priority)
+  - Current focus: Adding deprecation notices and migration instructions
+  - Progress: Branch created, task planned, scripts identified in both repos
+  - Branch: feature/deprecate-local-git-inception
+  - Cross-repo task: Updates needed in untracked/Claude-Code-CLI-Toolkit
+
+- [ ] **Create tests for audit_inception_commit-POC.sh** (Medium priority)
+  - Current focus: Setting up test environment for various repository conditions
+  - Status: Requirements defined, awaiting test infrastructure
+  - Branch: feature/test-infrastructure (needs verification)
+
+### Future Projects
+- [ ] **Set up CI/CD pipeline** (Low priority)
+  - Automated testing and deployment workflows using GitHub Actions
+  - See details in [contexts/futures/feature-ci-cd-setup-context.md](./contexts/futures/feature-ci-cd-setup-context.md)
+  - Branch: feature/ci-cd-setup
+
+- [ ] **Enhanced functionality for Z_Utils library**
+  - Improvements to core functions and new capabilities
+  - See details in [contexts/futures/feature-enhanced-functionality-context.md](./contexts/futures/feature-enhanced-functionality-context.md)
+  - Branch: feature/enhanced-functionality
+
+- [ ] **Modernize scripts for better Zsh compliance**
+  - Update scripts with modern Zsh patterns and performance improvements
+  - See details in [contexts/futures/feature-modernize-scripts-context.md](./contexts/futures/feature-modernize-scripts-context.md)
+  - Branch: feature/modernize-scripts
+
+- [ ] **Implement comprehensive function tests**
+  - Create test suite for all Z_Utils library functions
+  - See details in [contexts/futures/feature-function-test-implementation-context.md](./contexts/futures/feature-function-test-implementation-context.md)
+  - Branch: feature/function-test-implementation
+
+- [ ] **Build test infrastructure framework**
+  - Create standardized testing tools and environment
+  - See details in [contexts/futures/feature-test-infrastructure-context.md](./contexts/futures/feature-test-infrastructure-context.md)
+  - Branch: feature/test-infrastructure
+
+- [ ] **Improve function documentation standards**
+  - Create consistent documentation format and templates
+  - See details in [contexts/futures/feature-function-documentation-context.md](./contexts/futures/feature-function-documentation-context.md)
+  - Branch: feature/function-documentation
+
+## Project Setup and Basic Infrastructure
+
 - [x] Initialize repository and branch structure (2025-03-19)
 - [x] Import source materials (2025-03-19)
 - [x] Set up development environment (2025-03-19)
@@ -157,381 +268,53 @@ RELATED_PROCESS_FILES:
 - [x] Clean up repository structure (2025-03-21)
 - [x] Update development processes and documentation (2025-03-22)
 - [x] Organize task planning and create future branch contexts (2025-03-22)
-- [x] **Synchronize context management and improve development processes** (completed 2025-03-31)
-  - Acceptance Criteria:
-    - ✅ All contexts properly reflected in WORK_STREAM_TASKS.md
-    - ✅ Main-context.md accurately lists all active branches and contexts
-    - ✅ Context creation facilitation process documented
-    - ✅ Context lifecycle management streamlined
-    - ✅ All references between files consistent
-    - ✅ Main-context.md redesigned to be minimalist and non-transient
-    - ✅ Required planning phase template established for all tasks
-    - ✅ Context closure procedures improved for better continuity
-    - ✅ Attribution issues fixed in commit messages and PRs
-    - ✅ CLAUDE.md structure optimized for clarity and token efficiency
-  - Implementation Details:
-    - Implemented Claude-optimized process documentation with decision trees
-    - Created self-contained process blocks with explicit state variables
-    - Enhanced context lifecycle management (Future → Active → Archived)
-    - Added Planning section with approval requirement to all contexts
-    - Created standardized context templates optimized for Claude
-    - Implemented context creation facilitation process
-    - Added comprehensive attribution guidelines with examples
-    - Updated all future contexts with standardized format
-    - Added state detection and validation mechanisms
-    - Created standardized error handling procedures
-  - Dependencies: None (infrastructure improvement)
-  - Branch: cleanup/work-stream-context-synchronization
 
-### Core Infrastructure and Standards (Critical Path - Foundation)
+## Completed Tasks
+
+For detailed information about completed tasks, branches, and implementations, please refer to the [Archived Contexts](./contexts/archived.md) file. This contains a comprehensive history of all completed work with implementation details.
+
+### Recently Completed Tasks (With References to Archive)
+
 - [x] **Enforce consistent naming conventions** (Completed: 2025-03-29)
-  - Acceptance Criteria:
-    - ✅ All script files follow naming conventions in zsh_core_scripting.md
-    - ✅ Function naming is standardized across the codebase
-    - ✅ Variable naming is standardized according to requirements
-    - ✅ All scripts correctly adhere to either snippet or framework requirements
-  - Implementation Details:
-    - Standardized function naming with lowerfirst_Pascal_Snake_Case pattern
-    - Implemented consistent verb_Preposition_Object function naming pattern
-    - Enhanced variable naming with camelCase and more descriptive names
-    - Added explicit typeset declarations with types
-    - Updated file naming and organization
-    - Added proper DID and github origins for external scripts
-  - Dependencies: None
-  - Branch: feature/refactor-inception-script
+  - Details available in [archived.md - feature-refactor-inception-script-context.md section](./contexts/archived.md#feature-refactor-inception-script-contextmd)
+  - PR: [#10](https://github.com/ChristopherA/z_Utils/pull/10)
+
+- [x] **Document existing library functions** (Completed: 2025-03-29)
+  - Details available in [archived.md - feature-refactor-inception-script-context.md section](./contexts/archived.md#feature-refactor-inception-script-contextmd)
+  - PR: [#10](https://github.com/ChristopherA/z_Utils/pull/10)
 
 - [x] **Implement safe testing environment for git operations** (Completed: 2025-03-23)
-  - Acceptance Criteria:
-    - ✅ Sandbox directory created and excluded from git tracking
-    - ✅ Test repositories are properly isolated
-    - ✅ Cleanup mechanisms handle all test artifacts
-    - ✅ Safeguards prevent affecting real repositories
-    - ✅ Testing approach is documented
-  - Implementation Details:
-    - Created setup_test_environment.sh script for automated setup
-    - Implemented temporary SSH key generation for isolated signing
-    - Added git configuration isolation to prevent affecting user settings
-    - Created run_test.sh wrapper script to maintain environment isolation
-    - Used Zsh-native capabilities for improved performance
-  - Dependencies: None
-  - Branch: feature/refactor-inception-script
+  - Details available in [archived.md - feature-refactor-inception-script-context.md section](./contexts/archived.md#feature-refactor-inception-script-contextmd)
+  - PR: [#10](https://github.com/ChristopherA/z_Utils/pull/10)
 
-- [ ] **Update project requirements for z_* functions**
-  - Acceptance Criteria:
-    - Clear criteria for including functions in _Z_Utils.zsh
-    - Standards for z_* function implementation documented
-    - Guidelines for refactoring script-specific functions created
-    - Documentation levels defined for different function types
-    - Templates created for function documentation
-  - Dependencies: None
-  - Branch: feature/enhanced-functionality
-
-### Core Function Documentation and Testing (Critical Path - Functionality)
-- [x] Set up core library functionality (2025-03-19)
-- [x] **Document existing library functions** (Completed: 2025-03-29)
-  - Acceptance Criteria:
-    - ✅ All functions in _Z_Utils.zsh have comprehensive documentation
-    - ✅ Documentation follows established standards
-    - ✅ Usage examples are provided for each function
-    - ✅ Function headers have consistent format and content
-  - Implementation Details:
-    - Added framework-level documentation header to _Z_Utils.zsh
-    - Created detailed change log section
-    - Added architectural section headers to organize functions
-    - Enhanced function block comments with detailed:
-      - Description and purpose
-      - Version information and change log
-      - Feature highlights and capabilities
-      - Parameter documentation with types
-      - Return values and error codes
-      - Runtime impact (renamed from side effects)
-      - Dependencies with version requirements
-      - Implementation details
-      - Multiple usage examples with complex scenarios
-    - Created draft zsh_library_scripting.md to document library standards
-    - Improved terminology using "Runtime Impact" instead of "Side Effects"
-    - Enhanced Git and SSH integration function documentation
-    - Verified documentation meets zsh_framework_scripting.md requirements
-  - Dependencies: Consistent naming conventions
-  - Branch: feature/refactor-inception-script
-
-- [ ] **Develop test infrastructure** (High priority)
-  - Acceptance Criteria:
-    - Standardized testing environment created
-    - Test automation framework implemented
-    - Pattern matching and ANSI handling standardized
-    - Test runner and reporting mechanism functional
-    - Testing guidelines and documentation completed
-  - Dependencies: Function documentation (recommended but not required)
-  - Branch: feature/test-infrastructure
-
-- [ ] **Implement function test coverage** (High priority)
-  - Acceptance Criteria:
-    - All functions have comprehensive test coverage
-    - Tests for core utility functions implemented
-    - Tests for environment functions implemented
-    - Tests for path handling functions implemented
-    - Tests for Git functions implemented
-  - Dependencies: Test infrastructure, Function documentation
-  - Branch: feature/function-test-implementation
-
-- [ ] **Improve z_Output() function and testing**
-  - Acceptance Criteria:
-    - Latest version is correctly implemented in _Z_Utils.zsh
-    - Tests are comprehensive, incorporating z_Output_Demo() techniques
-    - Usage patterns and examples are documented
-    - Function conforms to all requirements
-  - Dependencies: Function documentation
-  - Branch: feature/enhanced-functionality
-
-### Script Refactoring and Testing
 - [x] **Refactor create_inception_commit.sh** (Completed: 2025-03-24)
-  - Acceptance Criteria:
-    - ✅ TEST-create_inception_commit.sh properly tests the script
-    - ✅ Script sources _Z_Utils.zsh instead of containing duplicate functions
-    - ✅ Both scripts conform to zsh requirements
-    - ✅ Script continues to function correctly
-  - Implementation Details:
-    - Created setup_test_environment.sh for isolated git testing
-    - Added proper Z_Utils sourcing with dynamic path detection
-    - Replaced duplicate functions with Z_Utils equivalents (z_Report_Error, z_Check_Dependencies, etc.)
-    - Fixed issues in Z_Utils library (syntax error in check_Zsh_Version, compatibility in z_Check_Dependencies)
-    - Added Zsh-native capabilities to replace external commands (grep, awk, sed, echo)
-    - Enhanced documentation of Zsh-specific functionality
-    - Verified all 18 tests pass with the refactored implementation
-  - Dependencies: Safe testing environment
-  - Branch: feature/refactor-inception-script
+  - Details available in [archived.md - feature-refactor-inception-script-context.md section](./contexts/archived.md#feature-refactor-inception-script-contextmd)
+  - PR: [#10](https://github.com/ChristopherA/z_Utils/pull/10)
 
-- [ ] **Refactor create_github_remote.sh** (Medium priority)
-  - Acceptance Criteria:
-    - Script conforms to zsh requirements
-    - Script uses _Z_Utils.zsh instead of embedded functions
-    - Comprehensive regression test suite created
-    - Repository protection safeguards implemented
-    - Remote repository cleanup mechanism added
-    - Standardized function naming implemented
-    - Proper DID and GitHub origin references added
-  - Dependencies: Safe testing environment
-  - Branch: feature/refactor-github-remote
-
-- [ ] **Deprecate setup_local_git_inception.sh** (High priority)
-  - Acceptance Criteria:
-    - Script updated with prominent deprecation notice in both locations:
-      - scripts/setup_local_git_inception.sh
-      - /untracked/Claude-Code-CLI-Toolkit/scripts/setup_local_git_inception.sh
-    - Library file in untracked directory updated (not the test file)
-    - Migration instructions to src/examples/setup_git_inception_repo.sh added
-    - Testing verifies both scripts still function
-    - Future removal timeline documented
-  - Dependencies: None (standalone cleanup task)
-  - Branch: feature/deprecate-local-git-inception
-
-- [ ] **Create tests for audit_inception_commit-POC.sh** (Medium priority)
-  - Acceptance Criteria:
-    - Test suite with various repository conditions created
-    - Sandbox isolation implemented
-    - Cleanup mechanisms added
-    - Testing approach documented
-    - Framework compliance verified
-  - Dependencies: Safe testing environment
-  - Branch: feature/test-infrastructure
-
-### Core Function Testing Improvements
 - [x] **Improve Test Infrastructure** (Completed: 2025-03-25)
-  - Acceptance Criteria:
-    - ✅ Fix test pattern matching to handle terminal color codes in output
-    - ✅ Update sandbox script to provide better isolation
-    - ✅ Fix regression test script to properly match patterns
-    - ✅ Update test environment to consistently report test status
-    - ✅ Create simplified test running API for consistent workflows
-    - ✅ Document testing best practices
-  - Implementation Details:
-    - Created z_Test_Strip_ANSI() with Perl and sed implementations to handle all ANSI codes
-    - Created z_Test_Compare_Output() with robust pattern matching and debugging support
-    - Standardized test directories (repos, tmp, ssh, git_config, scripts)
-    - Implemented global test tracking variables and summary reporting
-    - Created test suite organization with z_Test_Begin_Suite/z_Test_End_Suite
-    - Added fallback implementations for compatibility with any environment
-    - Created user-friendly test runner with command-line options
-    - Enhanced test environment isolation and cleanup
-    - Created test_sandbox_environment.sh to validate environment-specific behavior
-    - Modified testing to use appropriate patterns for both direct and sandbox execution
-    - Identified future opportunities for improving ANSI code handling in sandbox tests
-    - Updated README.md with comprehensive test infrastructure documentation
-    - Modified all test patterns to be more resilient to output formatting changes
-  - Dependencies: None
-  - Branch: feature/refactor-inception-script
+  - Details available in [archived.md - feature-test-fixes-context.md section](./contexts/archived.md#feature-test-fixes-contextmd)
+  - PR: [#10](https://github.com/ChristopherA/z_Utils/pull/10)
 
-- [x] **Create Backup Strategy for Inception Script** (Completed: 2025-03-26)
-  - Acceptance Criteria:
-    - ✅ Create a versioned backup of create_inception_commit.sh before changes
-    - ✅ Set up a simple way to revert if needed
-  - Implementation Details:
-    - Created untracked/backups directory for storing script backups
-    - Implemented initial backup of create_inception_commit.sh v0.3.00
-    - Created revert_inception_script.sh utility for easy restoration if needed
-    - Added documentation with backup naming conventions and usage instructions
-    - Placed backups in untracked directory to prevent repository bloat
-    - Implemented timestamped backup creation during reversion operations
-  - Dependencies: None
-  - Branch: feature/refactor-inception-script
-
-- [x] **Remove Compatibility Functions** (Completed: 2025-03-26)
-  - Acceptance Criteria:
-    - ✅ Remove oi_* functions that merely wrap z_* functions
-    - ✅ Directly use z_* functions throughout the script
-  - Implementation Details:
-    - Removed all eight oi_* wrapper functions from create_inception_commit.sh
-    - Added comments to document where functions were removed
-    - Updated script version from 0.3.00 to 0.4.00
-    - Created backup before removal in untracked/backups
-    - Verified all tests pass after function removal
-  - Dependencies: Create Backup Strategy
-  - Branch: feature/refactor-inception-script
-
-- [x] **Move Common Functions to Z_Utils Library** (Completed: 2025-03-26)
-  - Acceptance Criteria:
-    - ✅ Move `get_First_Commit_Hash()` to `z_Get_First_Commit_Hash()` in Z_Utils
-    - ✅ Move `verify_Functional_Git_Repo()` to `z_Verify_Git_Repository()` in Z_Utils
-    - ✅ Move `get_Git_Config()` to `z_Get_Git_Config()` in Z_Utils
-    - ✅ Create comprehensive tests for each moved function
-  - Implementation Details:
-    - Added three new functions to Z_Utils library with comprehensive documentation
-    - Updated version of Z_Utils library from 0.1.00 to 0.1.01
-    - Created comprehensive tests for all new functions
-    - Updated z_Get_Repository_DID to leverage new z_Get_First_Commit_Hash function
-    - Updated z_Verify_Commit_Signature to use z_Verify_Git_Repository
-    - Removed duplicate functions from create_inception_commit.sh
-    - Updated create_inception_commit.sh version to 0.2.01
-    - Verified all tests pass after function moves
-  - Dependencies: Remove Compatibility Functions
-  - Branch: feature/refactor-inception-script
-
-- [x] **Enhance Test Suite for --no-prompt Flag** (Completed: 2025-03-26)
-  - Acceptance Criteria:
-    - ✅ Change --force flag to more appropriate --no-prompt flag
-    - ✅ Add specific test case for non-interactive mode
-    - ✅ Ensure tests run in both direct and sandbox modes
-  - Implementation Details:
-    - Renamed --force flag to --no-prompt for more accurate description
-    - Modified code to set Output_Prompt_Enabled=FALSE when flag is used
-    - Updated script documentation to reflect flag purpose
-    - Added specific test for the --no-prompt flag with existing repositories
-    - Updated version numbers following proper semantic versioning
-    - Synchronized all updated test scripts to sandbox environment
-    - Verified tests pass in both direct and sandbox modes
-    - Identified issue with test_new_functions.sh hanging in sandbox (needs investigation)
-  - Dependencies: Move Common Functions to Z_Utils Library
-  - Branch: feature/refactor-inception-script
-
-- [x] **Code Cleanup for Inception Scripts** (Completed: 2025-03-26)
-  - Acceptance Criteria:
-    - ✅ Add missing type declarations (`typeset -i` for integers)
-    - ✅ Add comprehensive parameter documentation
-    - ✅ Improve function documentation with proper parameters and returns
-    - ✅ Update version numbers following proper semantic versioning
-  - Implementation Details:
-    - Added proper type declarations for all integer variables
-    - Added comprehensive documentation for both `Force_Mode` and `Output_Prompt_Enabled`
-    - Improved function documentation with clear descriptions of parameters and return values
-    - Updated version numbers for create_inception_commit.sh and TEST-create_inception_commit.sh
-    - Created backups of all modified files in untracked/backups
-    - Verified all tests pass after documentation updates
-    - Identified need to standardize prompt control variables in the future
-  - Dependencies: Enhance Test Suite for --no-prompt Flag
-  - Branch: feature/refactor-inception-script
-
-- [x] **Standardize Prompt Control Variables** (Completed: 2025-03-26)
-  - Acceptance Criteria:
-    - ✅ Use `Output_Prompt_Enabled` exclusively to control interactive behavior
-    - ✅ Remove the redundant `Force_Mode` variable
-    - ✅ Implement consistent handling of the `--no-prompt` flag
-    - ✅ Update documentation to reflect this unified approach
-    - ✅ Ensure backward compatibility with all existing test cases
-  - Implementation Details:
-    - Removed redundant `Force_Mode` variable and standardized on `Output_Prompt_Enabled`
-    - Updated parameter documentation to reflect the standardized approach
-    - Modified the `parse_Arguments` function to use `Output_Prompt_Enabled` exclusively
-    - Enhanced `core_Logic` to properly translate interactive mode for underlying functions
-    - Added an example in usage documentation for the `--no-prompt` flag with existing repos
-    - Verified that all tests pass with the modified implementation
-    - Updated version numbers to 0.2.04 to reflect these enhancements
-  - Dependencies: Code Cleanup for Inception Scripts
-  - Branch: feature/refactor-inception-script
-
-### Active Script Consolidation
 - [x] **Consolidate inception scripts** (Completed: 2025-03-24)
-  - Acceptance Criteria:
-    - ✅ Create new Z_Utils functions for Git configuration and SSH key management
-    - ✅ Add functions for allowed signers verification and setup
-    - ✅ Convert generic oi_* functions to z_* functions in Z_Utils library
-    - ✅ Improve error handling and add --force flag for existing repositories
-    - ✅ Add post-creation script suggestions for GitHub/GitLab integration
-    - ✅ Ensure comprehensive tests for all new functionality
-    - ✅ Deprecate setup_local_git_inception.sh
-    - ✅ Update documentation
-  - Implementation Details:
-    - Created seven new functions in Z_Utils library for Git operations
-    - Implemented comprehensive tests for all new functions
-    - Updated create_inception_commit.sh to use Z_Utils library functions
-    - Added --force flag for more flexible repository creation
-    - Ensured backward compatibility with existing script behavior
-    - Added deprecation notice to setup_local_git_inception.sh
-    - Added test script to verify functionality
-    - Core functionality:
-      - `z_Extract_SSH_Key_Fingerprint`: Improved SSH key fingerprint extraction
-      - `z_Verify_Git_Config`: Enhanced Git configuration verification
-      - `z_Verify_Commit_Signature`: Robust commit signature verification
-      - `z_Get_Repository_DID`: DID generation from repository inception commit
-      - `z_Create_Inception_Repository`: Comprehensive repository creation with signing
-      - `z_Ensure_Allowed_Signers`: Automated allowed signers configuration
-      - `z_Setup_Git_Environment`: Complete Git environment setup
-  - Dependencies: Refactoring create_inception_commit.sh (✅), Improve Test Infrastructure (✅)
-  - Branch: feature/refactor-inception-script
+  - Details available in [archived.md - feature-refactor-inception-script-context.md section](./contexts/archived.md#feature-refactor-inception-script-contextmd)
+  - PR: [#10](https://github.com/ChristopherA/z_Utils/pull/10)
 
-### Future Projects
+- [x] **Synchronize context management and improve development processes** (2025-03-31)
+  - Details available in [archived.md - cleanup-work-stream-context-synchronization-context.md section](./contexts/archived.md#cleanup-work-stream-context-synchronization-contextmd)
+  - PR: [#14](https://github.com/ChristopherA/z_Utils/pull/14)
 
-- [ ] **Enhanced Sandbox Testing Infrastructure** (Medium priority)
-  - Acceptance Criteria:
-    - All Git-related regression tests run successfully in sandbox mode
-    - All function tests can be run in sandbox environment
-    - Standardized sandbox setup and teardown procedures
-    - Improved ANSI handling evaluated and optimized
-    - Hanging test issues resolved
-  - Implementation Details:
-    - Create a standardized sandbox initialization function
-    - Build a comprehensive test runner for both direct and sandbox modes
-    - Evaluate necessity of ANSI stripping functions vs. other approaches
-    - Fix test_new_functions.sh hanging in sandbox environment
-    - Create consistent pattern matching approach across all test scripts
-    - Implement proper signal handling for test interruption
-    - Add automated cleanup of orphaned test environments
-    - Establish test environment validation mechanism
-    - Extend sandbox support to all function tests
-    - Document best practices for sandbox testing
-  - Dependencies: Test infrastructure improvements
-  - Branch: feature/test-infrastructure
-  - Context: contexts/futures/feature-test-infrastructure-context.md
-
-- [ ] **Set up CI/CD pipeline** (Low priority)
-  - Acceptance Criteria:
-    - GitHub Actions workflows configured
-    - Automated testing implemented
-    - Linting and style checking set up
-    - Release process automation created
-    - CI/CD procedures documented
-  - Dependencies: Test coverage, Enhanced Sandbox Testing
-  - Branch: feature/ci-cd-setup
-
-## Branch: organize/task-planning-final (Completed: 2025-03-22)
+- [x] **Process Improvement** (2025-03-22)
+  - Details available in [archived.md - process-update-toolkit-context.md section](./contexts/archived.md#process-update-toolkit-contextmd)
+  - PR: [#4](https://github.com/ChristopherA/z_Utils/pull/4)
 
 - [x] **Task Organization** (2025-03-22)
-  - [x] Review and update WORK_STREAM_TASKS.md structure (2025-03-22)
-  - [x] Create context files for future branches (2025-03-22)
-  - [x] Clarify dependencies and critical path (2025-03-22)
-  - [x] Define acceptance criteria for major tasks (2025-03-22)
-  - [x] Create organize-task-planning-summary.md (2025-03-22)
-  - [x] Update main context with revised task planning (2025-03-22)
+  - Details available in [archived.md - organize-task-planning-final-context.md section](./contexts/archived.md#organize-task-planning-final-contextmd)
+  - PR: [#7](https://github.com/ChristopherA/z_Utils/pull/7)
+
+- [x] **Upstream Toolkit Integration** (completed 2025-03-31)
+  - Related to feature/integrate-optimized-processes
+  - PR: [#15](https://github.com/ChristopherA/z_Utils/pull/15)
+  - Note: Context file not yet archived, currently active in contexts/feature-integrate-optimized-processes-context.md
 
 ## Development Process
 
@@ -541,6 +324,10 @@ RELATED_PROCESS_FILES:
 4. Document implementation details for completed tasks
 5. When creating a branch, ensure its context file is created simultaneously
 6. Before completing a branch, update its context file with completion status
+7. When a task is completed:
+   - Add the detailed entry to contexts/archived.md
+   - Replace the detailed entry in this file with a reference to archived.md
+   - Update relevant context files
 
 ## Task Dependencies and Critical Path
 
@@ -559,89 +346,3 @@ RELATED_PROCESS_FILES:
 - Script modernization (can proceed independently)
 - Task organization (can proceed independently)
 - Documentation improvements (can proceed in parallel with other tasks)
-
-## Completed Tasks
-
-### Branch: feature/refactor-inception-script (Completed: 2025-03-29)
-
-- [x] **Z_Utils Library Integration and Script Enhancement** (2025-03-24)
-  - [x] Created setup_test_environment.sh for safe git testing (2025-03-23)
-  - [x] Implemented isolated git configuration with temporary SSH keys (2025-03-23)
-  - [x] Created run_test.sh wrapper script to maintain isolation (2025-03-23)
-  - [x] Refactored create_inception_commit.sh to use Z_Utils library (2025-03-23)
-  - [x] Fixed syntax error in check_Zsh_Version function (2025-03-23)
-  - [x] Implemented backward-compatible z_Check_Dependencies function (2025-03-23)
-  - [x] Replaced external commands with Zsh-native capabilities (2025-03-24)
-  - [x] Enhanced documentation of Zsh-specific functionality (2025-03-24)
-  - [x] Verified all 18 tests passed with refactored implementation (2025-03-24)
-  - [x] Updated context files with completed work (2025-03-24)
-  - [x] Updated WORK_STREAM_TASKS.md to reflect completed tasks (2025-03-24)
-
-- [x] **Script Standardization and Documentation** (2025-03-29)
-  - [x] Renamed create_inception_commit.sh to setup_git_inception_repo.sh (2025-03-29)
-  - [x] Renamed TEST-create_inception_commit.sh to setup_git_inception_repo_REGRESSION.sh (2025-03-29)
-  - [x] Moved scripts to src/examples/ and src/examples/tests/ directories (2025-03-29)
-  - [x] Added proper DID and GitHub origin references (2025-03-29)
-  - [x] Improved command-line options with -f|--force flag (2025-03-29)
-  - [x] Enhanced function documentation with comprehensive headers (2025-03-29)
-  - [x] Standardized function naming with verb_Preposition_Object pattern (2025-03-29)
-  - [x] Added z_Check_Version function for library compatibility checking (2025-03-29)
-
-- [x] **Contribution to Open Integrity Project** (2025-03-29)
-  - [x] Created feature/enhance-inception-script-with-z-utils branch in Open Integrity Core (2025-03-29)
-  - [x] Renamed create_inception_commit.sh to setup_git_inception_repo.sh with git mv (2025-03-29)
-  - [x] Renamed test script and output file to match (2025-03-29)
-  - [x] Installed Z_Utils library in src/lib/_Z_Utils.zsh (2025-03-29)
-  - [x] Verified all 19 regression tests pass in both normal and verbose modes (2025-03-29)
-  - [x] Created PR #2 with detailed documentation of enhancements (2025-03-29)
-  - [x] Successfully merged improvements into main branch (2025-03-29)
-  - [x] Updated context documentation in both repositories (2025-03-29)
-
-### Branch: process/update-toolkit (Completed: 2025-03-22)
-
-- [x] **Process Improvement** (2025-03-22)
-  - [x] Created detailed analysis of improvements (2025-03-22)
-  - [x] Updated context_guide.md with enhanced features (2025-03-22)
-  - [x] Updated git_workflow_guide.md with process improvements (2025-03-22)
-  - [x] Updated main-context.md with improved structure (2025-03-22)
-  - [x] Updated DEVELOPER_GUIDE.md with development models (2025-03-22) 
-  - [x] Updated task_tracking_guide.md with Z_Utils focus (2025-03-22)
-  - [x] Updated WORK_STREAM_TASKS.md with improved structure (2025-03-22)
-  - [x] Created PR with detailed documentation of changes (2025-03-22)
-  - [x] Merged PR #4 with process improvements (2025-03-22)
-
-### Branch: cleanup/project-docs-and-structure (Completed: 2025-03-21)
-
-- [x] **Repository Cleanup** (2025-03-21)
-  - [x] Removed bootstrap.md file (2025-03-21)
-  - [x] Removed unnecessary .gitkeep files (2025-03-21)
-  - [x] Updated documentation files (2025-03-21)
-- [x] **Documentation Updates** (2025-03-21)
-  - [x] Updated CLAUDE.md to remove bootstrap.md references (2025-03-21)
-  - [x] Updated README.md to reflect Z_Utils library focus (2025-03-21)
-  - [x] Properly documented library functions and features (2025-03-21)
-  - [x] Updated repository structure documentation (2025-03-21)
-  - [x] Removed unnecessary Claude references (2025-03-21)
-  - [x] Updated WORK_STREAM_TASKS.md with current branch information (2025-03-21)
-
-### Branch: docs-import-materials (Completed: 2025-03-19)
-
-- [x] **Document Collection** (2025-03-19)
-  - [x] Created `untracked/source-material` directory for source documents
-  - [x] Imported documents from existing sources
-  - [x] Organized by preliminary categories
-- [x] **Document Inventory** (2025-03-19)
-  - [x] Created document inventory in markdown table
-  - [x] Identified documentation gaps
-- [x] **Documentation Structure** (2025-03-19)
-  - [x] Created documentation directory structure
-  - [x] Defined initial documentation standards
-- [x] **Documentation Processing** (2025-03-19)
-  - [x] Converted priority documents to standard format
-  - [x] Updated headers with proper repository references and DID
-- [x] **Script Organization** (2025-03-19)
-  - [x] Renamed files to follow naming conventions
-  - [x] Extracted utility functions from source materials
-  - [x] Created example scripts
-  - [x] Created function tests
-  - [x] Imported all source scripts
