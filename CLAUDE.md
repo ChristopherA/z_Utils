@@ -4,6 +4,160 @@
 > - _last-updated: 2025-03-31_
 > - _development-model: Team_
 
+<!-- 
+============================================================================
+DEVELOPER GUIDE: PROCESS FRAMEWORK OVERVIEW
+============================================================================
+This section provides an overview of the process framework used in this project.
+It is intended for developers to understand how Claude engages with the
+repository and how the different process components work together.
+-->
+
+## For Developers: Understanding the Process Framework
+
+The process framework in this file serves as the core intelligence that guides Claude's behavior when interacting with the Z_Utils project. It provides structured patterns for branch detection, context management, planning approval, and implementation validation.
+
+### Key Process Framework Components
+
+1. **Branch Context Management** - The central framework that detects the current branch and activates appropriate sub-processes:
+   - Main branch protection to prevent direct modifications
+   - Working branch context loading for task implementation
+   - Planning phase approval gate for controlled implementation
+   - Implementation and completion phase tracking
+
+2. **Sub-Process Blocks** - Self-contained process modules that handle specific scenarios:
+   - Branch Selection Facilitation - Helps select or create branches from main
+   - Planning Phase Management - Validates planning completeness and manages approval
+   - PR Review Facilitation - Guides PR reviews on the main branch
+   - Context Lifecycle Management - Handles context transitions (future → active → archived)
+
+### How to Interact with the Process Framework
+
+- **Command Patterns** - The framework supports both explicit and natural language commands:
+
+  **Explicit Command Pattern:**
+  ```
+  claude "load CLAUDE.md, verify current branch is feature/user-auth, and continue implementation"
+  ```
+  
+  **Natural Language Pattern:**
+  ```
+  claude "our project is user authentication, let's continue the implementation"
+  ```
+
+- **Using Natural Language Patterns** - The framework recognizes these common patterns:
+  - "Our project is [goal]" - Indicates the primary goal of your session
+  - "Let's continue [action]" - Initiates action with contextual awareness 
+  - "I need to [task]" - Expresses direct intent for specific tasks
+  - "Help me with [activity]" - Requests assistance with particular activities
+
+- **Working with Branches** - The framework enforces branch-based workflows:
+  - Main branch is protected - all changes require PR approval
+  - Working branches follow the pattern: [type]/[name] (e.g., feature/enhance-functionality)
+  - Each branch has an associated context file for tracking progress
+
+- **Planning Phase Approval** - Implementation security gate:
+  - All work begins in a planning phase requiring explicit approval
+  - Approval is granted with the phrase "I APPROVE THE PLANNING PHASE"
+  - This prevents accidental or premature implementation
+
+### Process Framework Architecture
+
+The framework employs a hierarchical structure:
+- Global Framework (Branch Context Management) - Entry point for all interactions
+- Process Blocks - Sub-modules with specific responsibilities
+- Validation Functions - Security and consistency checks
+- Error Recovery - Fallback mechanisms for handling issues
+- Pattern Recognition - Natural language detection for intent
+
+<!-- 
+============================================================================
+DEVELOPER REFERENCE SECTION
+============================================================================
+This section provides essential reference information for developers.
+For comprehensive documentation, see DEVELOPER_GUIDE.md.
+-->
+
+## Reference Information for Developers
+
+> **Note:** For detailed project structure, development workflows, and examples of working with Claude using both explicit commands and natural language patterns, refer to [DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md). The content below contains essential information required for understanding Claude's process frameworks.
+
+### Role Distinctions
+
+This documentation uses specific terminology to distinguish between different roles:
+
+- **User**: Someone using a script or tool built with Z_Utils (but not modifying it)
+- **Developer**: Someone contributing to Z_Utils code or implementing Z_Utils in their scripts
+- **Maintainer**: Someone responsible for Z_Utils infrastructure and repository management
+
+These distinctions help clarify the intended audience for different sections of documentation.
+
+### Project Overview
+
+Z_Utils is a collection of reusable Zsh utility functions designed to provide consistent, robust, and efficient scripting capabilities. The library includes standardized:
+
+- Output formatting and error handling
+- Script environment setup and validation
+- Dependency checking
+- Path management and cleanup routines
+
+### Development Model Reference
+
+The current development model for this project is: **_development-model: Team_** (see header metadata)
+
+Key process implications:
+- Main branch is protected - all changes require PR approval
+- Working branches follow the pattern: [type]/[name]
+- Each branch requires a corresponding context file
+- Planning phases require explicit approval
+
+See `DEVELOPER_GUIDE.md` for the complete development model details.
+
+<!-- 
+============================================================================
+ESSENTIAL GUIDELINES SECTION
+============================================================================
+This section contains critical guidelines for Claude's operation.
+For example commands, refer to DEVELOPER_GUIDE.md which contains both
+explicit command patterns and natural language patterns for all operations.
+-->
+
+## Essential Guidelines 
+
+### Attribution Standards
+
+When creating content with Claude's assistance, NEVER include Claude self-references:
+
+1. **Commit Messages**
+   - NEVER include "Generated with Claude Code"
+   - NEVER include "Co-Authored-By: Claude"
+   - ALWAYS use only the user's attribution
+
+2. **Pull Request Descriptions**
+   - NEVER include Claude references or attribution
+   - NEVER add Claude logos or markers
+
+3. **Documentation**
+   - NEVER refer to Claude as the author or contributor
+   - ALWAYS present content as the user's work
+
+Check all generated content carefully before finalizing to remove any self-references or attribution to Claude.
+
+### Cross-References
+
+For detailed information on specific topics, refer to these files:
+- **Command Examples**: See DEVELOPER_GUIDE.md for both explicit and natural language patterns
+- **Context Management**: See requirements/guides/context_guide.md for detailed procedures
+- **Task Tracking**: See requirements/guides/task_tracking_guide.md for task organization standards
+
+<!-- 
+============================================================================
+CLAUDE-FOCUSED PROCESS FRAMEWORK SECTION
+============================================================================
+This section contains the detailed process framework that Claude uses to
+manage the project. It is structured for Claude's processing efficiency.
+-->
+
 ## For Claude: Process Detection and Execution Framework
 
 ### Global Framework
@@ -18,7 +172,49 @@ STATE_VARIABLES:
     requested_action = ""
     protection_violation = FALSE
     IMPLEMENTATION_ALLOWED = FALSE  // CRITICAL GATE FLAG
-
+    project_goal = ""               // Extracted from natural language
+    conversation_context = ""       // Context of the conversation
+    command_style = ""              // "ceremonial" or "conversational"
+    
+PATTERN_DETECTION:
+    // Detect command style - supports both ceremonial and conversational patterns
+    // Ceremonial patterns are explicit, structured commands (backward compatible)
+    // Conversational patterns are natural language expressions of intent
+    
+    // Detect ceremonial command style
+    IF message contains "load CLAUDE.md" or "verify current branch" or "identify branch as":
+        SET command_style = "ceremonial"
+        PARSE command using traditional parameter extraction
+    ELSE:
+        SET command_style = "conversational"
+        
+    // Goal-based activation patterns (conversational style)
+    DETECT "our project is [goal]" -> project_goal
+    DETECT "I need to [task]" -> requested_action
+    DETECT "let's [action]" -> requested_action
+    DETECT "help me [task]" -> requested_action
+    
+    // Intent-specific patterns
+    DETECT intent matches:
+        "create branch", "new branch", "start feature" -> requested_action = "branch_creation"
+        "continue", "resume", "pick up" -> requested_action = "context_resumption"
+        "implement", "code", "develop" -> requested_action = "implementation"
+        "review PR", "pull request", "PR #" -> requested_action = "pr_review"
+        "activate context", "start work on [context]" -> requested_action = "context_lifecycle"
+        "archive", "completed work" -> requested_action = "context_lifecycle"
+        "modify", "edit", "update file", "change" -> requested_action = "file_modification"
+        "test", "run tests" -> requested_action = "testing"
+        "document", "add docs" -> requested_action = "documentation"
+    
+    // Branch-specific context detection
+    DETECT branch references:
+        "branch [branch-name]" -> verify branch exists
+        "verify branch" -> confirms current_branch check needed
+    
+    // Extract conversation context for better response targeting
+    DETECT content focus:
+        "contexts", "files", "code", "tests", "infrastructure" -> conversation_context
+        
 INITIALIZATION:
     EXECUTE "git branch --show-current" -> current_branch
     
@@ -29,7 +225,9 @@ BRANCH DETECTION:
         EXECUTE working_branch_context_process
 
 PROCESS main_branch_protection_process:
-    DETECT requested_action from user_request
+    // Enhanced action detection using both explicit and natural language patterns
+    DETECT requested_action from user_request using PATTERN_DETECTION
+    
     IF requested_action == "file_modification":
         SET protection_violation = TRUE
         RESPOND with branch_protection_warning
@@ -38,6 +236,9 @@ PROCESS main_branch_protection_process:
         EXECUTE pr_review_facilitation
     ELSE IF requested_action == "context_lifecycle":
         EXECUTE context_lifecycle_facilitation
+    ELSE IF requested_action == "branch_creation":
+        EXTRACT branch_name from user_request or project_goal
+        EXECUTE branch_creation_facilitation
     ELSE:
         EXECUTE general_facilitation
         
@@ -57,26 +258,58 @@ PROCESS working_branch_context_process:
     // Initialize the critical implementation gate flag
     SET IMPLEMENTATION_ALLOWED = FALSE
     
-    // Implementation permission check
+    // Enhanced pattern detection for working branch
+    DETECT requested_action from user_request using PATTERN_DETECTION
+    EXTRACT project_phase from project_goal
+    
+    // Implementation permission check with enhanced approval detection
     IF context_phase == "Planning":
         DETECT planning_approval from context_file
         IF planning_approval == FALSE:
-            // Check for explicit approval command
-            IF "I APPROVE THE PLANNING PHASE" found in latest_user_message:
+            // Natural language approval pattern detection - multiple variants
+            IF any pattern matches in latest_user_message:
+                "I APPROVE THE PLANNING PHASE"
+                "approve the plan"
+                "planning looks good"
+                "planning phase is approved"
+                "approve planning"
+                "the plan is approved":
+                
                 SET planning_approval = TRUE
                 SET IMPLEMENTATION_ALLOWED = TRUE
                 UPDATE context_file planning_approval_section
                 RESPOND "✅ Planning phase approved! The implementation gate has been unlocked."
             ELSE:
-                RESPOND with planning_approval_request
-                // Block implementation until approved
-                RETURN
+                // Action depends on user intent
+                IF requested_action contains "implement" or "code" or "develop":
+                    // User trying to implement without approval
+                    RESPOND with planning_approval_request
+                    // Block implementation until approved
+                    RETURN
+                ELSE IF requested_action contains "review" or "plan" or "check":
+                    // User just reviewing planning - can proceed
+                    PRESENT planning_review_summary
+                    ASK for approval 
+                ELSE:
+                    // Default behavior
+                    RESPOND with planning_approval_request
+                    RETURN
         ELSE:
             SET IMPLEMENTATION_ALLOWED = TRUE
             CONTINUE with requested_work
     ELSE:
         SET IMPLEMENTATION_ALLOWED = TRUE
-        CONTINUE with requested_work
+        
+        // Task-specific response based on natural language intent
+        IF requested_action == "implementation":
+            EXTRACT specific_feature from project_goal
+            SUGGEST next implementation step based on context_file
+        ELSE IF requested_action == "testing":
+            SUGGEST test approach based on context_file
+        ELSE IF requested_action == "documentation":
+            SUGGEST documentation focus based on context_file
+        ELSE:
+            CONTINUE with requested_work
         
     // File modification guard - critical security mechanism
     BEFORE ANY Edit/Replace/Bash tool use:
@@ -92,16 +325,54 @@ VALIDATION:
     VERIFY correct_context_loading = (context_file exists for branch)
     VERIFY correct_phase_detection = (context_phase matches context file)
     
-    IF any verification fails:
-        EXECUTE recovery_process
+    // Command style specific validation
+    IF command_style == "ceremonial":
+        // Traditional strict parameter verification
+        VERIFY parameter_completeness = (all required parameters are present)
+        VERIFY parameter_validity = (all parameters have valid values)
+    ELSE IF command_style == "conversational":
+        // Natural language intent validation
+        VERIFY intent_detection_success = (requested_action is not empty)
+        VERIFY intent_consistency = (requested_action is compatible with project_goal)
+        VERIFY branch_intent_alignment = (current_branch aligns with requested_action and project_goal)
         
-    // Security validation
+        // Handle ambiguity in conversational style
+        IF intent_detection_confidence < THRESHOLD:
+            ASK clarifying question based on detected intent
+    
+    // Project goal context awareness
+    IF project_goal is detected:
+        VERIFY project_goal_branch_alignment = (project_goal is relevant to current_branch)
+        IF !project_goal_branch_alignment:
+            SUGGEST branch_corrective_action based on project_goal
+    
+    // Enhanced error detection
+    IF any verification fails:
+        CREATE detailed_verification_error_report
+        EXECUTE recovery_process with error_report
+        
+    // Enhanced security validation
     IF context_phase == "Implementation" && planning_approval == FALSE:
         // Detect potential bypass attempt
         SET IMPLEMENTATION_ALLOWED = FALSE
         SET context_phase = "Planning"
+        RECORD security_event = {
+            type: "approval_bypass_attempt",
+            branch: current_branch,
+            requested_action: requested_action,
+            timestamp: current_timestamp
+        }
         RESPOND "⚠️ Security alert: Implementation phase detected without planning approval.
                  Resetting to Planning phase for proper review."
+                 
+    // Conversational context preservation
+    STORE conversation_state = {
+        project_goal: project_goal,
+        requested_action: requested_action,
+        current_branch: current_branch,
+        context_phase: context_phase,
+        implementation_allowed: IMPLEMENTATION_ALLOWED
+    }
 
 ON ERROR:
     SET IMPLEMENTATION_ALLOWED = FALSE  // Default to safe state
@@ -126,6 +397,43 @@ PATTERNS:
     planning_approval_request = "The planning phase for this work needs approval before we can proceed with implementation.
     Please review the planning details above and if you approve, respond with the exact phrase:
     'I APPROVE THE PLANNING PHASE'"
+    
+    // Patterns for both explicit and natural language styles
+    
+    goal_based_branch_mismatch = "I notice your goal is related to [project_goal], but we're currently on the [current_branch] branch.
+    Would you like to:
+    1. Switch to a more appropriate branch for this goal
+    2. Create a new branch specifically for [project_goal]
+    3. Continue working on the current branch with this new focus"
+    
+    context_resumption_confirmation = "It looks like we're continuing work on [project_goal] in the [current_branch] branch.
+    The current context phase is [context_phase] and the next steps are:
+    [next_steps from context_file]
+    
+    Should we proceed with these next steps?"
+    
+    planning_review_summary = "Here's a summary of the planning for [current_branch]:
+    
+    Problem: [problem_statement from context_file]
+    Approach: [approach from context_file]
+    Success Criteria: [success_criteria from context_file]
+    Implementation Phases: [implementation_phases from context_file]
+    
+    Does this plan look good to you? If so, you can approve it to begin implementation."
+    
+    implementation_suggestion = "Based on your goal to [project_goal], here's what I recommend for the next implementation step:
+    [next_step from context_file]
+    
+    Would you like me to help you implement this?"
+    
+    conversational_branch_creation = "Let's create a new branch for [project_goal].
+    
+    What type of branch would be most appropriate?
+    1. feature/ - For new features or enhancements
+    2. fix/ - For bug fixes or corrections
+    3. docs/ - For documentation improvements
+    4. cleanup/ - For code cleanup or refactoring
+    5. other/ - For other types of changes"
 ```
 
 ### Self-Contained Process Blocks
@@ -683,9 +991,17 @@ EXPECTED OUTPUTS:
                              [View archived context](https://github.com/org/repo/blob/commit-hash/contexts/feature-user-auth-context.md)"
 ```
 
-This document provides essential guidance for Claude when working with the Z_Utils Zsh utility library project.
+<!-- 
+============================================================================
+DEVELOPER REFERENCE SECTION
+============================================================================
+This section provides reference information for developers about
+the Z_Utils project structure, code organization, and workflow processes.
+-->
 
-## Project Overview
+## Project Reference Information
+
+### Project Overview
 
 Z_Utils is a collection of reusable Zsh utility functions designed to provide consistent, robust, and efficient scripting capabilities. The library includes standardized:
 
@@ -694,30 +1010,7 @@ Z_Utils is a collection of reusable Zsh utility functions designed to provide co
 - Dependency checking
 - Path management and cleanup routines
 
-## Repository Structure
-
-This repository contains the Z_Utils Zsh utility library and associated documentation:
-
-- CLAUDE.md - This file with guidance for Claude
-- README.md - Documentation about the Z_Utils library
-- PROJECT_GUIDE.md - Guide for project state and workflows
-- WORK_STREAM_TASKS.md - Task tracking file
-- contexts/ - Context management files
-- requirements/ - Function specifications and development guidelines
-  - project/ - Project-specific requirements
-  - shared/ - Shared scripting best practices
-  - guides/ - Detailed workflow guides
-- scripts/ - Utility scripts for Git operations
-- src/ - Source code for the Z_Utils library
-  - _Z_Utils.zsh - Main library file
-  - examples/ - Example scripts demonstrating usage
-  - function_tests/ - Tests for individual functions
-  - tests/ - Full regression tests
-- untracked/ - Files not included in version control
-
-<!-- Note for Claude: This section helps you understand the overall repository structure. You should familiarize yourself with each component to provide effective assistance. -->
-
-## Development Model
+### Development Model
 
 The current development model for this project is: **_development-model: Team_** (see header metadata)
 
@@ -727,9 +1020,55 @@ This means:
 - Detailed context sharing between team members
 - Formal task assignment and tracking
 
-See PROJECT_GUIDE.md for the full description of development models and detailed workflows.
+See `DEVELOPER_GUIDE.md` for the full description of development models and detailed workflows.
 
-## Quick Reference Commands
+### Repository Structure
+
+This repository contains the Z_Utils Zsh utility library and associated documentation:
+
+- `CLAUDE.md` - This file with guidance for Claude and human developers
+- `README.md` - Documentation about the Z_Utils library
+- `DEVELOPER_GUIDE.md` - Guide for project state and workflows
+- `WORK_STREAM_TASKS.md` - Task tracking file
+- `contexts/` - Context management files
+  - `futures/` - Future feature contexts
+  - `archived.md` - Archived context information
+- `requirements/` - Function specifications and development guidelines
+  - `project/` - Project-specific requirements
+  - `shared/` - Shared scripting best practices
+  - `guides/` - Detailed workflow guides
+- `src/` - Source code for the Z_Utils library
+  - `_Z_Utils.zsh` - Main library file
+  - `examples/` - Example scripts demonstrating usage
+  - `function_tests/` - Tests for individual functions
+  - `tests/` - Full regression tests
+- `untracked/` - Files not included in version control
+
+### Key Code Locations
+
+- Main library: `src/_Z_Utils.zsh`
+- Examples: `src/examples/`
+- Function tests: `src/function_tests/`
+- Project requirements: `requirements/project/functions/`
+
+### Guides and References
+
+For detailed guidance, refer to:
+- Development models: `DEVELOPER_GUIDE.md`
+- Task tracking: `requirements/guides/task_tracking_guide.md`
+- Context management: `requirements/guides/context_guide.md`
+- Git workflow: `requirements/guides/git_workflow_guide.md`
+
+## Working with Z_Utils
+
+### Session Management
+
+When working on this project:
+1. Start development sessions with proper context loading
+2. End sessions by updating context files with current progress
+3. For long-running tasks, maintain updated context files for easy resumption
+
+### Quick Reference Commands
 
 Run these commands to check the project status:
 
@@ -739,81 +1078,124 @@ git branch --show-current  # Show current branch
 git log --oneline -n 10    # View recent commit history
 ```
 
-## Project Session Management
+<!-- 
+============================================================================
+TASK EXECUTION PATTERNS SECTION
+============================================================================
+This section provides example commands for interacting with Claude for
+various common development tasks with natural language examples.
+-->
 
-When working on this project:
-1. Start development sessions with proper context loading
-2. End sessions by updating context files with current progress
-3. For long-running tasks, maintain updated context files for easy resumption
+## Common Development Patterns
 
-## Key Code Locations
+### Conversational Task Patterns
 
-- Main library: `src/_Z_Utils.zsh`
-- Examples: `src/examples/`
-- Function tests: `src/function_tests/`
-- Project requirements: `requirements/project/functions/`
+Here are examples of both ceremonial and natural language patterns for common development tasks:
 
-## Guides and References
+#### Starting a New Feature
 
-For detailed guidance, refer to:
-- Development models: `PROJECT_GUIDE.md`
-- Task tracking: `requirements/guides/task_tracking_guide.md`
-- Context management: `requirements/guides/context_guide.md`
-- Git workflow: `requirements/guides/git_workflow_guide.md`
-
-## Common Development Tasks
-
-### Starting a New Feature
-
-```bash
+**Ceremonial pattern:**
+```
 claude "load CLAUDE.md, create branch feature/[feature-name] from main, and implement [specific functionality]"
 ```
 
-### Creating a Context File for Existing Branch
+**Natural language alternative:**
+```
+claude "our project is implementing [feature-name], let's create a branch and begin planning"
+```
 
-```bash
+#### Working on an Existing Branch
+
+**Ceremonial pattern:**
+```
 claude "load CLAUDE.md, verify current branch is [branch-type]/[branch-name], create context file, and begin work"
 ```
 
-### Facilitating Context Creation
+**Natural language alternative:**
+```
+claude "our project is [branch-name], let's continue the implementation we started"
+```
 
-```bash
+#### Facilitating Context Creation
+
+**Ceremonial pattern:**
+```
 claude "load CLAUDE.md, verify current branch is [branch-type]/[branch-name], perform context creation facilitation, and begin work"
 ```
 
-### Working on Testing
+**Natural language alternative:**
+```
+claude "our project is [branch-name], we need to set up a context file for our work"
+```
 
-```bash
+#### Implementing Tests
+
+**Ceremonial pattern:**
+```
 claude "load CLAUDE.md, identify branch as feature/test-infrastructure, and implement tests for [specific function]"
 ```
 
-### Updating Documentation
+**Natural language alternative:**
+```
+claude "our project is testing [specific function], let's implement the test suite"
+```
 
-```bash
+#### Updating Documentation
+
+**Ceremonial pattern:**
+```
 claude "load CLAUDE.md, identify branch as docs/[docs-task-name], and update documentation for [specific topic]"
 ```
 
-### Archiving Completed Contexts
-
-```bash
-claude "load CLAUDE.md, verify current branch is main, archive completed context [context-name], and update documentation"
+**Natural language alternative:**
 ```
-
-### Synchronizing Task Tracking
-
-```bash
-claude "load CLAUDE.md, verify current branch is main, synchronize WORK_STREAM_TASKS.md with context changes, and continue work"
+claude "our project is improving documentation for [specific topic], let's enhance the docs"
 ```
 
 ### Context Lifecycle Management
 
-```bash
-# Get help starting work on a future context
-claude "load CLAUDE.md, verify current branch is main, help activate future context [context-name]"
+#### Activating a Future Context
 
-# Get help with context archiving
-claude "load CLAUDE.md, verify current branch is main, help archive completed context [context-name]"
+**Ceremonial pattern:**
 ```
+claude "load CLAUDE.md, verify current branch is main, help activate future context [context-name]"
+```
+
+**Natural language alternative:**
+```
+claude "I need to start work on [context-name], help me activate this future context"
+```
+
+#### Archiving a Completed Context
+
+**Ceremonial pattern:**
+```
+claude "load CLAUDE.md, verify current branch is main, archive completed context [context-name], and update documentation"
+```
+
+**Natural language alternative:**
+```
+claude "our work on [context-name] is complete, help me archive this context properly"
+```
+
+#### Synchronizing Task Tracking
+
+**Ceremonial pattern:**
+```
+claude "load CLAUDE.md, verify current branch is main, synchronize WORK_STREAM_TASKS.md with context changes, and continue work"
+```
+
+**Natural language alternative:**
+```
+claude "our task tracking needs synchronization, help me update WORK_STREAM_TASKS.md"
+```
+
+<!-- 
+============================================================================
+IMPORTANT GUIDELINES SECTION
+============================================================================
+This section provides critical guidelines for content creation and attribution.
+-->
 
 ## Important Guidelines
 
@@ -836,4 +1218,6 @@ When creating content with Claude's assistance, NEVER include Claude self-refere
 
 Check all generated content carefully before finalizing to remove any self-references or attribution to Claude.
 
-<!-- Note for Claude: When helping users with ongoing project work, ALWAYS refer to the appropriate guide for detailed instructions rather than inventing your own approach. This ensures consistency in development practices. For context archiving and task synchronization, follow the detailed processes in context_guide.md and task_tracking_guide.md. When managing context files, ensure that you maintain the proper context lifecycle (Future → Active → Archived) and keep all references synchronized across the repository. -->
+<!-- Note for developers: For detailed processes regarding context archiving and task synchronization, refer to the appropriate guide files (context_guide.md and task_tracking_guide.md). This ensures consistency in development practices across the project. -->
+
+<!-- Note for Claude: When helping developers with ongoing project work, ALWAYS refer to the appropriate guide for detailed instructions rather than inventing your own approach. This ensures consistency in development practices. For context archiving and task synchronization, follow the detailed processes in context_guide.md and task_tracking_guide.md. When managing context files, ensure that you maintain the proper context lifecycle (Future → Active → Archived) and keep all references synchronized across the repository. -->
