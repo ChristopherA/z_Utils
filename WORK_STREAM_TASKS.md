@@ -312,9 +312,16 @@ For detailed information about completed tasks, branches, and implementations, p
   - PR: [#7](https://github.com/ChristopherA/z_Utils/pull/7)
 
 - [x] **Upstream Toolkit Integration** (completed 2025-03-31)
-  - Related to feature/integrate-optimized-processes
+  - Details available in [archived.md - feature-integrate-optimized-processes-context.md section](./contexts/archived.md#feature-integrate-optimized-processes-contextmd)
   - PR: [#15](https://github.com/ChristopherA/z_Utils/pull/15)
-  - Note: Context file not yet archived, currently active in contexts/feature-integrate-optimized-processes-context.md
+
+- [x] **Document context lifecycle management** (completed 2025-03-27)
+  - Details available in [archived.md - docs-context-lifecycle-management.md section](./contexts/archived.md#docs-context-lifecycle-managementmd)
+  - PR: [#13](https://github.com/ChristopherA/z_Utils/pull/13)
+
+- [x] **Standardize function naming conventions** (completed 2025-03-26)
+  - Details available in [archived.md - requirements-function-naming-standardization.md section](./contexts/archived.md#requirements-function-naming-standardizationmd)
+  - PR: [#8](https://github.com/ChristopherA/z_Utils/pull/8)
 
 ## Development Process
 
