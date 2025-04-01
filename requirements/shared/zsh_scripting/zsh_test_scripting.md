@@ -6,7 +6,7 @@
 
 [![License](https://img.shields.io/badge/License-BSD_2--Clause--Patent-blue.svg)](https://spdx.org/licenses/BSD-2-Clause-Patent.html)  
 [![Project Status: Active](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)  
-[![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.3.0-blue.svg)](CHANGELOG.md)
 
 # Introduction
 Z_Utils includes two distinct types of test scripts - **function tests** and **regression tests**. Both are **lightweight, targeted tests** designed to verify different aspects of our Zsh scripts. All tests should remain **concise and focused** on relevant verification needs.
@@ -55,6 +55,123 @@ This document covers considerations specific to both types of test scripts.
 | **Test Coverage** | Detailed coverage of all function features | Coverage of key user workflows |
 | **Output** | Detailed output showing function behavior | Comparison to expected reference output |
 | **Success Criteria** | All test cases pass with expected behavior | Output matches reference files or patterns |
+
+# Standardized Test Functions
+
+Z_Utils provides a set of standardized test functions to ensure consistent test structure, output handling, and state management across all test files. These functions are available in `_Z_Utils.zsh` and should be used in all new test scripts and when updating existing test scripts.
+
+## Core Standardized Test Functions
+
+### z_Handle_Test_Output
+
+Controls where test output is sent - to the terminal only or both terminal and file.
+
+```zsh
+z_Handle_Test_Output "test_name" "FUNCTEST|REGRESSION" ["save"]
+```
+
+- **Parameters:**
+  - `$1` - Test name for the output file
+  - `$2` - Test type (FUNCTEST or REGRESSION)
+  - `$3` - (Optional) Set to "save" to save output to a file (defaults to "terminal")
+
+### z_Save_Global_Test_State
+
+Saves the global state variables before test execution for later restoration.
+
+```zsh
+z_Save_Global_Test_State
+```
+
+- Saves output mode state (verbose, quiet, debug)
+- Preserves other global variables that might be modified during testing
+
+### z_Restore_Global_Test_State
+
+Restores global state variables from saved state after test execution.
+
+```zsh
+z_Restore_Global_Test_State
+```
+
+- Restores output mode state
+- Returns global environment to pre-test condition
+
+### z_Parse_Test_Args
+
+Parses command-line arguments for test scripts with standardized options.
+
+```zsh
+z_Parse_Test_Args "$@"
+```
+
+- **Sets global variables:**
+  - `Test_Save_Output` - "terminal" or "save" based on `-s` or `--save` flag
+  - `Test_Show_Help` - 1 if `-h` or `--help` flag present, 0 otherwise
+  - `Test_Run_All` - 1 if no specific test modules specified, 0 otherwise
+  - `Test_Specific_Modules` - Array of test modules to run when specified with `--module`
+
+## Using Standardized Test Functions
+
+All new test scripts should use these standardized functions. Here's how to implement them:
+
+```zsh
+#!/usr/bin/env zsh
+# z_FunctionName_FUNCTEST.sh - Test suite for z_FunctionName function
+
+# Basic setup
+SCRIPT_DIR="${0:a:h}"
+LIB_DIR="${SCRIPT_DIR:h}"
+source "${LIB_DIR}/_Z_Utils.zsh"
+
+# Script filename without extension (for output files)
+typeset SCRIPT_NAME="${${(%):-%N}:r}"
+
+# Define test modules...
+function run_Basic_Tests() {
+    # Save global state
+    z_Save_Global_Test_State
+    
+    # Test code...
+    
+    # Restore global state
+    z_Restore_Global_Test_State
+}
+
+# Run the test if executed directly
+if [[ "${(%):-%N}" == "$0" ]]; then
+    # Parse command line arguments
+    z_Parse_Test_Args "$@"
+    
+    # Check for help flag
+    if (( Test_Show_Help == 1 )); then
+        print "Usage: $0 [OPTIONS]"
+        print "  -s, --save      Save output to file (default: terminal only)"
+        print "  --basic         Run only basic functionality tests"
+        print "  -h, --help      Display this help message"
+        exit 0
+    fi
+    
+    # Configure test output
+    z_Handle_Test_Output "$SCRIPT_NAME" "FUNCTEST" "$Test_Save_Output"
+    
+    # Determine which tests to run
+    if (( Test_Run_All == 1 )); then
+        # Run all tests
+        run_All_Tests
+    else
+        # Run specific modules
+        for module in "${Test_Specific_Modules[@]}"; do
+            case "$module" in
+                basic)
+                    run_Basic_Tests
+                    ;;
+                # Additional test modules...
+            esac
+        done
+    fi
+fi
+```
 
 # Function Test Requirements
 
@@ -375,27 +492,79 @@ Each test case should be designed to check one specific behavior—whether it's 
 
 ## Making Tests Reusable
 
-A good regression test suite is modular and reusable. Instead of writing repetitive code, it's best to use shared test functions that handle common patterns. Utility functions help standardize testing by ensuring test results are formatted consistently and failures are easy to debug.
+A good regression test suite is modular and reusable. Instead of writing repetitive code, it's best to use shared test functions that handle common patterns. Z_Utils provides standardized test functions that ensure test results are formatted consistently and failures are easy to debug.
 
 Key functions include:
-- **`z_Run_Test`** – Runs a test case, verifies the exit code, and optionally checks output.
-- **`z_Cleanup_Test_Environment`** – Cleans up any test artifacts left behind.
-- **`z_Print_Summary`** – Displays test results, summarizing total tests, passed tests, and failures.
-- **`z_Error_Report`** – Generates standardized error messages
-- **`z_Validate_Input`** – Validates test inputs and configurations
+- **Standardized Test Functions** (added to _Z_Utils.zsh)
+  - **`z_Handle_Test_Output`** – Configures output to terminal or file based on test options
+  - **`z_Save_Global_Test_State`** – Saves global state variables before test execution
+  - **`z_Restore_Global_Test_State`** – Restores global state variables after test execution
+  - **`z_Parse_Test_Args`** – Parses test command-line arguments with standard options
 
-Using these functions ensures test scripts are easy to maintain and extend as new test scenarios arise.
+- **Common Regression Test Functions** (implemented in test scripts)
+  - **`run_Script_Test`** – Runs a test case, verifies the exit code, and optionally checks output
+  - **`cleanup_Test_Directories`** – Cleans up any test artifacts left behind
+  - **`print_Test_Summary`** – Displays test results, summarizing total tests, passed tests, and failures
+  - **`begin_Test_Suite`** / **`end_Test_Suite`** – Marks the beginning and end of a test suite
+
+Here's an example of how to integrate standardized functions in a regression test:
+
+```zsh
+#!/usr/bin/env zsh
+# script_name_REGRESSION.sh - Regression test for script_name.sh
+
+# Ensure we can find the Z_Utils library
+SCRIPT_DIR="${0:A:h}"
+LIB_DIR="${SCRIPT_DIR:h:h}"
+source "${LIB_DIR}/_Z_Utils.zsh"
+
+# Script filename without extension (for output files)
+typeset SCRIPT_NAME="${${(%):-%N}:r}"
+
+# At the end of the script, update the execution block:
+if [[ "${(%):-%N}" == "$0" ]]; then
+    # Parse command line arguments using standardized function
+    z_Parse_Test_Args "$@"
+    
+    # Handle help flag using standardized parameter
+    if (( Test_Show_Help == 1 )); then
+        display_Script_Usage
+        exit 0
+    fi
+    
+    # Configure test output using standardized function
+    z_Handle_Test_Output "$SCRIPT_NAME" "REGRESSION" "$Test_Save_Output"
+    
+    # Call main function with all arguments
+    main "$@"
+}
+```
+
+Using these standardized functions ensures test scripts are easy to maintain and extend as new test scenarios arise.
 
 ### Managing the Test Environment
 
 To keep tests clean and repeatable, regression test scripts should avoid leaving behind files, directories, or altered configurations. Any temporary files should be created only when necessary and cleaned up immediately after the test completes. Tests should always restore the system state so they can be run multiple times without side effects.
 
-Built-in functions help manage this:
-- `z_Cleanup_Test_Environment` ensures test files and directories are removed after execution.
-- `z_Ensure_Temporary_Directory` creates safe, isolated directories for running tests.
+When creating test environments:
+- Use the `z_Save_Global_Test_State` and `z_Restore_Global_Test_State` functions to preserve and restore global state
+- Implement a `cleanup_Test_Directories` function to ensure test files and directories are removed after execution
+- Create temporary directories with unique names using timestamp and random values
+- Set up trap handlers to ensure cleanup even if the test script is interrupted
 
-By using these functions, test scripts remain consistent and avoid interfering with the user's environment.
+By using these practices, test scripts remain consistent and avoid interfering with the user's environment.
 
 # Conclusion
 
-Regression test scripts provide a lightweight but effective way to check Zsh scripts. By keeping them simple, repeatable, and well-structured, they help ensure scripts behave predictably across different environments and edge cases. With a focus on parameter handling, error checking, and proper cleanup, these tests act as a reliable safeguard against unintended regressions.
+Z_Utils provides a robust, standardized approach to testing through both function tests and regression tests. The addition of standardized test functions in `_Z_Utils.zsh` ensures consistent test structure, output handling, and state management across all test files.
+
+By using these standardized functions (`z_Handle_Test_Output`, `z_Save_Global_Test_State`, `z_Restore_Global_Test_State`, and `z_Parse_Test_Args`), developers can create consistent, maintainable test scripts that provide reliable verification of both individual functions and complete scripts.
+
+The test scripts remain lightweight and focused, while gaining the benefits of standardization:
+- Consistent command-line interface across all tests
+- Uniform output handling and formatting
+- Proper state management for test isolation
+- Modular test structure that supports incremental testing
+- Clear distinction between function tests and regression tests
+
+This approach balances simplicity with robustness, ensuring that Z_Utils remains reliable and well-tested as it evolves.

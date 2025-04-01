@@ -2,23 +2,25 @@
 
 > - _created: 2025-03-31_
 > - _updated: 2025-03-31_
-> - _status: Ready for Commitment_
+> - _status: Completed_
 
 ## Current Status
 
-**Phase: Completion**
+**Phase: Closed**
 
 - [x] Initial branch created (2025-03-31)
-- [x] Created comprehensive z_Output_complete_test.sh test file preserving all tests from original z_Output_Demo (2025-03-31)
-- [x] Created simple test file z_Output_simple_debug.sh that works correctly (2025-03-31)
+- [x] Created comprehensive z_Output_complete_FUNCTEST.sh test file preserving tests from original z_Output_Demo (2025-03-31)
+- [x] Created simple test file z_Output_debug_FUNCTEST.sh that works correctly (2025-03-31)
 - [x] Verified the core z_Output function works correctly using the simple test (2025-03-31)
 - [x] Identified issues with the comprehensive test structure (2025-03-31)
 - [x] Planning phase complete (2025-03-31)
 - [x] Planning approved - Ready to implement (2025-03-31)
-- [ ] Implementation phase complete
-- [ ] Test phase complete
-- [ ] Documentation phase complete
-- [ ] Ready for review/PR
+- [x] Implementation phase complete (2025-03-31)
+- [x] Test phase complete (2025-03-31)
+- [x] Documentation phase complete (2025-03-31)
+- [x] Changes committed (2025-03-31)
+- [x] Future standardization plan documented (2025-03-31)
+- [x] Context closed (2025-03-31)
 
 ## Overview
 
@@ -223,8 +225,12 @@ We've successfully improved the z_Output function testing and established clear 
    - Established clear, consistent naming conventions for all test types
    - Verified backward compatibility with existing scripts
 
-Final steps before completion:
-1. ✅ Verify all renamed tests work correctly with the new naming convention
+## Implementation Status
+
+✅ **Implementation Complete**
+
+We have successfully:
+1. ✅ Verified all renamed tests work correctly with the new naming convention
 2. ✅ Implemented the following improvements:
    - Updated file headers to match current filenames
    - Added output file handling with standardized functions
@@ -232,8 +238,235 @@ Final steps before completion:
    - Improved function dependency documentation
    - Applied standardized pattern across all test files
 3. ✅ Tested the improved functions to ensure they work correctly
-4. Complete Git staging and commit all changes with clear commit message
-5. Consider options for future work on consolidating test files
+4. ✅ Defaulted tests to terminal output with optional file saving
+5. ✅ Added output directory structure for test results
+6. ✅ Committed all changes with clear commit message
+7. ✅ Developed a comprehensive future standardization plan
+
+## Future Standardization Plan
+
+Based on our review of the function tests and regression tests, we've identified an opportunity to standardize all test files in Z_Utils. This plan outlines how to create a consistent approach to testing across the entire codebase.
+
+### Core Test Functions for _Z_Utils.zsh
+
+We should consider extracting these common test utilities to _Z_Utils.zsh:
+
+```zsh
+#----------------------------------------------------------------------#
+# Function: z_Handle_Test_Output
+#----------------------------------------------------------------------#
+# Description:
+#   Configures test output to terminal or file based on mode
+#
+# Parameters:
+#   $1 - Test name for the output file
+#   $2 - Test type (FUNCTEST or REGRESSION)
+#   $3 - (Optional) Set to "save" to save output to a file
+#
+# Returns:
+#   None. Configures stdout for appropriate output.
+#----------------------------------------------------------------------#
+function z_Handle_Test_Output() {
+    typeset TestName=$1
+    typeset TestType=$2  # FUNCTEST or REGRESSION
+    typeset OutputMode=${3:-"terminal"}  # Default to terminal output
+    
+    # Determine output directory based on test type
+    typeset OutputDir
+    case $TestType in
+        FUNCTEST)
+            OutputDir="${SCRIPT_DIR}/output" ;;
+        REGRESSION)
+            OutputDir="${SCRIPT_DIR}/output" ;;
+        *)
+            OutputDir="${SCRIPT_DIR}/output" ;;
+    esac
+    
+    # Ensure output directory exists
+    [[ -d "$OutputDir" ]] || mkdir -p "$OutputDir"
+    
+    if [[ "$OutputMode" == "save" ]]; then
+        # Output to both terminal and file
+        typeset OutputFile="${OutputDir}/${TestName}_${TestType}_output.txt"
+        print "Saving test output to: $OutputFile"
+        exec > >(tee "$OutputFile")
+    else
+        # Output to terminal only (default)
+        print "Running test with output to terminal only"
+    fi
+}
+
+#----------------------------------------------------------------------#
+# Function: z_Save_Global_Test_State
+#----------------------------------------------------------------------#
+# Description:
+#   Saves global state variables for test environment
+#
+# Parameters:
+#   None
+#
+# Returns:
+#   None. Saves state to global variables.
+#----------------------------------------------------------------------#
+function z_Save_Global_Test_State() {
+    # Save output mode state
+    typeset -g Saved_Verbose_Mode=$Output_Verbose_Mode
+    typeset -g Saved_Quiet_Mode=$Output_Quiet_Mode
+    typeset -g Saved_Debug_Mode=$Output_Debug_Mode
+    typeset -g Saved_Prompt_Enabled=$Output_Prompt_Enabled
+    
+    # Save any other relevant state...
+}
+
+#----------------------------------------------------------------------#
+# Function: z_Restore_Global_Test_State
+#----------------------------------------------------------------------#
+# Description:
+#   Restores global state variables from saved state
+#
+# Parameters:
+#   None
+#
+# Returns:
+#   None. Restores state from global variables.
+#----------------------------------------------------------------------#
+function z_Restore_Global_Test_State() {
+    # Restore output mode state
+    Output_Verbose_Mode=$Saved_Verbose_Mode
+    Output_Quiet_Mode=$Saved_Quiet_Mode
+    Output_Debug_Mode=$Saved_Debug_Mode
+    Output_Prompt_Enabled=$Saved_Prompt_Enabled
+    
+    # Restore any other relevant state...
+}
+
+#----------------------------------------------------------------------#
+# Function: z_Parse_Test_Args
+#----------------------------------------------------------------------#
+# Description:
+#   Parses command line arguments for test scripts
+#
+# Parameters:
+#   $@ - All command line arguments
+#
+# Returns:
+#   Sets global variables for test configuration.
+#----------------------------------------------------------------------#
+function z_Parse_Test_Args() {
+    # Set default parameters
+    typeset -g Test_Save_Output="terminal"
+    typeset -g Test_Show_Help=0
+    typeset -g Test_Run_All=1
+    typeset -ga Test_Specific_Modules=()
+    
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --help|-h)
+                Test_Show_Help=1
+                shift
+                ;;
+            --save|-s)
+                Test_Save_Output="save"
+                shift
+                ;;
+            --*) # Any other specific test module/option
+                Test_Run_All=0
+                Test_Specific_Modules+=("${1:2}") # Remove -- prefix
+                shift
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+}
+```
+
+### Standardized Test File Template
+
+With these core functions in place, we can standardize all test files, both function tests and regression tests:
+
+```zsh
+#!/usr/bin/env zsh
+# z_FunctionName_TYPE.sh - Test suite for z_FunctionName function
+# 
+# Version:       1.0.00 (YYYY-MM-DD)
+# Origin:        https://github.com/ChristopherA/z_Utils
+# Description:   Test suite for the z_FunctionName function
+# License:       BSD-2-Clause-Patent
+# Copyright:     (c) YYYY Christopher Allen
+# Attribution:   @ChristopherA <ChristopherA@LifeWithAlacrity.com>
+
+# Ensure we can find the Z_Utils library
+SCRIPT_DIR="${0:a:h}"
+LIB_DIR="${SCRIPT_DIR:h}"
+source "${LIB_DIR}/_Z_Utils.zsh"
+
+# Reset the shell environment to a known state
+emulate -LR zsh
+setopt errexit nounset pipefail localoptions warncreateglobal
+
+# Define test modules...
+
+# Run the test if executed directly
+if [[ "${(%):-%N}" == "$0" ]]; then
+    # Parse command line arguments
+    z_Parse_Test_Args "$@"
+    
+    # Check for help flag
+    if (( Test_Show_Help == 1 )); then
+        print "\nUsage: $0 [OPTIONS]"
+        print "Options:"
+        print "  -s, --save       Save output to file (default: terminal only)"
+        print "  --[test-name]    Run specific test module"
+        print "  -h, --help       Display this help message"
+        exit 0
+    fi
+    
+    # Configure test output
+    z_Handle_Test_Output "$(basename $0 .sh)" "FUNCTEST" "$Test_Save_Output"
+    
+    # Determine which tests to run
+    if (( Test_Run_All == 1 )); then
+        # Run all tests
+        run_All_Tests
+    else
+        # Run specific modules based on Test_Specific_Modules array
+        for module in "${Test_Specific_Modules[@]}"; do
+            run_function_name="run_${module^}_Tests"  # Capitalize first letter
+            if typeset -f "$run_function_name" > /dev/null; then
+                "$run_function_name"
+            else
+                print "Error: Test module '$module' not found"
+            fi
+        done
+    fi
+fi
+```
+
+### Implementation Strategy
+
+1. **First Phase**:
+   - Extract core functions to `_Z_Utils.zsh`
+   - Update function test template to use new functions
+   - Document the new standard in `zsh_test_scripting.md`
+
+2. **Second Phase**:
+   - Update existing function tests to use new pattern
+   - Refactor one regression test as example (start with `setup_git_inception_repo_REGRESSION.sh`)
+
+3. **Final Phase**:
+   - Update all remaining regression tests
+   - Ensure full consistency across the codebase
+
+This standardization will bring several benefits:
+- Improved maintainability with common test structure
+- Reduced duplication by centralizing test utilities
+- Consistent user experience with standardized CLI flags
+- Better documentation with clear test organization
+
+The work we've done in this context provides a strong foundation for this future standardization effort.
 
 This implementation has successfully established a solid foundation for function testing throughout the Z_Utils project.
 

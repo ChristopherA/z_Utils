@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 # z_Output_debug_FUNCTEST.sh - Simple debug test for z_Output function
 # 
-# Version:       1.0.00 (2025-03-31)
+# Version:       1.0.01 (2025-03-31)
 # Origin:        https://github.com/ChristopherA/z_Utils
 # Description:   Simple debug test for the z_Output function
 # License:       BSD-2-Clause-Patent (https://spdx.org/licenses/BSD-2-Clause-Patent.html)
@@ -19,75 +19,8 @@ emulate -LR zsh
 # Safe shell scripting options for strict error handling
 setopt errexit nounset pipefail localoptions warncreateglobal
 
-# Ensure output directory exists
-typeset OUTPUT_DIR="${SCRIPT_DIR}/output"
-[[ -d "$OUTPUT_DIR" ]] || mkdir -p "$OUTPUT_DIR"
-
-#----------------------------------------------------------------------#
-# Function: save_Test_Output
-#----------------------------------------------------------------------#
-# Description:
-#   Saves test output to a file in the output directory
-#
-# Parameters:
-#   $1 - Test name suffix for the output file
-#
-# Returns:
-#   None. Configures stdout to write to both console and file.
-#
-# Dependencies:
-#   None
-#----------------------------------------------------------------------#
-function save_Test_Output() {
-    typeset TestName=$1
-    typeset OutputFile="${OUTPUT_DIR}/z_Output_${TestName}_FUNCTEST_output.txt"
-    # Redirect output to both console and file using tee
-    exec > >(tee "$OutputFile")
-}
-
-#----------------------------------------------------------------------#
-# Function: save_Global_State
-#----------------------------------------------------------------------#
-# Description:
-#   Saves current global state variables for later restoration
-#
-# Parameters:
-#   None
-#
-# Returns:
-#   None. Sets global variables with saved state.
-#
-# Dependencies:
-#   None
-#----------------------------------------------------------------------#
-function save_Global_State() {
-    typeset -g Saved_State_Verbose=$Output_Verbose_Mode
-    typeset -g Saved_State_Quiet=$Output_Quiet_Mode
-    typeset -g Saved_State_Debug=$Output_Debug_Mode
-    typeset -g Saved_State_Prompt=$Output_Prompt_Enabled
-}
-
-#----------------------------------------------------------------------#
-# Function: restore_Global_State
-#----------------------------------------------------------------------#
-# Description:
-#   Restores global state variables from saved values
-#
-# Parameters:
-#   None
-#
-# Returns:
-#   None. Resets global variables to their saved values.
-#
-# Dependencies:
-#   save_Global_State - Must be called first to save the state
-#----------------------------------------------------------------------#
-function restore_Global_State() {
-    Output_Verbose_Mode=$Saved_State_Verbose
-    Output_Quiet_Mode=$Saved_State_Quiet
-    Output_Debug_Mode=$Saved_State_Debug
-    Output_Prompt_Enabled=$Saved_State_Prompt
-}
+# Test script filename without extension (for output files)
+typeset SCRIPT_NAME="${${(%):-%N}:r}"
 
 #----------------------------------------------------------------------#
 # Function: run_Simple_Debug
@@ -102,13 +35,13 @@ function restore_Global_State() {
 #   0 on success
 #
 # Dependencies:
-#   save_Global_State - For saving state
-#   restore_Global_State - For restoring state
+#   z_Save_Global_Test_State - For saving state
+#   z_Restore_Global_Test_State - For restoring state
 #   z_Output - The function being tested
 #----------------------------------------------------------------------#
 function run_Simple_Debug() {
     # Save global state
-    save_Global_State
+    z_Save_Global_Test_State
     
     print "Starting simple debug test..."
     
@@ -143,16 +76,84 @@ function run_Simple_Debug() {
     print "\nSimple debug test completed"
     
     # Restore global state
-    restore_Global_State
+    z_Restore_Global_Test_State
+    
+    return 0
+}
+
+#----------------------------------------------------------------------#
+# Function: run_All_Tests
+#----------------------------------------------------------------------#
+# Description:
+#   Main test function that runs all test modules
+#
+# Parameters:
+#   None
+#
+# Returns:
+#   0 on success, non-zero on test failure
+#
+# Dependencies:
+#   run_Simple_Debug - Debug functionality test
+#----------------------------------------------------------------------#
+function run_All_Tests() {
+    print "============================================================"
+    print "z_Output Debug Test Suite"
+    print "============================================================"
+    print "Testing basic function behavior"
+    print "============================================================"
+    print ""
+    
+    # Run all test modules
+    run_Simple_Debug
+    
+    # Print footer
+    print ""
+    print "============================================================"
+    print "All tests completed successfully."
+    print "============================================================"
     
     return 0
 }
 
 # Run the test if executed directly
 if [[ "${(%):-%N}" == "$0" ]]; then
-    # Save test output to file
-    save_Test_Output "debug"
+    # Parse command line arguments
+    z_Parse_Test_Args "$@"
     
-    # Run the test
-    run_Simple_Debug
+    # Check for help flag
+    if (( Test_Show_Help == 1 )); then
+        print "\nUsage: $0 [OPTIONS]"
+        print "Options:"
+        print "  -s, --save      Save output to file (default: terminal only)"
+        print "  --simple        Run only simple debug test"
+        print "  -h, --help      Display this help message"
+        exit 0
+    fi
+    
+    # Ensure output directory exists
+    typeset OUTPUT_DIR="${SCRIPT_DIR}/output"
+    [[ -d "$OUTPUT_DIR" ]] || mkdir -p "$OUTPUT_DIR"
+    
+    # Configure test output
+    typeset SIMPLE_SCRIPT_NAME=$(basename "$SCRIPT_NAME")
+    z_Handle_Test_Output "$SIMPLE_SCRIPT_NAME" "FUNCTEST" "$Test_Save_Output"
+    
+    # Determine which tests to run
+    if (( Test_Run_All == 1 )); then
+        # Run all tests
+        run_All_Tests
+    else
+        # Run specific modules based on command line arguments
+        for module in "${Test_Specific_Modules[@]}"; do
+            case "$module" in
+                simple)
+                    run_Simple_Debug
+                    ;;
+                *)
+                    print "Unknown test module: $module"
+                    ;;
+            esac
+        done
+    fi
 fi

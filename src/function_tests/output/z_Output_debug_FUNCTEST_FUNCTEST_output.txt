@@ -1,0 +1,17 @@
+============================================================
+z_Output Debug Test Suite
+============================================================
+Testing basic function behavior
+============================================================
+
+Starting simple debug test...
+
+1. Basic message types:
+(B[mPrint message(B[m
+[36m=� Info message(B[m
+[32mSuccess message(B[m
+[35m� Warning message(B[m
+[31mL Error message(B[m
+
+2. Verbose mode:
+Default (should not show):

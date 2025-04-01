@@ -24,25 +24,34 @@ typeset OUTPUT_DIR="${SCRIPT_DIR}/output"
 [[ -d "$OUTPUT_DIR" ]] || mkdir -p "$OUTPUT_DIR"
 
 #----------------------------------------------------------------------#
-# Function: save_Test_Output
+# Function: handle_Test_Output
 #----------------------------------------------------------------------#
 # Description:
-#   Saves test output to a file in the output directory
+#   Configures test output to terminal or file based on mode
 #
 # Parameters:
 #   $1 - Test name suffix for the output file
+#   $2 - (Optional) Set to "save" to save output to a file
 #
 # Returns:
-#   None. Configures stdout to write to both console and file.
+#   None. Configures stdout to write to terminal or both console and file.
 #
 # Dependencies:
 #   None
 #----------------------------------------------------------------------#
-function save_Test_Output() {
+function handle_Test_Output() {
     typeset TestName=$1
-    typeset OutputFile="${OUTPUT_DIR}/z_Output_${TestName}_FUNCTEST_output.txt"
-    # Redirect output to both console and file using tee
-    exec > >(tee "$OutputFile")
+    typeset OutputMode=${2:-"terminal"} # Default to terminal output
+    
+    if [[ "$OutputMode" == "save" ]]; then
+        # Output to both terminal and file
+        typeset OutputFile="${OUTPUT_DIR}/z_Output_${TestName}_FUNCTEST_output.txt"
+        print "Saving test output to: $OutputFile"
+        exec > >(tee "$OutputFile")
+    else
+        # Output to terminal only (default)
+        print "Running test with output to terminal only"
+    fi
 }
 
 #----------------------------------------------------------------------#
@@ -415,22 +424,86 @@ function run_Output_All_Tests() {
 
 # Run the test if executed directly
 if [[ "${(%):-%N}" == "$0" ]]; then
-    # Save test output to file
-    save_Test_Output "modular"
+    # Set default parameters
+    typeset arg1="${1:-}"
+    typeset arg2="${2:-}"
     
-    # By default, run all tests
-    run_Output_All_Tests
+    # First, check for help flag
+    if [[ -n "$arg1" && ("$arg1" == "--help" || "$arg1" == "-h") ]]; then
+        print "\nUsage: $0 [OPTIONS]"
+        print "Options:"
+        print "  -s, --save       Save output to file (default: terminal only)"
+        print "  --basic          Run only basic tests"
+        print "  --mode           Run only mode tests"
+        print "  --format         Run only formatting tests"
+        print "  --edge           Run only edge case tests"
+        print "  -h, --help       Display this help message"
+        print "\nExamples:"
+        print "  $0                    Run all tests with output to terminal only"
+        print "  $0 --save             Run all tests and save output to file"
+        print "  $0 --basic            Run basic tests with output to terminal only"
+        print "  $0 --basic --save     Run basic tests and save output to file"
+        exit 0
+    fi
     
-    # To run specific test modules, uncomment the desired line(s):
-    # save_Test_Output "basic"
-    # run_Output_Basic_Tests
+    # Check if user wants to save output to file
+    typeset OutputMode="terminal"
+    if [[ (-n "$arg1" && ("$arg1" == "--save" || "$arg1" == "-s")) || 
+          (-n "$arg2" && ("$arg2" == "--save" || "$arg2" == "-s")) ]]; then
+        OutputMode="save"
+    fi
     
-    # save_Test_Output "mode"
-    # run_Output_Mode_Tests
+    # Check which tests to run
+    typeset RunBasic=0
+    typeset RunMode=0
+    typeset RunFormat=0
+    typeset RunEdge=0
+    typeset RunAll=1
     
-    # save_Test_Output "format"
-    # run_Output_Format_Tests
+    if [[ -n "$arg1" && "$arg1" == "--basic" || -n "$arg2" && "$arg2" == "--basic" ]]; then
+        RunBasic=1
+        RunAll=0
+    fi
     
-    # save_Test_Output "edge"
-    # run_Output_Edge_Tests
+    if [[ -n "$arg1" && "$arg1" == "--mode" || -n "$arg2" && "$arg2" == "--mode" ]]; then
+        RunMode=1
+        RunAll=0
+    fi
+    
+    if [[ -n "$arg1" && "$arg1" == "--format" || -n "$arg2" && "$arg2" == "--format" ]]; then
+        RunFormat=1
+        RunAll=0
+    fi
+    
+    if [[ -n "$arg1" && "$arg1" == "--edge" || -n "$arg2" && "$arg2" == "--edge" ]]; then
+        RunEdge=1
+        RunAll=0
+    fi
+    
+    # Run the specified tests
+    if (( RunAll == 1 )); then
+        handle_Test_Output "modular" "$OutputMode"
+        run_Output_All_Tests
+    else
+        if (( RunBasic == 1 )); then
+            handle_Test_Output "basic" "$OutputMode"
+            run_Output_Basic_Tests
+        fi
+        
+        if (( RunMode == 1 )); then
+            handle_Test_Output "mode" "$OutputMode"
+            run_Output_Mode_Tests
+        fi
+        
+        if (( RunFormat == 1 )); then
+            handle_Test_Output "format" "$OutputMode"
+            run_Output_Format_Tests
+        fi
+        
+        if (( RunEdge == 1 )); then
+            handle_Test_Output "edge" "$OutputMode"
+            run_Output_Edge_Tests
+        fi
+    fi
+    
 fi

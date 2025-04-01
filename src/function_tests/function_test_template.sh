@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
-# z_Function_test_template.sh - Template for function tests
+# function_test_template.sh - Template for function tests
 # 
-# Version:       1.0.00 (2025-03-31)
+# Version:       1.0.01 (2025-03-31)
 # Origin:        https://github.com/ChristopherA/z_Utils
 # Description:   Template for creating new function tests
 # License:       BSD-2-Clause-Patent (https://spdx.org/licenses/BSD-2-Clause-Patent.html)
@@ -19,144 +19,12 @@ emulate -LR zsh
 # Safe shell scripting options for strict error handling
 setopt errexit nounset pipefail localoptions warncreateglobal
 
+# Test script filename without extension (for output files)
+typeset SCRIPT_NAME="${${(%):-%N}:r}"
+
 # Ensure output directory exists
 typeset OUTPUT_DIR="${SCRIPT_DIR}/output"
 [[ -d "$OUTPUT_DIR" ]] || mkdir -p "$OUTPUT_DIR"
-
-#----------------------------------------------------------------------#
-# Function: save_Test_Output
-#----------------------------------------------------------------------#
-# Description:
-#   Saves test output to a file in the output directory
-#
-# Parameters:
-#   $1 - Test name suffix for the output file
-#
-# Returns:
-#   None. Configures stdout to write to both console and file.
-#
-# Dependencies:
-#   None
-#----------------------------------------------------------------------#
-function save_Test_Output() {
-    typeset TestName=$1
-    typeset OutputFile="${OUTPUT_DIR}/z_FunctionName_${TestName}_FUNCTEST_output.txt"
-    # Redirect output to both console and file using tee
-    exec > >(tee "$OutputFile")
-}
-
-#----------------------------------------------------------------------#
-# Function: save_Global_State
-#----------------------------------------------------------------------#
-# Description:
-#   Saves current global state variables for later restoration
-#
-# Parameters:
-#   None
-#
-# Returns:
-#   None. Sets global variables with saved state.
-#
-# Dependencies:
-#   None
-#----------------------------------------------------------------------#
-function save_Global_State() {
-    # Example state variables - modify to match what your function uses
-    typeset -g Saved_State_Verbose=$Output_Verbose_Mode
-    typeset -g Saved_State_Quiet=$Output_Quiet_Mode
-    typeset -g Saved_State_Debug=$Output_Debug_Mode
-    typeset -g Saved_State_Prompt=$Output_Prompt_Enabled
-}
-
-#----------------------------------------------------------------------#
-# Function: restore_Global_State
-#----------------------------------------------------------------------#
-# Description:
-#   Restores global state variables from saved values
-#
-# Parameters:
-#   None
-#
-# Returns:
-#   None. Resets global variables to their saved values.
-#
-# Dependencies:
-#   save_Global_State - Must be called first to save the state
-#----------------------------------------------------------------------#
-function restore_Global_State() {
-    # Example state variables - modify to match what your function uses
-    Output_Verbose_Mode=$Saved_State_Verbose
-    Output_Quiet_Mode=$Saved_State_Quiet
-    Output_Debug_Mode=$Saved_State_Debug
-    Output_Prompt_Enabled=$Saved_State_Prompt
-}
-
-#----------------------------------------------------------------------#
-# Function: run_Function_Tests
-#----------------------------------------------------------------------#
-# Description:
-#   Main test function for z_FunctionName. Tests all parameters, options,
-#   behaviors, and edge cases of the function.
-#
-# Parameters:
-#   None
-#
-# Returns:
-#   0 on success, non-zero on test failure
-#
-# Dependencies:
-#   save_Global_State - For saving state
-#   restore_Global_State - For restoring state
-#   z_FunctionName - The function being tested
-#----------------------------------------------------------------------#
-function run_Function_Tests() {
-    # Save global state
-    save_Global_State
-    
-    # Print header
-    print "============================================================"
-    print "z_FunctionName Test Suite"
-    print "============================================================"
-    print "Testing function behavior and parameters"
-    print "============================================================"
-    print ""
-    
-    # Test basic message types
-    print "1. Basic functionality:"
-    print "------------------------"
-    # Basic test code here
-    print ""
-    
-    # Test various parameters
-    print "2. Parameter variations:"
-    print "------------------------"
-    # Parameter test code here
-    print ""
-    
-    # Test edge cases
-    print "3. Edge cases:"
-    print "------------------------"
-    # Edge case test code here
-    print ""
-    
-    # Test mode interactions (if applicable)
-    print "4. Mode interactions:"
-    print "------------------------"
-    # Mode interaction test code here
-    print ""
-    
-    # Additional test sections as needed
-    
-    # Print footer
-    print "============================================================"
-    print "All tests completed successfully."
-    print "============================================================"
-    
-    # Restore global state
-    restore_Global_State
-    
-    return 0
-}
 
 #----------------------------------------------------------------------#
 # Function: run_Basic_Tests
@@ -171,13 +39,13 @@ function run_Function_Tests() {
 #   0 on success, non-zero on test failure
 #
 # Dependencies:
-#   save_Global_State - For saving state
-#   restore_Global_State - For restoring state
+#   z_Save_Global_Test_State - For saving state
+#   z_Restore_Global_Test_State - For restoring state
 #   z_FunctionName - The function being tested
 #----------------------------------------------------------------------#
 function run_Basic_Tests() {
     # Save global state
-    save_Global_State
+    z_Save_Global_Test_State
     
     print "============================================================"
     print "Basic Functionality Tests"
@@ -186,19 +54,157 @@ function run_Basic_Tests() {
     # Test code here
     
     # Restore global state
-    restore_Global_State
+    z_Restore_Global_Test_State
+    
+    return 0
+}
+
+#----------------------------------------------------------------------#
+# Function: run_Parameter_Tests
+#----------------------------------------------------------------------#
+# Description:
+#   Tests various parameter combinations for z_FunctionName
+#
+# Parameters:
+#   None
+#
+# Returns:
+#   0 on success, non-zero on test failure
+#
+# Dependencies:
+#   z_Save_Global_Test_State - For saving state
+#   z_Restore_Global_Test_State - For restoring state
+#   z_FunctionName - The function being tested
+#----------------------------------------------------------------------#
+function run_Parameter_Tests() {
+    # Save global state
+    z_Save_Global_Test_State
+    
+    print "============================================================"
+    print "Parameter Variation Tests"
+    print "============================================================"
+    
+    # Test code here
+    
+    # Restore global state
+    z_Restore_Global_Test_State
+    
+    return 0
+}
+
+#----------------------------------------------------------------------#
+# Function: run_EdgeCase_Tests
+#----------------------------------------------------------------------#
+# Description:
+#   Tests edge cases and error handling for z_FunctionName
+#
+# Parameters:
+#   None
+#
+# Returns:
+#   0 on success, non-zero on test failure
+#
+# Dependencies:
+#   z_Save_Global_Test_State - For saving state
+#   z_Restore_Global_Test_State - For restoring state
+#   z_FunctionName - The function being tested
+#----------------------------------------------------------------------#
+function run_EdgeCase_Tests() {
+    # Save global state
+    z_Save_Global_Test_State
+    
+    print "============================================================"
+    print "Edge Case Tests"
+    print "============================================================"
+    
+    # Test code here
+    
+    # Restore global state
+    z_Restore_Global_Test_State
+    
+    return 0
+}
+
+#----------------------------------------------------------------------#
+# Function: run_All_Tests
+#----------------------------------------------------------------------#
+# Description:
+#   Main test function that runs all test modules
+#
+# Parameters:
+#   None
+#
+# Returns:
+#   0 on success, non-zero on test failure
+#
+# Dependencies:
+#   run_Basic_Tests - Basic functionality tests
+#   run_Parameter_Tests - Parameter variation tests
+#   run_EdgeCase_Tests - Edge case tests
+#----------------------------------------------------------------------#
+function run_All_Tests() {
+    print "============================================================"
+    print "z_FunctionName Test Suite"
+    print "============================================================"
+    print "Testing complete function behavior"
+    print "============================================================"
+    print ""
+    
+    # Run all test modules
+    run_Basic_Tests
+    run_Parameter_Tests
+    run_EdgeCase_Tests
+    
+    # Print footer
+    print ""
+    print "============================================================"
+    print "All tests completed successfully."
+    print "============================================================"
     
     return 0
 }
 
 # Run the test if executed directly
 if [[ "${(%):-%N}" == "$0" ]]; then
-    # Save test output to file
-    save_Test_Output "basic"
+    # Parse command line arguments
+    z_Parse_Test_Args "$@"
     
-    # Run all tests or specific test modules
-    run_Function_Tests
+    # Check for help flag
+    if (( Test_Show_Help == 1 )); then
+        print "\nUsage: $0 [OPTIONS]"
+        print "Options:"
+        print "  -s, --save      Save output to file (default: terminal only)"
+        print "  --basic         Run only basic functionality tests"
+        print "  --parameter     Run only parameter variation tests"
+        print "  --edgecase      Run only edge case tests"
+        print "  -h, --help      Display this help message"
+        exit 0
+    fi
     
-    # To run specific test modules, uncomment the desired line(s):
-    # run_Basic_Tests
+    # Configure test output
+    z_Handle_Test_Output "$SCRIPT_NAME" "FUNCTEST" "$Test_Save_Output"
+    
+    # Determine which tests to run
+    if (( Test_Run_All == 1 )); then
+        # Run all tests
+        run_All_Tests
+    else
+        # Run specific modules based on command line arguments
+        for module in "${Test_Specific_Modules[@]}"; do
+            case "$module" in
+                basic)
+                    run_Basic_Tests
+                    ;;
+                parameter)
+                    run_Parameter_Tests
+                    ;;
+                edgecase)
+                    run_EdgeCase_Tests
+                    ;;
+                *)
+                    print "Unknown test module: $module"
+                    ;;
+            esac
+        done
+    fi
 fi
