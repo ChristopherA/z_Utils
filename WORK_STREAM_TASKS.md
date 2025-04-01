@@ -188,6 +188,13 @@ RELATED_PROCESS_FILES:
   - Status: Analysis of existing functions complete, drafting requirements
   - Branch: feature/enhanced-functionality
 
+### Claude Performance Optimizations
+- [~] **Refactor CLAUDE.md to optimize size** (High priority - Started: 2025-03-31)
+  - Current focus: Restructuring CLAUDE.md to reduce file size while maintaining functionality
+  - Status: Planning phase, restructuring strategy developed
+  - Branch: refactor/claude-md-size-optimization
+  - Context: [refactor-claude-md-size-optimization-context.md](./contexts/refactor-claude-md-size-optimization-context.md)
+
 ### Task Management and Process Improvements
 - [ ] **Update Task Tracking Framework** (High priority)
   - Current focus: Enhancing task archiving and conciseness processes
