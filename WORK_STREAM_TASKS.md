@@ -217,11 +217,9 @@ RELATED_PROCESS_FILES:
   - Status: Analysis complete, refactoring plan created
   - Branch: feature/refactor-github-remote
 
-- [~] **Deprecate setup_local_git_inception.sh** (Started: 2025-03-31, High priority)
-  - Current focus: Adding deprecation notices and migration instructions
-  - Progress: Branch created, task planned, scripts identified in both repos
-  - Branch: feature/deprecate-local-git-inception
-  - Cross-repo task: Updates needed in untracked/Claude-Code-CLI-Toolkit
+- [x] **Deprecate setup_local_git_inception.sh** (Completed: 2025-03-31)
+  - Details available in [archived.md - feature-deprecate-local-git-inception-context.md section](./contexts/archived.md#feature-deprecate-local-git-inception-contextmd)
+  - PR: [#9](https://github.com/ChristopherA/Claude-Code-CLI-Toolkit/pull/9)
 
 - [ ] **Create tests for audit_inception_commit-POC.sh** (Medium priority)
   - Current focus: Setting up test environment for various repository conditions
