@@ -20,6 +20,13 @@ emulate -LR zsh
 # Safe shell scripting options for strict error handling
 setopt errexit nounset pipefail localoptions warncreateglobal
 
+# Test script filename without extension (for output files)
+typeset SCRIPT_NAME="${${(%):-%N}:r}"
+
+# Ensure output directory exists
+typeset OUTPUT_DIR="${SCRIPT_DIR}/output"
+[[ -d "$OUTPUT_DIR" ]] || mkdir -p "$OUTPUT_DIR"
+
 #----------------------------------------------------------------------#
 # Function: z_Output_Complete_Test
 #----------------------------------------------------------------------#
@@ -35,11 +42,8 @@ setopt errexit nounset pipefail localoptions warncreateglobal
 #   None. Outputs demonstration results to the console.
 #----------------------------------------------------------------------#
 function z_Output_Complete_Test {
-    # Save initial state
-    typeset -i Initial_Verbose=$Output_Verbose_Mode
-    typeset -i Initial_Quiet=$Output_Quiet_Mode
-    typeset -i Initial_Debug=$Output_Debug_Mode
-    typeset -i Initial_Prompt=$Output_Prompt_Enabled
+    # Save global state
+    z_Save_Global_Test_State
 
     # Test suite shared variables
     typeset -i Terminal_Width=$(tput cols)
@@ -1482,22 +1486,16 @@ function z_Output_Complete_Test {
     z_Output print "Test suite completed successfully."
     z_Output print "============================================================"
     
-    # Restore original settings
-    Output_Verbose_Mode=$Initial_Verbose
-    Output_Quiet_Mode=$Initial_Quiet
-    Output_Debug_Mode=$Initial_Debug
-    Output_Prompt_Enabled=$Initial_Prompt
+    # Restore global state
+    z_Restore_Global_Test_State
     
     return 0
 }
 
 # Function to run a subset of the tests for incremental testing
 function run_Incremental_Tests() {
-    # Save initial state
-    typeset -i Initial_Verbose=$Output_Verbose_Mode
-    typeset -i Initial_Quiet=$Output_Quiet_Mode
-    typeset -i Initial_Debug=$Output_Debug_Mode
-    typeset -i Initial_Prompt=$Output_Prompt_Enabled
+    # Save global state
+    z_Save_Global_Test_State
 
     # Reset the shell environment to a known state
     emulate -LR zsh
@@ -1613,21 +1611,49 @@ function run_Incremental_Tests() {
     print "Incremental test completed successfully."
     print "============================================================"
     
-    # Restore original settings
-    Output_Verbose_Mode=$Initial_Verbose
-    Output_Quiet_Mode=$Initial_Quiet
-    Output_Debug_Mode=$Initial_Debug
-    Output_Prompt_Enabled=$Initial_Prompt
+    # Restore global state
+    z_Restore_Global_Test_State
     
     return 0
 }
 
 # Run the tests if executed directly
 if [[ "${(%):-%N}" == "$0" ]]; then
-    # Use the incremental test approach for more reliable execution
-    run_Incremental_Tests
+    # Parse command line arguments
+    z_Parse_Test_Args "$@"
     
-    # Later, once the incremental tests are working reliably, 
-    # we can enable the comprehensive tests
-    # z_Output_Complete_Test
+    # Check for help flag
+    if (( Test_Show_Help == 1 )); then
+        print "\nUsage: $0 [OPTIONS]"
+        print "Options:"
+        print "  -s, --save        Save output to file (default: terminal only)"
+        print "  --incremental     Run incremental tests (default)"
+        print "  --complete        Run complete comprehensive tests"
+        print "  -h, --help        Display this help message"
+        exit 0
+    fi
+    
+    # Configure test output
+    z_Handle_Test_Output "$SCRIPT_NAME" "FUNCTEST" "$Test_Save_Output"
+    
+    # Determine which tests to run
+    if (( Test_Run_All == 1 )); then
+        # Run incremental tests by default
+        run_Incremental_Tests
+    else
+        # Run specific modules based on command line arguments
+        for module in "${Test_Specific_Modules[@]}"; do
+            case "$module" in
+                incremental)
+                    run_Incremental_Tests
+                    ;;
+                complete)
+                    z_Output_Complete_Test
+                    ;;
+                *)
+                    print "Unknown test module: $module"
+                    ;;
+            esac
+        done
+    fi
 fi

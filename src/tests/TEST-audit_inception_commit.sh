@@ -21,17 +21,28 @@
 ##                * Added proper identification of phase classification in output checking
 ########################################################################
 
+# Ensure we can find the Z_Utils library
+SCRIPT_DIR=$(dirname "$0:A")
+LIB_DIR="${SCRIPT_DIR:h}"
+source "${LIB_DIR}/_Z_Utils.zsh"
+
 # Reset the shell environment to a known state
 emulate -LR zsh
 
 # Safe shell scripting options
 setopt errexit nounset pipefail localoptions warncreateglobal
 
+# Test script filename without extension (for output files)
+typeset SCRIPT_NAME="${${(%):-%N}:r}"
+
+# Ensure output directory exists
+typeset OUTPUT_DIR="${SCRIPT_DIR}/output"
+[[ -d "$OUTPUT_DIR" ]] || mkdir -p "$OUTPUT_DIR"
+
 # Script constants
 typeset -r Script_Name=$(basename "$0")
 typeset -r Script_Version="0.1.05"
-typeset -r Script_Dir=$(dirname "$0:A")
-typeset -r Repo_Root=$(realpath "${Script_Dir}/..")
+typeset -r Repo_Root=$(realpath "${SCRIPT_DIR}/..")
 
 # Define TRUE/FALSE constants
 typeset -r TRUE=1
@@ -725,6 +736,27 @@ main() {
 # but to the function name when sourced. This is different from Bash's 
 # equivalent test: [[ "${BASH_SOURCE[0]}" == "${0}" ]]
 if [[ "${(%):-%N}" == "$0" ]]; then
+    # Parse command line arguments using standardized function
+    z_Parse_Test_Args "$@"
+    
+    # Handle help flag using standardized parameter
+    if (( Test_Show_Help == 1 )); then
+        show_Usage
+        exit 0
+    fi
+    
+    # Configure test output using standardized function
+    z_Handle_Test_Output "$SCRIPT_NAME" "REGRESSION" "$Test_Save_Output"
+    
+    # Set verbose mode if specified in Test_Specific_Modules
+    for module in "${Test_Specific_Modules[@]}"; do
+        if [[ "$module" == "verbose" ]]; then
+            Verbose_Mode=$TRUE
+            print "Verbose mode enabled"
+        fi
+    done
+    
+    # Call main function with all arguments
     main "$@"
     exit $?  # Explicitly propagate the exit status from main
 fi

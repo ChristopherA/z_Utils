@@ -1,16 +1,17 @@
 #!/usr/bin/env zsh
-# z_Output_test.zsh - Test functions for z_Output
+# z_Output_FUNCTEST.sh - Test functions for z_Output
 # 
-# Version:       0.1.00 (2025-03-19)
+# Version:       0.2.00 (2025-03-31)
 # Origin:        https://github.com/ChristopherA/z_Utils
 # Description:   Tests for the z_Output function from the Z_Utils library.
 # License:       BSD-2-Clause-Patent (https://spdx.org/licenses/BSD-2-Clause-Patent.html)
 # Copyright:     (c) 2025 Christopher Allen
 # Attribution:   Authored by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
 #
-# NOTE: This is a basic test for z_Output. A much more comprehensive test exists 
-# in the source materials at 'untracked/source-material/z_output_demo.sh',
-# which should be adapted and imported into this testing framework.
+# NOTE: This is a basic test for z_Output. More comprehensive tests exist in:
+# - z_Output_debug_FUNCTEST.sh
+# - z_Output_comprehensive_FUNCTEST.sh
+# - z_Output_modular_FUNCTEST.sh
 
 # Ensure we can find the Z_Utils library
 SCRIPT_DIR="${0:a:h}"
@@ -23,14 +24,24 @@ emulate -LR zsh
 # Safe shell scripting options for strict error handling
 setopt errexit nounset pipefail localoptions warncreateglobal
 
-# Set up global variables
-Output_Verbose_Mode=$TRUE
-Output_Quiet_Mode=$FALSE
-Output_Debug_Mode=$TRUE
-Output_Prompt_Enabled=$TRUE
+# Test script filename without extension (for output files)
+typeset SCRIPT_NAME="${${(%):-%N}:r}"
+
+# Ensure output directory exists
+typeset OUTPUT_DIR="${SCRIPT_DIR}/output"
+[[ -d "$OUTPUT_DIR" ]] || mkdir -p "$OUTPUT_DIR"
 
 # Test various output types
-function test_z_Output() {
+function run_Basic_Tests() {
+    # Save global state
+    z_Save_Global_Test_State
+    
+    # Enable all output modes for testing
+    Output_Verbose_Mode=$TRUE
+    Output_Quiet_Mode=$FALSE
+    Output_Debug_Mode=$TRUE
+    Output_Prompt_Enabled=$TRUE
+    
     print "\n=== Testing z_Output Function ==="
     print "\n--- Basic Message Types ---"
     
@@ -61,9 +72,55 @@ function test_z_Output() {
     z_Output vdebug "Verbose debug message"
     
     print "\n--- Test Complete ---"
+    
+    # Restore global state
+    z_Restore_Global_Test_State
+}
+
+# Function to run all tests
+function run_All_Tests() {
+    print "\n=== z_Output Basic Test Suite ==="
+    print "Testing output function behavior"
+    
+    # Run all test modules
+    run_Basic_Tests
+    
+    print "\n=== All Tests Completed Successfully ==="
 }
 
 # Run the test if executed directly
 if [[ "${(%):-%N}" == "$0" ]]; then
-    test_z_Output
+    # Parse command line arguments
+    z_Parse_Test_Args "$@"
+    
+    # Check for help flag
+    if (( Test_Show_Help == 1 )); then
+        print "\nUsage: $0 [OPTIONS]"
+        print "Options:"
+        print "  -s, --save     Save output to file (default: terminal only)"
+        print "  --basic        Run only basic tests"
+        print "  -h, --help     Display this help message"
+        exit 0
+    fi
+    
+    # Configure test output
+    z_Handle_Test_Output "$SCRIPT_NAME" "FUNCTEST" "$Test_Save_Output"
+    
+    # Determine which tests to run
+    if (( Test_Run_All == 1 )); then
+        # Run all tests
+        run_All_Tests
+    else
+        # Run specific modules based on command line arguments
+        for module in "${Test_Specific_Modules[@]}"; do
+            case "$module" in
+                basic)
+                    run_Basic_Tests
+                    ;;
+                *)
+                    print "Unknown test module: $module"
+                    ;;
+            esac
+        done
+    fi
 fi
