@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
-# z_Output_comprehensive_test.zsh - Comprehensive tests for z_Output
+# z_Output_comprehensive_FUNCTEST.sh - Comprehensive tests for z_Output
 # 
-# Version:       0.1.00 (2025-03-19)
+# Version:       0.2.00 (2025-03-31)
 # Origin:        https://github.com/ChristopherA/z_Utils
 # Description:   Comprehensive tests for the z_Output function from the Z_Utils library.
 #                Adapted from the more extensive z_output_demo.sh in source materials.
@@ -19,6 +19,13 @@ emulate -LR zsh
 
 # Safe shell scripting options for strict error handling
 setopt errexit nounset pipefail localoptions warncreateglobal
+
+# Test script filename without extension (for output files)
+typeset SCRIPT_NAME="${${(%):-%N}:r}"
+
+# Ensure output directory exists
+typeset OUTPUT_DIR="${SCRIPT_DIR}/output"
+[[ -d "$OUTPUT_DIR" ]] || mkdir -p "$OUTPUT_DIR"
 
 # Helper function to display section headers
 function display_header() {
@@ -66,7 +73,10 @@ function reset_modes() {
 }
 
 # Test basic message types
-function test_basic_message_types() {
+function run_Basic_Tests() {
+    # Save global state
+    z_Save_Global_Test_State
+    
     display_header "TEST: Basic Message Types"
     
     # Reset to default modes
@@ -96,10 +106,16 @@ function test_basic_message_types() {
     
     print "\n8. Verbose Debug Message (should NOT show with verbose AND debug OFF):"
     z_Output vdebug "This verbose debug message should not be displayed"
+    
+    # Restore global state
+    z_Restore_Global_Test_State
 }
 
 # Test verbose mode
-function test_verbose_mode() {
+function run_Verbose_Tests() {
+    # Save global state
+    z_Save_Global_Test_State
+    
     display_header "TEST: Verbose Mode"
     
     # Reset and enable verbose mode
@@ -120,10 +136,16 @@ function test_verbose_mode() {
     
     print "\n5. Verbose Debug with Verbose ON (should NOT show without debug ON):"
     z_Output vdebug "This verbose debug message should NOT be displayed without debug mode"
+    
+    # Restore global state
+    z_Restore_Global_Test_State
 }
 
 # Test debug mode
-function test_debug_mode() {
+function run_Debug_Tests() {
+    # Save global state
+    z_Save_Global_Test_State
+    
     display_header "TEST: Debug Mode"
     
     # Reset and enable debug mode
@@ -140,10 +162,16 @@ function test_debug_mode() {
     Output_Verbose_Mode=$TRUE
     print "\n3. Verbose Debug with both Verbose and Debug ON (should show):"
     z_Output vdebug "This verbose debug message SHOULD be displayed with Output_Verbose_Mode=$Output_Verbose_Mode and Output_Debug_Mode=$Output_Debug_Mode"
+    
+    # Restore global state
+    z_Restore_Global_Test_State
 }
 
 # Test quiet mode
-function test_quiet_mode() {
+function run_Quiet_Tests() {
+    # Save global state
+    z_Save_Global_Test_State
+    
     display_header "TEST: Quiet Mode"
     
     # Reset and enable quiet mode
@@ -170,10 +198,16 @@ function test_quiet_mode() {
     
     print "\n7. Print with Force in Quiet Mode (should show):"
     z_Output print "This print message SHOULD show in quiet mode with Force=1" Force=1
+    
+    # Restore global state
+    z_Restore_Global_Test_State
 }
 
 # Test text wrapping and indentation
-function test_wrapping_indentation() {
+function run_Format_Tests() {
+    # Save global state
+    z_Save_Global_Test_State
+    
     display_header "TEST: Text Wrapping and Indentation"
     
     # Reset modes
@@ -202,10 +236,16 @@ function test_wrapping_indentation() {
     z_Output print "Level 2 text with 8 spaces" Indent=8
     z_Output print "Level 3 text with 12 spaces" Indent=12
     z_Output print "Back to level 0 with no indentation"
+    
+    # Restore global state
+    z_Restore_Global_Test_State
 }
 
 # Test emoji customization
-function test_emoji_customization() {
+function run_Emoji_Tests() {
+    # Save global state
+    z_Save_Global_Test_State
+    
     display_header "TEST: Emoji Customization"
     
     # Reset modes
@@ -228,10 +268,16 @@ function test_emoji_customization() {
     print "\n3. No Emojis:"
     z_Output info "Removing info emoji" Emoji=""
     z_Output success "Removing success emoji" Emoji=""
+    
+    # Restore global state
+    z_Restore_Global_Test_State
 }
 
 # Test prompt functionality
-function test_prompt_functionality() {
+function run_Prompt_Tests() {
+    # Save global state
+    z_Save_Global_Test_State
+    
     display_header "TEST: Prompt Functionality"
     
     # Reset modes
@@ -265,38 +311,85 @@ function test_prompt_functionality() {
     # print "b. Prompt without Default:"
     # typeset Response=$(z_Output prompt "Enter a value:")
     # print "Response: ${Response:-(empty)}"
+    
+    # Restore global state
+    z_Restore_Global_Test_State
 }
 
 # Function to run all tests
-function run_all_tests() {
-    typeset -i InitialVerbose=$Output_Verbose_Mode
-    typeset -i InitialQuiet=$Output_Quiet_Mode
-    typeset -i InitialDebug=$Output_Debug_Mode
-    typeset -i InitialPrompt=$Output_Prompt_Enabled
-    
+function run_All_Tests() {
     print "\n=== z_Output Comprehensive Test Suite ==="
     print "Tests multiple features of the z_Output function"
-    print "Original script environment: Verbose=$InitialVerbose, Quiet=$InitialQuiet, Debug=$InitialDebug, Prompt=$InitialPrompt"
     
-    # Run all test functions
-    test_basic_message_types
-    test_verbose_mode
-    test_debug_mode
-    test_quiet_mode
-    test_wrapping_indentation
-    test_emoji_customization
-    test_prompt_functionality
-    
-    # Restore original settings
-    Output_Verbose_Mode=$InitialVerbose
-    Output_Quiet_Mode=$InitialQuiet
-    Output_Debug_Mode=$InitialDebug
-    Output_Prompt_Enabled=$InitialPrompt
+    # Run all test modules
+    run_Basic_Tests
+    run_Verbose_Tests
+    run_Debug_Tests
+    run_Quiet_Tests
+    run_Format_Tests
+    run_Emoji_Tests
+    run_Prompt_Tests
     
     print "\n=== Test Suite Complete ==="
 }
 
 # Run the tests if executed directly
 if [[ "${(%):-%N}" == "$0" ]]; then
-    run_all_tests
+    # Parse command line arguments
+    z_Parse_Test_Args "$@"
+    
+    # Check for help flag
+    if (( Test_Show_Help == 1 )); then
+        print "\nUsage: $0 [OPTIONS]"
+        print "Options:"
+        print "  -s, --save      Save output to file (default: terminal only)"
+        print "  --basic         Test basic message types"
+        print "  --verbose       Test verbose mode"
+        print "  --debug         Test debug mode"
+        print "  --quiet         Test quiet mode"
+        print "  --format        Test text formatting (wrap, indent)"
+        print "  --emoji         Test emoji customization"
+        print "  --prompt        Test prompt functionality"
+        print "  -h, --help      Display this help message"
+        exit 0
+    fi
+    
+    # Configure test output
+    z_Handle_Test_Output "$SCRIPT_NAME" "FUNCTEST" "$Test_Save_Output"
+    
+    # Determine which tests to run
+    if (( Test_Run_All == 1 )); then
+        # Run all tests
+        run_All_Tests
+    else
+        # Run specific modules based on command line arguments
+        for module in "${Test_Specific_Modules[@]}"; do
+            case "$module" in
+                basic)
+                    run_Basic_Tests
+                    ;;
+                verbose)
+                    run_Verbose_Tests
+                    ;;
+                debug)
+                    run_Debug_Tests
+                    ;;
+                quiet)
+                    run_Quiet_Tests
+                    ;;
+                format)
+                    run_Format_Tests
+                    ;;
+                emoji)
+                    run_Emoji_Tests
+                    ;;
+                prompt)
+                    run_Prompt_Tests
+                    ;;
+                *)
+                    print "Unknown test module: $module"
+                    ;;
+            esac
+        done
+    fi
 fi

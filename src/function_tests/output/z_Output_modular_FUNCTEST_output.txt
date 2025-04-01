@@ -1,0 +1,23 @@
+============================================================
+z_Output Complete Test Suite
+============================================================
+Testing all aspects of the z_Output function
+Current terminal width: 80 columns
+============================================================
+
+============================================================
+z_Output Basic Tests
+============================================================
+
+1. Basic message types:
+(B[mPrint message - basic text output(B[m
+[36m=� Info message - for informational notices(B[m
+[32mSuccess message - for operation completion(B[m
+[35m� Warning message - for potential issues(B[m
+[31mL Error message - for error conditions(B[m
+============================================================
+z_Output Mode Tests
+============================================================
+
+1. Verbose mode:
+a. Default (verbose OFF):

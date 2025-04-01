@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 ########################################################################
 ## Script:        setup_git_inception_repo_REGRESSION.sh
-## Version:       0.2.00 (2025-03-26)
+## Version:       0.3.00 (2025-03-31)
 ## did-origin:    did:repo:69c8659959f1a6aa281bdc1b8653b381e741b3f6/blob/main/src/tests/setup_git_inception_repo_REGRESSION.sh
 ## github-origin: https://github.com/OpenIntegrityProject/core/blob/main/src/tests/setup_git_inception_repo_REGRESSION.sh
 ## Description:   Regression test harness for setup_git_inception_repo.sh
@@ -21,9 +21,14 @@
 ## 
 ## Notes:
 ##   - Tests may be run directly or via the sandbox/run_test.sh wrapper
-##   - This updated version fixes issues with ANSI code handling
-##   - Uses simpler pattern matching approach for reliability
+##   - This updated version uses the new standardized test functions
+##   - Uses Z_Utils standardized test framework for output and state management
 ########################################################################
+
+# Ensure we can find the Z_Utils library
+SCRIPT_DIR="${0:A:h}"
+LIB_DIR="${SCRIPT_DIR:h:h}"
+source "${LIB_DIR}/_Z_Utils.zsh"
 
 # Reset the shell environment to a known state
 emulate -LR zsh
@@ -34,9 +39,10 @@ setopt errexit nounset pipefail localoptions warncreateglobal
 # Script constants
 # Extract script name using Zsh parameter expansion with :t modifier (tail/basename)
 typeset -r Script_Name="${0:t}"
-typeset -r Script_Version="0.2.00"
-typeset -r Script_Dir="${0:A:h}"
-typeset -r Repo_Root="${Script_Dir:h:h}"
+typeset -r Script_Version="0.3.00"
+
+# Test script filename without extension (for output files)
+typeset SCRIPT_NAME="${${(%):-%N}:r}"
 
 # Terminal formatting for test output
 typeset -r Term_Reset="\033[0m"
@@ -47,7 +53,7 @@ typeset -r Term_Yellow="\033[33m"
 typeset -r Term_Blue="\033[34m"
 
 # Script-scoped variables
-typeset -r Target_Script="${Script_Dir}/../setup_git_inception_repo.sh"  # Full path to the target script being tested
+typeset -r Target_Script="${SCRIPT_DIR}/../setup_git_inception_repo.sh"  # Full path to the target script being tested
 typeset -i Verbose_Mode=0                                 # Controls output verbosity (0=normal, 1=verbose)
 
 # Generate unique test directory names to prevent collisions
@@ -620,6 +626,8 @@ function execute_Core_Workflow() {
 #----------------------------------------------------------------------#
 # Description:
 #   Processes command line arguments for the test script
+#   Note: This function is kept for backward compatibility, but the main
+#   script execution now uses the standardized z_Parse_Test_Args function.
 # Parameters:
 #   $@ - Command line arguments
 # Sets:
@@ -641,6 +649,11 @@ function parse_CLI_Options() {
             -h|--help)
                 display_Script_Usage
                 ;;
+            -s|--save)
+                # Support for standardized save option
+                Test_Save_Output="save"
+                shift
+                ;;
             -*)
                 print -u2 "Error: Unknown option: $1"
                 display_Script_Usage
@@ -660,24 +673,29 @@ function parse_CLI_Options() {
 #----------------------------------------------------------------------#
 # Description:
 #   Main entry point for the script, orchestrates overall execution
+#   Now integrated with Z_Utils standardized test functions for better
+#   compatibility across the codebase.
 # Parameters:
 #   $@ - Command line arguments
 # Returns:
 #   Exit_Status_Success on success
 #   Various error codes on failure
 # Dependencies:
-#   parse_Arguments, core_Logic, cleanup_Test_Directories
+#   parse_CLI_Options, execute_Core_Workflow, cleanup_Test_Directories,
+#   z_Parse_Test_Args, z_Handle_Test_Output
 # Side Effects:
 #   Sets up trap handlers for clean test environment
 #----------------------------------------------------------------------#
 function main() {
     print "=== $Script_Name v$Script_Version ==="
+    print "Using standardized Z_Utils test framework"
     
     # Trap to ensure cleanup even if script fails
     typeset cleanupCommand='print "Test script interrupted. Cleaning up..."; cleanup_Test_Directories'
     trap $cleanupCommand INT TERM
     
-    # Parse command line parameters
+    # Parse command line parameters - keep for backwards compatibility
+    # New code path uses z_Parse_Test_Args before main() is called
     parse_CLI_Options "$@" || exit $?
     
     # Execute core workflow with enhanced error tracking
@@ -692,6 +710,23 @@ function main() {
 
 # Execute main() only if script is run directly, not sourced
 if [[ "${(%):-%N}" == "$0" ]]; then
+    # Parse command line arguments using standardized function
+    z_Parse_Test_Args "$@"
+    
+    # Handle help flag using standardized parameter
+    if (( Test_Show_Help == 1 )); then
+        display_Script_Usage
+        exit 0
+    fi
+    
+    # Ensure output directory exists for test outputs
+    typeset OUTPUT_DIR="${SCRIPT_DIR}/output"
+    [[ -d "$OUTPUT_DIR" ]] || mkdir -p "$OUTPUT_DIR"
+    
+    # Configure test output using standardized function
+    typeset SIMPLE_SCRIPT_NAME=$(basename "$SCRIPT_NAME")
+    z_Handle_Test_Output "$SIMPLE_SCRIPT_NAME" "REGRESSION" "$Test_Save_Output"
+    
     # Call main function with all arguments
     main "$@"
     # Explicitly propagate the exit status from main function

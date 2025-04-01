@@ -3349,6 +3349,140 @@ function z_Setup_Git_Environment() {
     return $Exit_Status_Success
 }
 
+#======================================================================#
+# STANDARDIZED TEST FUNCTIONS
+#======================================================================#
+# These functions provide a standardized approach to testing in Z_Utils.
+# They are used by function tests and regression tests to ensure
+# consistent test structure, output handling, and state management.
+#======================================================================#
+
+#----------------------------------------------------------------------#
+# Function: z_Handle_Test_Output
+#----------------------------------------------------------------------#
+# Description:
+#   Configures test output to terminal or file based on mode
+#
+# Parameters:
+#   $1 - Test name for the output file
+#   $2 - Test type (FUNCTEST or REGRESSION)
+#   $3 - (Optional) Set to "save" to save output to a file
+#
+# Returns:
+#   None. Configures stdout for appropriate output.
+#----------------------------------------------------------------------#
+function z_Handle_Test_Output() {
+    typeset TestName=$1
+    typeset TestType=$2  # FUNCTEST or REGRESSION
+    typeset OutputMode=${3:-"terminal"}  # Default to terminal output
+    
+    # Make sure TestName is just the base name without directory components
+    typeset BaseName=$(basename "$TestName")
+    
+    # Determine output directory based on test type
+    # Note: OUTPUT_DIR should be set by the calling script
+    typeset OutputDir="${OUTPUT_DIR:-${SCRIPT_DIR}/output}"
+    
+    # Ensure output directory exists
+    [[ -d "$OutputDir" ]] || mkdir -p "$OutputDir"
+    
+    if [[ "$OutputMode" == "save" ]]; then
+        # Output to both terminal and file
+        typeset OutputFile="${OutputDir}/${BaseName}_${TestType}_output.txt"
+        print "Saving test output to: $OutputFile"
+        exec > >(tee "$OutputFile")
+    else
+        # Output to terminal only (default)
+        print "Running test with output to terminal only"
+    fi
+}
+
+#----------------------------------------------------------------------#
+# Function: z_Save_Global_Test_State
+#----------------------------------------------------------------------#
+# Description:
+#   Saves global state variables for test environment
+#
+# Parameters:
+#   None
+#
+# Returns:
+#   None. Saves state to global variables.
+#----------------------------------------------------------------------#
+function z_Save_Global_Test_State() {
+    # Save output mode state
+    typeset -g Saved_Verbose_Mode=$Output_Verbose_Mode
+    typeset -g Saved_Quiet_Mode=$Output_Quiet_Mode
+    typeset -g Saved_Debug_Mode=$Output_Debug_Mode
+    typeset -g Saved_Prompt_Enabled=$Output_Prompt_Enabled
+    
+    # Save any other relevant state...
+}
+
+#----------------------------------------------------------------------#
+# Function: z_Restore_Global_Test_State
+#----------------------------------------------------------------------#
+# Description:
+#   Restores global state variables from saved state
+#
+# Parameters:
+#   None
+#
+# Returns:
+#   None. Restores state from global variables.
+#----------------------------------------------------------------------#
+function z_Restore_Global_Test_State() {
+    # Restore output mode state
+    Output_Verbose_Mode=$Saved_Verbose_Mode
+    Output_Quiet_Mode=$Saved_Quiet_Mode
+    Output_Debug_Mode=$Saved_Debug_Mode
+    Output_Prompt_Enabled=$Saved_Prompt_Enabled
+    
+    # Restore any other relevant state...
+}
+
+#----------------------------------------------------------------------#
+# Function: z_Parse_Test_Args
+#----------------------------------------------------------------------#
+# Description:
+#   Parses command line arguments for test scripts
+#
+# Parameters:
+#   $@ - All command line arguments
+#
+# Returns:
+#   Sets global variables for test configuration.
+#----------------------------------------------------------------------#
+function z_Parse_Test_Args() {
+    # Set default parameters
+    typeset -g Test_Save_Output="terminal"
+    typeset -g Test_Show_Help=0
+    typeset -g Test_Run_All=1
+    typeset -ga Test_Specific_Modules=()
+    
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --help|-h)
+                Test_Show_Help=1
+                shift
+                ;;
+            --save|-s)
+                Test_Save_Output="save"
+                shift
+                ;;
+            --*) # Any other specific test module/option
+                Test_Run_All=0
+                Test_Specific_Modules+=("${1:2}") # Remove -- prefix
+                shift
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+}
+
 ########################################################################
 ##                        END OF LIBRARY
 ########################################################################
