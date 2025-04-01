@@ -1,29 +1,245 @@
-# Regression Test Scripts Requirements
+# Z_Utils Test Scripts Requirements
 > - _did: `did:repo:b0c5cd0d85b29543c604c093dd83a1a20eb17af1/blob/main/requirements/shared/zsh_scripting/zsh_test_scripting.md`_
 > - _github: [`z_Utils/requirements/shared/zsh_scripting/zsh_test_scripting.md`](https://github.com/ChristopherA/z_Utils/blob/main/requirements/shared/zsh_scripting/zsh_test_scripting.md)_
-> - _Updated: 2025-03-19 by Christopher Allen <ChristopherA@LifeWithAlacrity.com> Github/Twitter/Bluesky: @ChristopherA_
+> - _Updated: 2025-03-31 by Christopher Allen <ChristopherA@LifeWithAlacrity.com> Github/Twitter/Bluesky: @ChristopherA_
 > - _Original: [`did:repo:69c8659959f1a6aa281bdc1b8653b381e741b3f6/src/requirements/REQUIREMENTS-Regression_Test_Scripts.md`](https://github.com/OpenIntegrityProject/core/blob/main/src/requirements/REQUIREMENTS-Regression_Test_Scripts.md)_
 
 [![License](https://img.shields.io/badge/License-BSD_2--Clause--Patent-blue.svg)](https://spdx.org/licenses/BSD-2-Clause-Patent.html)  
 [![Project Status: Active](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)  
-[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)](CHANGELOG.md)
 
 # Introduction
-Regression test scripts are **lightweight, targeted tests** designed to check the behavior of Zsh scripts. These tests should remain **concise (under 200 lines of code)** and focus on **parameter checking, error handling, and expected script behavior**.
+Z_Utils includes two distinct types of test scripts - **function tests** and **regression tests**. Both are **lightweight, targeted tests** designed to verify different aspects of our Zsh scripts. All tests should remain **concise and focused** on relevant verification needs.
 
-This document outlines the **minimum requirements** for regression test scripts. If testing needs become more extensive—requiring complex mocking, full test suites, or structured test frameworks—consider refactoring into a **broader testing strategy** aligned with the Zsh Framework Scripting Best Practices.
+- **Function Tests**: Focus on verifying individual functions within the Z_Utils library, with detailed testing of parameters, options, behavior, and edge cases.
+- **Regression Tests**: Focus on verifying complete scripts and their behavior, ensuring they handle parameters correctly and maintain expected functionality over time.
 
-All regression test scripts must follow:
-- **[Zsh Core Scripting Best Practices](REQUIREMENTS-Zsh_Core_Scripting_Best_Practices.md)**
-- **[Zsh Snippet Script Best Practices](REQUIREMENTS-Zsh_Snippet_Script_Best_Practices.md)**
+## File Organization and Naming Conventions
 
-This document covers additional considerations specific to regression test scripts.
+Test files should follow a consistent organization and naming convention:
 
-## Purpose and Scope
+### Function Tests
+- **Location**: `/src/function_tests/`
+- **Basic Function Test Naming**: `z_FunctionName_FUNCTEST.sh`
+- **Specialized Function Tests**: `z_FunctionName_purpose_FUNCTEST.sh` (e.g., `z_Output_debug_FUNCTEST.sh`)
+- **Comprehensive Tests**: `z_FunctionName_comprehensive_FUNCTEST.sh`
+- **Modular Tests**: `z_FunctionName_modular_FUNCTEST.sh` (when using modular approach)
+- **Output Files**: `/src/function_tests/output/z_FunctionName_FUNCTEST_output.txt`
+- **Template Files**: `function_test_template.sh`
 
-Regression test scripts focus on verifying the correctness and robustness of Zsh scripts, particularly in handling different CLI arguments and error scenarios. The goal is to catch regressions early by systematically exercising all defined options and variations in script execution.
+### Regression Tests
+- **Location**: `/src/examples/tests/`
+- **Naming Convention**: `ScriptName_REGRESSION.sh`
+- **Output Reference Files**: `ScriptName_REGRESSION_output.txt`
+- **Test Data Directory**: `/src/examples/tests/data/`
 
-These tests are especially useful when scripts accept user input, interact with the environment, or manipulate files. By checking both expected behaviors and edge cases, they help maintain reliability over time. While not required for the smaller Zsh Snippet scripts (50 - 200 lines of code), they are still recommended to ensure ongoing script stability.
+This organization ensures that tests are easily discoverable and maintainable, with a clear separation between function tests and regression tests.
+
+This document outlines the **requirements and best practices** for both function tests and regression tests. If testing needs become more extensive—requiring complex mocking, full test suites, or structured test frameworks—consider refactoring into a **broader testing strategy** aligned with the Zsh Framework Scripting Best Practices.
+
+All test scripts must follow:
+- **[Zsh Core Scripting Best Practices](zsh_core_scripting.md)**
+- **[Zsh Snippet Script Best Practices](zsh_snippet_scripting.md)**
+
+This document covers considerations specific to both types of test scripts.
+
+## Key Differences Between Function Tests and Regression Tests
+
+| Aspect | Function Tests | Regression Tests |
+|--------|---------------|-----------------|
+| **Purpose** | Test individual functions within the Z_Utils library | Test complete scripts and their behavior |
+| **Location** | `/src/function_tests/` | `/src/examples/tests/` |
+| **Naming** | `z_FunctionName_test.sh` | `ScriptName_REGRESSION.sh` |
+| **Focus** | Function parameters, options, edge cases | Script CLI arguments, workflows, integration |
+| **Testing Level** | Unit testing | Integration testing |
+| **Test Coverage** | Detailed coverage of all function features | Coverage of key user workflows |
+| **Output** | Detailed output showing function behavior | Comparison to expected reference output |
+| **Success Criteria** | All test cases pass with expected behavior | Output matches reference files or patterns |
+
+# Function Test Requirements
+
+Function tests focus on thoroughly testing individual functions within the Z_Utils library. They're designed to verify that each function works correctly under various conditions, with different parameters, and in edge cases.
+
+## Purpose and Scope of Function Tests
+
+Function tests serve as unit tests for the Z_Utils library components. Their primary purposes are:
+
+1. **Function Verification**: Ensure each function behaves as expected with valid inputs
+2. **Parameter Testing**: Verify that all parameters and options work correctly
+3. **Edge Case Handling**: Test boundary conditions and unusual inputs
+4. **Mode Interaction**: Verify behavior when system modes change (verbose, debug, quiet)
+5. **Documentation by Example**: Provide clear usage examples for developers
+
+These tests are crucial for maintaining the stability and reliability of core library functions. They serve as both verification tools and documentation, showing how functions should be used in different contexts.
+
+## Function Test Structure
+
+Z_Utils function tests should follow a modular, incremental structure that promotes both maintainability and thorough testing. This approach breaks testing into logical modules that can be run independently or together.
+
+### Basic Test Structure
+
+A well-structured function test follows this organization:
+
+```zsh
+#!/usr/bin/env zsh
+# z_FunctionName_test.sh - Test suite for z_FunctionName function
+# 
+# Version:       1.0.00 (YYYY-MM-DD)
+# Origin:        https://github.com/ChristopherA/z_Utils
+# Description:   Test suite for the z_FunctionName function
+# License:       BSD-2-Clause-Patent
+# Copyright:     (c) YYYY Christopher Allen
+# Attribution:   Authored by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
+
+# Ensure we can find the Z_Utils library
+SCRIPT_DIR="${0:a:h}"
+LIB_DIR="${SCRIPT_DIR:h}"
+source "${LIB_DIR}/_Z_Utils.zsh"
+
+# Reset the shell environment to a known state
+emulate -LR zsh
+setopt errexit nounset pipefail localoptions warncreateglobal
+
+# Main test function
+function run_FunctionName_Tests() {
+    print "Testing z_FunctionName..."
+    
+    # Test case 1: Basic functionality
+    print "\n1. Basic functionality:"
+    # Test code...
+    
+    # Test case 2: Parameter variations
+    print "\n2. Parameter variations:"
+    # Test code...
+    
+    # Additional test cases...
+    
+    print "\nAll z_FunctionName tests completed successfully"
+    return 0
+}
+
+# Run the test if executed directly
+if [[ "${(%):-%N}" == "$0" ]]; then
+    run_FunctionName_Tests
+fi
+```
+
+### Modular, Incremental Test Structure
+
+For more complex functions, use a modular structure that separates tests into logical units:
+
+```zsh
+#!/usr/bin/env zsh
+# z_FunctionName_test.sh - Test suite for z_FunctionName function
+# 
+# Version:       1.0.00 (YYYY-MM-DD)
+# Origin:        https://github.com/ChristopherA/z_Utils
+# Description:   Test suite for the z_FunctionName function
+# License:       BSD-2-Clause-Patent
+# Copyright:     (c) YYYY Christopher Allen
+# Attribution:   Authored by @ChristopherA <ChristopherA@LifeWithAlacrity.com>
+
+# Ensure we can find the Z_Utils library
+SCRIPT_DIR="${0:a:h}"
+LIB_DIR="${SCRIPT_DIR:h}"
+source "${LIB_DIR}/_Z_Utils.zsh"
+
+# Reset the shell environment to a known state
+emulate -LR zsh
+setopt errexit nounset pipefail localoptions warncreateglobal
+
+# Basic functionality tests
+function run_FunctionName_Basic_Tests() {
+    # Save initial state
+    typeset -i Initial_State=$Some_Global_Variable
+    
+    print "============================================================"
+    print "z_FunctionName Basic Tests"
+    print "============================================================"
+    
+    # Test basic functionality
+    print "\n1. Basic operations:"
+    # Basic test code...
+    
+    # Restore state
+    Some_Global_Variable=$Initial_State
+    return 0
+}
+
+# Parameter variation tests
+function run_FunctionName_Parameter_Tests() {
+    # Save initial state
+    typeset -i Initial_State=$Some_Global_Variable
+    
+    print "============================================================"
+    print "z_FunctionName Parameter Tests"
+    print "============================================================"
+    
+    # Test parameter variations
+    print "\n1. Required parameters:"
+    # Parameter test code...
+    
+    # Restore state
+    Some_Global_Variable=$Initial_State
+    return 0
+}
+
+# Additional test modules...
+
+# Run all tests in sequence
+function run_FunctionName_All_Tests() {
+    print "============================================================"
+    print "z_FunctionName Complete Test Suite"
+    print "============================================================"
+    
+    # Run each test module
+    run_FunctionName_Basic_Tests
+    run_FunctionName_Parameter_Tests
+    # Additional test modules...
+    
+    print "\n============================================================"
+    print "All z_FunctionName tests completed successfully."
+    print "============================================================"
+    
+    return 0
+}
+
+# Run the test if executed directly
+if [[ "${(%):-%N}" == "$0" ]]; then
+    # By default, run all tests
+    run_FunctionName_All_Tests
+    
+    # To run specific test modules, uncomment the desired line(s):
+    # run_FunctionName_Basic_Tests
+    # run_FunctionName_Parameter_Tests
+}
+```
+
+This modular approach provides several advantages:
+1. Tests can be run individually during development
+2. Test failure is isolated to specific modules
+3. Each test module can properly manage state
+4. The structure scales well for complex functions
+
+## Incremental Testing Approach
+
+For complex functions, an incremental testing approach is recommended:
+
+1. **Start with a simple test**: Begin with basic functionality tests that verify core behavior
+2. **Add test cases incrementally**: Gradually add more complex test cases once basics work
+3. **Build up to edge cases**: After core functionality is verified, test boundary conditions
+4. **Test mode interactions**: Verify behavior under different system mode settings
+5. **Document results clearly**: Ensure test output clearly shows what's being tested
+
+This approach helps isolate issues and makes tests more maintainable and debuggable.
+
+# Regression Test Requirements
+
+Regression test scripts focus on verifying the correctness and robustness of complete Zsh scripts, particularly in handling different CLI arguments and error scenarios. The goal is to catch regressions early by systematically exercising all defined options and variations in script execution.
+
+## Purpose and Scope of Regression Tests
+
+Regression tests are especially useful when scripts accept user input, interact with the environment, or manipulate files. By checking both expected behaviors and edge cases, they help maintain reliability over time. While not required for the smaller Zsh Snippet scripts (50 - 200 lines of code), they are still recommended to ensure ongoing script stability.
 
 These regression tests are designed to be simple and efficient. They should not introduce unnecessary complexity, require large mock environments, or involve detailed performance benchmarking. Instead, they should focus on ensuring scripts handle valid and invalid inputs as expected, with clear error messages and predictable behavior.
 
